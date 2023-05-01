@@ -1,0 +1,41 @@
+[{
+  "_id": {
+    "$oid": "610d329211174223387f5b48"
+  },
+  "role": "employee",
+  "name": "Saumya",
+  "emp_code": "EMP-001",
+  "email": "saumya2@mail.com",
+  "phone": 987412589,
+  "address": "Kolkata",
+  "designation": "Developer",
+  "password": "$2b$10$JELrHqHcPNfMamodB4UTZ.a5PEyPNb2njR4YVtGOMpEwiZxfKhNcq",
+  "image": "uploads\\1628254866384-988549698.png",
+  "createdAt": {
+    "$date": "2021-08-06T13:01:06.488Z"
+  },
+  "updatedAt": {
+    "$date": "2021-08-06T13:01:06.488Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6184c206e7572318b4bfd9d7"
+  },
+  "role": "employee",
+  "name": "Saumyadeb",
+  "emp_code": "EMP1636090374597",
+  "email": "saumya3@mail.com",
+  "phone": 987412580,
+  "address": "Kolkata",
+  "designation": "Developer",
+  "password": "$2b$10$ddX7ds6ATcUFEFYYgjABaO72AWXpgDwG8.PcK6udh5Qg9/oPkerZi",
+  "image": "uploads\\1636090374284-110318743.jpg",
+  "createdAt": {
+    "$date": "2021-11-05T05:32:54.598Z"
+  },
+  "updatedAt": {
+    "$date": "2021-11-05T05:32:54.598Z"
+  },
+  "__v": 0
+}]
