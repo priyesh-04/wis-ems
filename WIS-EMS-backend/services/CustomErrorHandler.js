@@ -9,7 +9,11 @@ class CustomErrorhandler extends Error {
         return new CustomErrorhandler(409, message);
     }
 
-    static wrongCredentials(message = 'Username or password is wrong!') {
+    static inActive(message = 'Employee currently deactivated!') {
+        return new CustomErrorhandler(409, message);
+    }
+
+    static wrongCredentials(message = 'Email ID or password is wrong!') {
         return new CustomErrorhandler(401, message);
     }
 
@@ -17,7 +21,7 @@ class CustomErrorhandler extends Error {
         return new CustomErrorhandler(401, message);
     }
 
-    static notFound(message = 'user not found!') {
+    static notFound(message = 'Employee not found!') {
         return new CustomErrorhandler(401, message);
     }
 

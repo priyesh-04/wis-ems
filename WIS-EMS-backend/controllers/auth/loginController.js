@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { User, RefreshToken } from '../../models';
+import { Employee, RefreshToken } from '../../models';
 import { CustomErrorhandler } from '../../services';
 import bcrypt from 'bcrypt';
 import { JwtService } from '../../services';
@@ -9,7 +9,7 @@ const loginController = {
     async login(req, res, next) {
         // Validation
         const loginSchema = Joi.object({
-            email: Joi.string().email().required(),
+            email_id: Joi.string().email().required(),
             password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,15}$')).required(),
         });
 
@@ -20,20 +20,25 @@ const loginController = {
         }
 
         try {
-            const user = await User.findOne({ email: req.body.email });
-            if (!user) {
+            const employee = await Employee.findOne({ email_id: req.body.email_id });
+            if (!employee) {
                 return next(CustomErrorhandler.wrongCredentials());
             }
 
             // Compare password
-            const match = await bcrypt.compare(req.body.password, user.password);
+            const match = await bcrypt.compare(req.body.password, employee.password);
             if (!match) {
                 return next(CustomErrorhandler.wrongCredentials());
             }
 
-            // Token
-            const access_token = JwtService.sign({ _id: user._id, role: user.role });
-            const refresh_token = JwtService.sign({ _id: user._id, role: user.role }, '1y', REFRESH_SECRET);
+            // Check employee is active or not
+            if (!employee.is_active) {
+                return next(CustomErrorhandler.inActive());
+            }
+
+            // Tokens
+            const access_token = JwtService.sign({ _id: employee._id, role: employee.role });
+            const refresh_token = JwtService.sign({ _id: employee._id, role: employee.role }, '1y', REFRESH_SECRET);
             
             // Database whitelist
             await RefreshToken.create({ token: refresh_token });
@@ -62,7 +67,7 @@ const loginController = {
             return next(error);
         }
 
-        res.json({ status: 'ok' });
+        res.json({ status: 'success' });
     }
 };
 
