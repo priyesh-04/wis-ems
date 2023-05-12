@@ -1,0 +1,32 @@
+Employee CRUD 
+    - access - Admin / HR
+    - fields -> name, emp_id, phone_num, email_id, address, user_type
+    - Once admin/hr creates new account email should be sent to user with credentials with auto gen pass.
+    - First Login -- force change password
+    - Everyone is employee. Admin and hr are also employee
+    - Admin can create all types of employee and hr can create only employee
+    - Only Admin can create admin
+
+
+Client management CRUD
+    - fields -> company_name, company_email, phone_num, respective_person_name
+    - access - Admin / HR
+
+
+Employee engagement
+    - Assign client to employee...can be multiple...also maintain duration of the working with client
+
+
+Update TimeSheet - Add / Edit
+    - fields ->
+            Choose Client ->
+                on client selection ->
+                    Date - no past dates allowed - No update allowed -> one record allowed only
+                    In Time -> one record allowed only
+                    Out Time -> one record allowed only
+
+                    below fields multiple add allowed - associated with same timesheet and date
+                        Work Done
+                        attachment - multiple allowed - not mandatory
+                        hrs_spent
+                        Credentials
