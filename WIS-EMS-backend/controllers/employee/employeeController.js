@@ -76,7 +76,42 @@ const employeeController = {
         } catch (error) {
             return next(error);
         }
-    }
+    },
+
+    // async editEmployee(req, res, next) {        
+    //     try {
+    //         // Check current user
+    //         const currentEmployee = await Employee.findOne({ _id: req.user._id }).select('-password -createdAt -updatedAt -__v');
+    //         if (!currentEmployee._id) {
+    //             return next(CustomErrorhandler.notFound());
+    //         } 
+
+    //         // Validation
+    //         const createEmployeeSchema = Joi.object({
+    //             _id: Joi.string().required(),
+    //             name: Joi.string().min(3).max(50).required(),
+    //             emp_id: Joi.string().required(),
+    //             phone_num: Joi.number().required(),
+    //             email_id: Joi.string().email().required(),
+    //             address: Joi.string().required(),
+    //             user_type: Joi.string().required(),
+    //         });
+
+    //         const { error } = createEmployeeSchema.validate(req.body);
+    //         if (error) {
+    //             return next(error);
+    //         }
+
+    //         const {name, emp_id, phone_num, email_id, address, user_type, password} = req.body;
+
+    //         // Scope checking - 1. Admin can create another Admin, HR, Employee, 2. HR can create another HR, employee
+    //         if (!(currentEmployee.user_type === 'Admin' || (currentEmployee.user_type === 'HR' && user_type !== 'Admin'))) {
+    //             return next(CustomErrorhandler.unauthorization(user_type + ' type user not allowed to create!'));
+    //         }
+    //     } catch (error) {
+    //         return next(error);
+    //     }
+    // }
 }
 
 export default employeeController;

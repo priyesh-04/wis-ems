@@ -25,12 +25,12 @@
 							"formdata": [
 								{
 									"key": "name",
-									"value": "Saumyadeb",
+									"value": "Saumyadeb Biswas",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "saumya3@mail.com",
+									"value": "saumya4@mail.com",
 									"type": "text"
 								},
 								{
@@ -81,7 +81,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n   \"email\": \"saumya3@mail.com\",\r\n   \"password\": \"saumya12\"\r\n}"
+							"raw": "{\r\n   \"email_id\": \"admin@mail.com\",\r\n   \"password\": \"admin123\"\r\n}"
 						},
 						"url": "{{base_url}}/login"
 					},
@@ -94,7 +94,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTg0YzIwNmU3NTcyMzE4YjRiZmQ5ZDciLCJyb2xlIjoiZW1wbG95ZWUiLCJpYXQiOjE2MzYxMDg1NjIsImV4cCI6MTYzNjExMjE2Mn0.I1YGepRLR9hAcaeXx4cunEJ7DH4kXE_--K_wAbKVDlE"
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDViNzNlYzk2ZTRkYTBkNzBiY2Q5NzAiLCJpYXQiOjE2ODM3MTU5MjQsImV4cCI6MTY4MzcxOTUyNH0.5j7GDibFzPuvbwPTjHvjNBrLbilJijLv53oOFku03OY"
 							}
 						],
 						"body": {
@@ -169,6 +169,56 @@
 							"raw": "{\r\n   \"emp_code\": \"EMP1636090374597\",\r\n   \"project_name\": \"Mobikasa\",\r\n   \"task_details\": \"Working on changes list\",\r\n   \"date\": \"05-11-2021\",\r\n   \"start_time\": \"10:00 AM\",\r\n   \"end_time\": \"08:00 PM\"\r\n}"
 						},
 						"url": "{{base_url}}/taskAsign"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employee",
+			"item": [
+				{
+					"name": "Create Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDViNzNlYzk2ZTRkYTBkNzBiY2Q5NzAiLCJpYXQiOjE2ODM4ODQyNDgsImV4cCI6MTY4Mzg4Nzg0OH0.fkqgD70AFxXMUWIDSyHvCKGuJfnyutM0U-V5RiKX_-k",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\": \"Mr. HR\",\r\n   \"emp_id\": \"EMP003\",\r\n   \"phone_num\": 9876543212,\r\n   \"email_id\": \"employee@mail.com\",\r\n   \"address\": \"Dumdum\",\r\n   \"user_type\": \"Employee\",\r\n   \"password\": \"employee123\"\r\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/employee/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"employee",
+								"create"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
 					},
 					"response": []
 				}
