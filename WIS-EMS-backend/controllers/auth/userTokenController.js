@@ -1,7 +1,5 @@
 // import Joi from 'joi';
-// import { REFRESH_SECRET } from '../../config';
 // import { RefreshToken, User } from '../../models';
-// import { CustomErrorhandler, JwtService } from '../../utils';
 const { RefreshTokenService } = require('../../services');
 
 class RefreshTokenController {

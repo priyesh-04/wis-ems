@@ -1,2 +1,4 @@
-export { default as errorHandler } from './errorHandlers';
-export { default as auth } from './auth';
+const ApiAuthValidator = require('./auth');
+const errorHandler = require('./errorHandlers');
+
+module.exports = { ApiAuthValidator, errorHandler };

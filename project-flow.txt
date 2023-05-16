@@ -1,6 +1,6 @@
 Employee CRUD 
     - access - Admin / HR
-    - fields -> name, emp_id, phone_num, email_id, address, user_type
+    - fields -> name, emp_id, phone, email, address, designation, password, image, role, created_by, is_active
     - Once admin/hr creates new account email should be sent to user with credentials with auto gen pass.
     - First Login -- force change password
     - Everyone is employee. Admin and hr are also employee

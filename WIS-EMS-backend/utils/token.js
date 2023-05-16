@@ -7,13 +7,13 @@ class TokenService {
       const payload = { _id: user._id, roles: user.roles };
       const accessToken = jwt.sign(
         payload,
-        process.env.ACCESS_TOKEN_PRIVATE_KEY,
-        { expiresIn: '14m' }
+        process.env.JWT_ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.JWT_ACCESS_TOKEN_LIFE }
       );
       const refreshToken = jwt.sign(
         payload,
-        process.env.REFRESH_TOKEN_PRIVATE_KEY,
-        { expiresIn: '30d' }
+        process.env.JWT_REFRESH_TOKEN_SECRET,
+        { expiresIn: process.env.JWT_REFRESH_TOKEN_LIFE }
       );
 
       const userToken = await UserToken.findOne({ user_id: user._id });
@@ -27,7 +27,7 @@ class TokenService {
   }
 
   async verifyToken(refreshToken) {
-    const privateKey = process.env.REFRESH_TOKEN_PRIVATE_KEY;
+    const privateKey = process.env.JWT_REFRESH_TOKEN_SECRET;
 
     return new Promise((resolve, reject) => {
       UserToken.findOne({ token: refreshToken }, (err, doc) => {

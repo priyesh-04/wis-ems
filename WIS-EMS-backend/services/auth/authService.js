@@ -49,34 +49,37 @@ class AuthService {
   async register(req, res, next) {
     try {
       const payload = req.body;
-      console.log(req.body);
       const image = req.file;
       const imagename =
-        Date.now() + '_' + req.file.originalname.replace(/ /g, '_');
+        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
       if (image) {
-        fs.rename(req.file.path, './uploads/users/' + imagename, (err) => {
-          console.log(err);
-        });
+        fs.appendFileSync(
+          './uploads/users/' + imagename,
+          image.buffer,
+          (err) => {
+            console.log('Error' + err);
+          }
+        );
         payload.image = '/uploads/users/' + imagename;
       }
-      // const registerSchema = Joi.object({
-      //   name: Joi.string().min(3).max(50).required(),
-      //   emp_id: Joi.string().min(3).max(50).required(),
-      //   email: Joi.string().email().required(),
-      //   phone: Joi.number().required(),
-      //   address: Joi.string().required(),
-      //   designation: Joi.string().required(),
-      //   password: Joi.string()
-      //     .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
-      //     .required(),
-      //   image: Joi.string().required(),
-      // });
+      const registerSchema = Joi.object({
+        name: Joi.string().min(3).max(50).required(),
+        emp_id: Joi.string().min(3).max(50).required(),
+        email: Joi.string().email().required(),
+        phone: Joi.number().required(),
+        address: Joi.string().required(),
+        designation: Joi.string().required(),
+        password: Joi.string()
+          .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
+          .required(),
+        image: Joi.string(),
+      });
 
-      // const { error } = registerSchema.validate(req.body);
+      const { error } = registerSchema.validate(req.body);
 
-      // if (error) {
-      //   return res.status(400).json({ message: error.message });
-      // }
+      if (error) {
+        return res.status(400).json({ message: error.message });
+      }
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(req.body.password, salt);
       payload.password = hashPassword;
@@ -88,6 +91,69 @@ class AuthService {
           return res
             .status(201)
             .json({ message: 'Registration Succesfully', result });
+        }
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async updateUser(req, res, next) {
+    try {
+      const payload = req.body;
+      delete payload['email'];
+      delete payload['password'];
+      const image = req.file;
+      const imagename =
+        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
+      const user = await User.findById({ _id: req.params.id });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: 'User Not Found', status: false });
+      }
+
+      const registerSchema = Joi.object({
+        name: Joi.string().min(3).max(50).required(),
+        emp_id: Joi.string().min(3).max(50).required(),
+        phone: Joi.number().required(),
+        address: Joi.string().required(),
+        designation: Joi.string().required(),
+        image: Joi.string(),
+      });
+
+      const { error } = registerSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ message: error.message });
+      }
+      if (image) {
+        if (fs.existsSync('.' + user.image)) {
+          fs.unlinkSync('.' + user.image);
+        }
+
+        fs.appendFileSync(
+          './uploads/users/' + imagename,
+          image.buffer,
+          (err) => {
+            console.log('Error' + err);
+          }
+        );
+        payload.image = '/uploads/users/' + imagename;
+      }
+      await User.findByIdAndUpdate({ _id: req.params.id }, payload, {
+        new: true,
+      }).exec((err, details) => {
+        if (err) {
+          return res
+            .status(400)
+            .json({ status: false, message: 'Error ' + err });
+        } else {
+          return res
+            .status(200)
+            .json({ status: true, message: 'Update Successfully' });
         }
       });
     } catch (error) {

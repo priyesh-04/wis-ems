@@ -1,4 +1,3 @@
-// import { DEBUG_MODE } from '../config';
 const { ValidationError } = require('joi');
 const { CustomErrorhandler } = require('../utils');
 
