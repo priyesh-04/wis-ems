@@ -1,8 +1,6 @@
 const Joi = require('joi');
 const { CustomErrorhandler } = require('../../utils');
-const multer = require('multer');
 const User = require('../../models/auth/user');
-const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { TokenService } = require('../../utils');
@@ -36,6 +34,7 @@ class AuthService {
         name: user.name,
         role: user.role,
         email: user.email,
+        _id: user._id,
         accessToken,
         refreshToken,
       });
@@ -69,10 +68,12 @@ class AuthService {
         phone: Joi.number().required(),
         address: Joi.string().required(),
         designation: Joi.string().required(),
+        role: Joi.string(),
         password: Joi.string()
           .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
           .required(),
         image: Joi.string(),
+        created_by: Joi.string(),
       });
 
       const { error } = registerSchema.validate(req.body);
@@ -121,7 +122,9 @@ class AuthService {
         phone: Joi.number().required(),
         address: Joi.string().required(),
         designation: Joi.string().required(),
+        role: Joi.string(),
         image: Joi.string(),
+        created_by: Joi.string(),
       });
 
       const { error } = registerSchema.validate(payload);
