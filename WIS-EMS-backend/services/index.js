@@ -1,2 +1,4 @@
-export { default as CustomErrorhandler } from './CustomErrorHandler';
-export { default as JwtService } from './JwtService';
+const AuthService = require('./auth/authService');
+const RefreshTokenService = require('./auth/UserTokenService');
+
+module.exports = { AuthService, RefreshTokenService };

@@ -1,8 +1,10 @@
-export { default as registerController } from './auth/registerController';
-export { default as loginController } from './auth/loginController';
-export { default as userController } from './auth/userController';
-export { default as refreshTokenController } from './auth/refreshTokenController';
+const LoginController = require('./auth/loginController');
+const UserTokenController = require('./auth/userTokenController');
 
-export { default as employeeController } from './employee/employeeController';
+module.exports = { LoginController, UserTokenController };
 
-export { default as taskAsignController } from './task/taskAsignController';
+// export { default as userController } from './auth/userController';
+
+// export { default as employeeController } from './employee/employeeController';
+
+// export { default as taskAsignController } from './task/taskAsignController';
