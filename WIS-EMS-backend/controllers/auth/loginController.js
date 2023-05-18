@@ -5,7 +5,7 @@ class LoginController {
     try {
       await AuthService.login(req, res, next);
     } catch (error) {
-      return res.status(500).json({ status: false, message: 'Error' });
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 
@@ -13,7 +13,7 @@ class LoginController {
     try {
       await AuthService.register(req, res, next);
     } catch (error) {
-      return res.status(500).json({ status: false, message: 'Error' });
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 
@@ -21,7 +21,7 @@ class LoginController {
     try {
       await AuthService.logout(req, res, next);
     } catch (error) {
-      return res.status(500).json({ status: false, message: 'Error' });
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 
@@ -29,7 +29,7 @@ class LoginController {
     try {
       await AuthService.myProfile(req, res, next);
     } catch (error) {
-      return res.status(500).json({ status: false, message: 'Error' });
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 
@@ -37,7 +37,7 @@ class LoginController {
     try {
       await AuthService.updateUser(req, res, next);
     } catch (error) {
-      return res.status(500).json({ status: false, message: 'Error' });
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 }

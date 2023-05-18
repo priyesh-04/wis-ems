@@ -214,6 +214,27 @@ class AuthService {
         .json({ message: 'Internal Server Error ' + error });
     }
   }
+
+  async getAllAdmin(req, res, next) {
+    try {
+      await User.find({ role: 'admin' })
+        .select('-password ')
+        .lean()
+        .exec((err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ status: false, message: 'Error ' + err });
+          } else {
+            return res.status(200).json({ status: true, result });
+          }
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ status: false, message: 'Internal server error ' + error });
+    }
+  }
 }
 
 module.exports = new AuthService();

@@ -1,19 +1,11 @@
-const { CustomErrorhandler } = require('../../utils');
-const { Employee } = require('../../models');
+const { AuthService } = require('../../services');
 
 class UserController {
-  async profile(req, res, next) {
+  async getAllAdmin(req, res, next) {
     try {
-      // console.log(req.user._id);
-      const employee = await Employee.findOne({ _id: req.user._id }).select(
-        '-password -updatedAt -__v'
-      );
-      if (!employee) {
-        return next(CustomErrorhandler.notFound());
-      }
-      res.json(employee);
+      await AuthService.getAllAdmin(req, res, next);
     } catch (error) {
-      return next(error);
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
 }

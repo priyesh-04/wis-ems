@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { LoginController, UserTokenController } = require('../../controllers');
+const {
+  LoginController,
+  UserTokenController,
+  UserController,
+} = require('../../controllers');
 const { ApiAuthValidator } = require('../../middlewares');
 const multer = require('multer');
 
@@ -16,11 +20,17 @@ router.get(
   ApiAuthValidator.validateAccessToken,
   LoginController.myProfile
 );
-router.post(
+router.put(
   '/user/:id',
   ApiAuthValidator.validateAccessToken,
   upload.single('image'),
   LoginController.updateUser
+);
+
+router.get(
+  '/user/all-admin',
+  ApiAuthValidator.validateAccessToken,
+  UserController.getAllAdmin
 );
 // router.post('/employee/create', auth, employeeController.createEmployee);
 // router.post('/taskAsign', auth, taskAsignController.taskAsign);

@@ -7,9 +7,11 @@ Employee CRUD
     - Admin can create all types of employee and hr can create only employee
     - Only Admin can create admin
 
+    admin > hr > employee
+
 
 Client management CRUD
-    - fields -> company_name, company_email, phone_num, respective_person_name
+    - fields -> company_name, company_email, phone_num, respective_person_name(optional), is_active, start_date , end_date
     - access - Admin / HR
 
 
