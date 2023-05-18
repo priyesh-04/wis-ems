@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const UserToken = require('../models/auth/userToken');
 
 class ApiAuthValidator {
   validateAccessToken(req, res, next) {
@@ -6,7 +7,7 @@ class ApiAuthValidator {
     if (!bearerToken) {
       return res
         .status(401)
-        .json({ status: false, message: 'Authorization Needed.' });
+        .json({ status: false, message: 'Unauthorized. Please Add Token.' });
     }
     const token = bearerToken.split(' ')[1];
     if (token) {
@@ -19,7 +20,8 @@ class ApiAuthValidator {
               .status(401)
               .json({ status: false, message: 'Access Token Expired' });
           } else {
-            req.decoded = decoded;
+            // console.log(decoded);
+            req.user = decoded;
             next();
           }
         }
@@ -29,6 +31,24 @@ class ApiAuthValidator {
         .status(403)
         .send({ status: false, message: 'Access Token Required' });
     }
+  }
+
+  authorizeRole(...roles) {
+    return (req, res, next) => {
+      const bearerToken = req.headers.authorization;
+      if (!bearerToken) {
+        return res
+          .status(401)
+          .json({ status: false, message: 'Unauthorized. Please Add Token.' });
+      }
+      if (!roles.includes(req.user.role)) {
+        return res.status(403).json({
+          message: `Role: ${req.user.role} is not allowed to access this resource`,
+        });
+      }
+      //admin
+      next();
+    };
   }
 }
 

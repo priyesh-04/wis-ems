@@ -168,25 +168,20 @@ class AuthService {
 
   async logout(req, res, next) {
     try {
-      const logoutSchema = Joi.object({
-        refreshToken: Joi.string().required(),
-      });
-      const { error } = logoutSchema.validate(req.body);
-      if (error) {
-        return next(error);
-      }
-      const userToken = await UserToken.findOne({
-        token: req.body.refreshToken,
-      });
-      if (!userToken)
-        return res
-          .status(200)
-          .json({ error: false, message: 'Logged Out Sucessfully' });
-
-      await UserToken.remove();
-      return res
-        .status(200)
-        .json({ error: false, message: 'Logged Out Sucessfully' });
+      await UserToken.findOneAndRemove(
+        { user_id: req.params.id },
+        (err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ message: 'Something went worng. ' + err });
+          } else {
+            return res
+              .status(200)
+              .json({ error: false, message: 'Logged Out Sucessfully' });
+          }
+        }
+      );
     } catch (error) {
       return res
         .status(500)

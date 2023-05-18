@@ -14,7 +14,7 @@ const upload = multer({ storage });
 router.post('/register', upload.single('image'), LoginController.register);
 router.post('/login', LoginController.login);
 router.post('/refreshtoken', UserTokenController.refresh);
-router.post('/logout', LoginController.logout);
+router.post('/logout/:id', LoginController.logout);
 router.get(
   '/profile/:id',
   ApiAuthValidator.validateAccessToken,

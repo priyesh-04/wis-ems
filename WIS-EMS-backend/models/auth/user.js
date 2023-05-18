@@ -48,7 +48,8 @@ const UserSchema = new mongoose.Schema(
       detault: null,
     },
     created_by: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
       default: null,
     },
     is_active: {

@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 class TokenService {
   async generateToken(user) {
     try {
-      const payload = { _id: user._id, roles: user.roles };
+      const payload = { _id: user._id, role: user.role };
       const accessToken = jwt.sign(
         payload,
         process.env.JWT_ACCESS_TOKEN_SECRET,
@@ -17,7 +17,7 @@ class TokenService {
       );
 
       const userToken = await UserToken.findOne({ user_id: user._id });
-      if (userToken) await UserToken.remove();
+      if (userToken) await UserToken.findOneAndRemove({ user_id: user._id });
 
       await new UserToken({ user_id: user._id, token: refreshToken }).save();
       return Promise.resolve({ accessToken, refreshToken });
