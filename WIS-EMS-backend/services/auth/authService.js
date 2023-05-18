@@ -10,7 +10,7 @@ class AuthService {
   async login(req, res, next) {
     try {
       const payload = req.body;
-      const user = await User.findOne({ email: payload.email });
+      const user = await User.findOne({ email_id: payload.email_id });
       if (!user) {
         return next(CustomErrorhandler.wrongCredentials());
       }
@@ -33,7 +33,7 @@ class AuthService {
       return res.status(200).json({
         name: user.name,
         role: user.role,
-        email: user.email,
+        email_id: user.email_id,
         _id: user._id,
         accessToken,
         refreshToken,
@@ -64,8 +64,8 @@ class AuthService {
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         emp_id: Joi.string().min(3).max(50).required(),
-        email: Joi.string().email().required(),
-        phone: Joi.number().required(),
+        email_id: Joi.string().email().required(),
+        phone_num: Joi.number().required(),
         address: Joi.string().required(),
         designation: Joi.string().required(),
         role: Joi.string(),
@@ -104,7 +104,7 @@ class AuthService {
   async updateUser(req, res, next) {
     try {
       const payload = req.body;
-      delete payload['email'];
+      delete payload['email_id'];
       delete payload['password'];
       const image = req.file;
       const imagename =
@@ -119,7 +119,7 @@ class AuthService {
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         emp_id: Joi.string().min(3).max(50).required(),
-        phone: Joi.number().required(),
+        phone_num: Joi.number().required(),
         address: Joi.string().required(),
         designation: Joi.string().required(),
         role: Joi.string(),
