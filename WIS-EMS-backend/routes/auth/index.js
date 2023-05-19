@@ -32,6 +32,16 @@ router.get(
   ApiAuthValidator.validateAccessToken,
   UserController.getAllAdmin
 );
+router.get(
+  '/user/all-employee',
+  ApiAuthValidator.validateAccessToken,
+  UserController.getAllEmployee
+);
+router.get(
+  '/user/all-hr',
+  ApiAuthValidator.validateAccessToken,
+  UserController.getAllHR
+);
 // router.post('/employee/create', auth, employeeController.createEmployee);
 // router.post('/taskAsign', auth, taskAsignController.taskAsign);
 
