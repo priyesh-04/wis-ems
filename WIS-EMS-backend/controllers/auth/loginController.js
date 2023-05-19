@@ -9,9 +9,9 @@ class LoginController {
     }
   }
 
-  async register(req, res, next) {
+  async createUser(req, res, next) {
     try {
-      await AuthService.register(req, res, next);
+      await AuthService.createUser(req, res, next);
     } catch (error) {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }

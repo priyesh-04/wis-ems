@@ -11,7 +11,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post('/register', upload.single('image'), LoginController.register);
+router.post('/create-user', upload.single('image'), LoginController.createUser);
 router.post('/login', LoginController.login);
 router.post('/refreshtoken', UserTokenController.refresh);
 router.post('/logout/:id', LoginController.logout);

@@ -32,3 +32,11 @@ Update TimeSheet - Add / Edit
                         attachment - multiple allowed - not mandatory
                         hrs_spent
                         Credentials
+
+
+--doubt--
+// employee_name , employee_assigned -- clientDetails
+// employee management -- which type of relation(how actualy work)
+
+
+// timesheet 

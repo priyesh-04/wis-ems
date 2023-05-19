@@ -2,8 +2,23 @@ const mongoose = require('mongoose');
 
 const ClientDetailsSchema = mongoose.Schema(
   {
+    client_name: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     company_name: {
       type: String,
+      trim: true,
+      required: true,
+    },
+    employee_name: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    mobile_number: {
+      type: Number,
       trim: true,
       required: true,
     },
@@ -12,18 +27,15 @@ const ClientDetailsSchema = mongoose.Schema(
       trim: true,
       required: true,
     },
-    phone_number: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
+    employee_assigned: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        trim: true,
+      },
+    ],
     is_active: {
       type: Boolean,
       default: true,
-    },
-    person_name: {
-      type: String,
-      trim: true,
     },
     start_date: {
       type: Date,

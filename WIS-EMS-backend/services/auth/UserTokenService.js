@@ -20,7 +20,7 @@ class UserTokenService {
           });
         })
         .catch((err) => {
-          return res.status(400).json({ message: 'Error ' + err });
+          return res.status(400).json(err);
         });
     } catch (error) {
       return res

@@ -45,7 +45,7 @@ class AuthService {
     }
   }
 
-  async register(req, res, next) {
+  async createUser(req, res, next) {
     try {
       const payload = req.body;
       const image = req.file;

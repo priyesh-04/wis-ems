@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const UserToken = require('../models/auth/userToken');
+const user = require('../models/auth/user');
 
 class ApiAuthValidator {
   validateAccessToken(req, res, next) {
@@ -48,6 +49,28 @@ class ApiAuthValidator {
       }
       //admin
       next();
+    };
+  }
+
+  hierarchicalAccess(uptoAccess) {
+    return (req, res, next) => {
+      console.log(uptoAccess);
+      const userRole = req.user.role;
+      if (!userRole) {
+        return res.status(401).json({ message: 'Unauthorized !!!' });
+      }
+      if (uptoAccess === 'admin' && userRole === 'admin') {
+        next();
+      } else if (
+        uptoAccess === 'hr' &&
+        (userRole === 'admin' || userRole === 'hr')
+      ) {
+        next();
+      } else {
+        return res.status(403).json({
+          message: `Role: ${userRole} is not allowed to access this resource.`,
+        });
+      }
     };
   }
 }
