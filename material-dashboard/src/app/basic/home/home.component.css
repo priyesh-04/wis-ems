@@ -1,0 +1,96 @@
+.container {
+    margin-top: 100px;
+    margin-bottom: 100px;
+}
+.progress-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.progress-meter {
+    padding: 0;
+}
+
+ol.progress-meter {
+    padding-bottom: 9.5px;
+    list-style-type: none;
+}
+
+ol.progress-meter li {
+    display: inline-block;
+    text-align: center;
+    text-indent: -19px;
+    height: 36px;
+    width: 20%;
+    font-size: 12px;
+    border-bottom-width: 4px;
+    border-bottom-style: solid;
+}
+
+ol.progress-meter li:before {
+    position: relative;
+    float: left;
+    text-indent: 0;
+    left: -webkit-calc(50% - 9.5px);
+    left: -moz-calc(50% - 9.5px);
+    left: -ms-calc(50% - 9.5px);
+    left: -o-calc(50% - 9.5px);
+    left: calc(50% - 9.5px);
+}
+
+ol.progress-meter li.done {
+    font-size: 14px;
+}
+
+ol.progress-meter li.done:before {
+    content: "\2713";
+    height: 19px;
+    width: 19px;
+    line-height: 21.85px;
+    bottom: -25px;
+    border: none;
+    border-radius: 19px;
+}
+
+ol.progress-meter li.todo {
+    font-size: 14px;
+}
+
+ol.progress-meter li.todo:before {
+    content: "\2716";
+    height: 19px;
+    width: 19px;
+    line-height: 21.85px;
+    bottom: -25px;
+    border: none;
+    border-radius: 19px;
+}
+
+ol.progress-meter li.done {
+    color: black;
+    border-bottom-color: #28a745;
+}
+
+ol.progress-meter li.done:before {
+    color: white;
+    background-color: #28a745;
+}
+
+ol.progress-meter li.todo {
+    color: #f44336;
+    border-bottom-color: #f44336;
+}
+
+ol.progress-meter li.todo:before {
+    color: #fff;
+    background-color: #f44336;
+}
+
+.home-page-header {
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #3f51b5;
+    color: #fff;
+    padding: 20px;
+    margin-bottom: 35px;
+}
