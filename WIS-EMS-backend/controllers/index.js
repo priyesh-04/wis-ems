@@ -3,6 +3,7 @@ const UserTokenController = require('./auth/userTokenController');
 const UserController = require('./auth/userController');
 const ClientDetailsController = require('./clientDetails/clientDetailsController');
 const DesignationController = require('./designation/designationController');
+const TimeSheetController = require('./timesheets/timesheetsController');
 
 module.exports = {
   LoginController,
@@ -10,6 +11,7 @@ module.exports = {
   UserController,
   ClientDetailsController,
   DesignationController,
+  TimeSheetController,
 };
 
 // export { default as userController } from './auth/userController';
