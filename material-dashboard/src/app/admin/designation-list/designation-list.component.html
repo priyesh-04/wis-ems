@@ -1,0 +1,53 @@
+<div class="container">
+    <div class="alert alert-{{alertType}} alert-dismissible fade show" role="alert" *ngIf="alertMessage">
+        <strong>{{alertMessage}}</strong>
+        <button type="button" class="close" aria-label="Close" (click)="successMessage = null">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="page-operations">
+        <form class="form-inline m-0" #f="ngForm" (ngSubmit)="onSearch()">
+            <mat-form-field>
+                <input matInput placeholder="Search" [(ngModel)]="searchText" name="searchText">
+            </mat-form-field>
+            <button type="submit" mat-mini-fab color="primary">
+                <mat-icon>search</mat-icon>
+            </button>
+        </form>
+        <button id="add-more-btn" mat-mini-fab color="primary" (click)="addDesignationDialog()">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered bg-white">
+            <thead>
+                <tr>
+                    <th scope="col" class="font-weight-bold">#</th>
+                    <th scope="col" class="font-weight-bold">User Type</th>
+                    <th scope="col" class="font-weight-bold">Actions</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let designation of designationList; let i = index">
+                <tr>
+                    <th scope="row">{{i+1}}</th>
+                    <td>
+                        <a>
+                            {{designation.name}}
+                        </a>
+                    </td>
+                    <td>
+                        <button class="mr-3" mat-raised-button color="primary"
+                            (click)="updateDesignationDialog(designation)">
+                            <mat-icon>edit</mat-icon>
+                            Edit
+                        </button>
+                        <button mat-raised-button color="warn" (click)="confirmDeleteDialog(designation._id)">
+                            <mat-icon>delete</mat-icon>
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

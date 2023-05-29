@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-lg col-md col-sm">
+        <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
+        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+            {{designationDialogData?.matDialogTitle}}
+        </h2>
+        <form [formGroup]="designationForm" (ngSubmit)="addDesignation(designationForm)">
+            <div class="fields-main-div">
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="name"
+                            placeholder="User Type Name">
+                    </mat-form-field>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-danger">Submit</button>
+        </form>
+    </div>
+</div>
