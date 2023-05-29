@@ -1,29 +1,27 @@
-import { DEBUG_MODE } from "../config";
-import { ValidationError } from "joi";
-import { CustomErrorhandler } from "../services";
+const { ValidationError } = require('joi');
+const { CustomErrorhandler } = require('../utils');
 
 const errorHandler = (err, req, res, next) => {
-    let statusCode = 500;
-    let data = {
-        message: 'Internal server error',
-        ...(DEBUG_MODE === 'true' && { originalError: err.message })
+  let statusCode = 500;
+  let data = {
+    message: 'Internal server error',
+    ...(process.env.DEBUG_MODE === 'true' && { originalError: err.message }),
+  };
+
+  if (err instanceof ValidationError) {
+    statusCode = 422;
+    data = {
+      message: err.message,
     };
+  }
 
-    if (err instanceof ValidationError) {
-        statusCode = 422;
-        data = {
-            message: err.message
-        }
-    }
+  if (err instanceof CustomErrorhandler) {
+    statusCode = err.status;
+    data = {
+      message: err.message,
+    };
+  }
 
-    if (err instanceof CustomErrorhandler) {
-        statusCode = err.status;
-        data = {
-            message: err.message
-        }
-    }
-
-    return res.status(statusCode).json(data);
-}
-
-export default errorHandler;
+  return res.status(statusCode).json(data);
+};
+module.exports = errorHandler;

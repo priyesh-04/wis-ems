@@ -1,25 +1,78 @@
-import { CustomErrorhandler, JwtService } from '../services';
+const jwt = require('jsonwebtoken');
+const UserToken = require('../models/auth/userToken');
+const user = require('../models/auth/user');
 
-const auth = async (req, res, next) => {
-    let authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return next(CustomErrorhandler.unauthorization());
+class ApiAuthValidator {
+  validateAccessToken(req, res, next) {
+    const bearerToken = req.headers.authorization;
+    if (!bearerToken) {
+      return res
+        .status(401)
+        .json({ status: false, message: 'Unauthorized. Please Add Token.' });
     }
+    const token = bearerToken.split(' ')[1];
+    if (token) {
+      jwt.verify(
+        token,
+        process.env.JWT_ACCESS_TOKEN_SECRET,
+        function (err, decoded) {
+          if (err) {
+            return res
+              .status(401)
+              .json({ status: false, message: 'Access Token Expired' });
+          } else {
+            // console.log(decoded);
+            req.user = decoded;
+            next();
+          }
+        }
+      );
+    } else {
+      return res
+        .status(403)
+        .send({ status: false, message: 'Access Token Required' });
+    }
+  }
 
-    const token = authHeader.split(' ')[1];
+  authorizeRole(...roles) {
+    return (req, res, next) => {
+      const bearerToken = req.headers.authorization;
+      if (!bearerToken) {
+        return res
+          .status(401)
+          .json({ status: false, message: 'Unauthorized. Please Add Token.' });
+      }
+      if (!roles.includes(req.user.role)) {
+        return res.status(403).json({
+          message: `Role: ${req.user.role} is not allowed to access this resource`,
+        });
+      }
+      //admin
+      next();
+    };
+  }
 
-    try {
-        const {_id, role} = await JwtService.verify(token);
-        const user = {
-            _id,
-            role
-        };
-        req.user = user;
-        // console.log(req.user);
+  hierarchicalAccess(uptoAccess) {
+    return (req, res, next) => {
+      console.log(uptoAccess);
+      const userRole = req.user.role;
+      if (!userRole) {
+        return res.status(401).json({ message: 'Unauthorized !!!' });
+      }
+      if (uptoAccess === 'admin' && userRole === 'admin') {
         next();
-    } catch (error) {
-        return next(CustomErrorhandler.unauthorization());
-    }
+      } else if (
+        uptoAccess === 'hr' &&
+        (userRole === 'admin' || userRole === 'hr')
+      ) {
+        next();
+      } else {
+        return res.status(403).json({
+          message: `Role: ${userRole} is not allowed to access this resource.`,
+        });
+      }
+    };
+  }
 }
 
-export default auth;
+module.exports = new ApiAuthValidator();

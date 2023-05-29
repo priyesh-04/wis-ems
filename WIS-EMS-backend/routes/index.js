@@ -1,14 +1,18 @@
-import express from 'express';
+const express = require('express');
 const router = express.Router();
-import {registerController, loginController, userController, refreshTokenController, taskAsignController} from '../controllers';
-import { auth } from '../middlewares';
+const authRoute = require('./auth');
+const clientDetailsRoute = require('./clientDetails/clientDetailsRoute');
+const designationRoute = require('./designation/designationRoute');
+const timesheetRoute = require('./timesheets/timesheetsRoute');
 
-router.post('/register', registerController.register);
-router.post('/login', loginController.login);
-router.get('/profile', auth, userController.profile);
-router.post('/refreshtoken', refreshTokenController.refresh);
-router.post('/logout', auth, loginController.logout);
+// multiple module route add here
+router.use('/', authRoute);
+router.use('/client', clientDetailsRoute);
+router.use('/designation', designationRoute);
+router.use('/timesheet', timesheetRoute);
 
-router.post('/taskAsign', auth, taskAsignController.taskAsign);
+router.get('/', (req, res) => {
+  return res.status(200).json({ message: 'Welcome to WIS-EMS api.' });
+});
 
-export default router;
+module.exports = router;

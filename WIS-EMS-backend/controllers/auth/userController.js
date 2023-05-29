@@ -1,19 +1,27 @@
-import { CustomErrorhandler } from '../../services';
-import { User } from '../../models';
+const { AuthService } = require('../../services');
 
-const userController = {
-    async profile(req, res, next) {
-        try {
-            // console.log(req.user._id);
-            const user = await User.findOne({ _id: req.user._id }).select('-password -updatedAt -__v');
-            if (!user) {
-                return next(CustomErrorhandler.notFound());
-            }
-            res.json(user);
-        } catch (error) {
-            return next(error);
-        }
+class UserController {
+  async getAllAdmin(req, res, next) {
+    try {
+      await AuthService.getAllAdmin(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
     }
-};
+  }
+  async getAllEmployee(req, res, next) {
+    try {
+      await AuthService.getAllEmployee(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+  async getAllHR(req, res, next) {
+    try {
+      await AuthService.getAllHR(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+}
 
-export default userController;
+module.exports = new UserController();
