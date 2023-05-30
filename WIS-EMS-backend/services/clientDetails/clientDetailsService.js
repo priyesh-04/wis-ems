@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const ClientDetails = require('../../models/clientDetails/clientDetails');
+const taskDetails = require('../../models/timesheets/taskDetails');
 
 class ClientDetailsService {
   async addClient(req, res, next) {
@@ -8,7 +9,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        employee_name: Joi.string().required(),
+        // employee_name: Joi.string().required(),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),
@@ -22,15 +23,15 @@ class ClientDetailsService {
         return res.status(400).json({ message: error.message });
       }
       const newRequest = await new ClientDetails(payload);
-      newRequest.save((err, details) => {
+      newRequest.save((err, result) => {
         if (err) {
           return res
             .status(400)
-            .json({ status: false, message: 'Error ' + err });
+            .json({ msgErr: true, message: 'Error ' + err });
         } else {
           return res.status(201).json({
-            status: true,
-            details,
+            msgErr: false,
+            result,
             message: 'Client Create Succesfull.',
           });
         }
@@ -48,7 +49,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        employee_name: Joi.string().required(),
+        // employee_name: Joi.string().required(),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),
@@ -65,15 +66,15 @@ class ClientDetailsService {
         { _id: req.params.id },
         payload,
         { new: true },
-        (err, details) => {
+        (err, result) => {
           if (err) {
             return res
               .status(400)
-              .json({ status: false, message: 'Error ' + err });
+              .json({ msgErr: true, message: 'Bad Request' });
           } else {
             return res.status(200).json({
-              status: true,
-              message: 'Client Details Update Succesfully.',
+              msgErr: false,
+              message: 'Client result Update Succesfully.',
             });
           }
         }
@@ -91,10 +92,10 @@ class ClientDetailsService {
         if (err) {
           return res
             .status(400)
-            .json({ status: false, message: 'Error ' + err });
+            .json({ msgErr: true, message: 'Error ' + err });
         } else {
           return res.status(200).json({
-            status: true,
+            msgErr: false,
             result,
           });
         }
@@ -102,27 +103,35 @@ class ClientDetailsService {
     } catch (error) {
       return res
         .status(500)
-        .json({ status: false, message: 'Internal server error ' + error });
+        .json({ msgErr: true, message: 'Internal server error ' + error });
     }
   }
 
   async deleteClient(req, res, next) {
     try {
+      const usedClient = await taskDetails.find({ client: req.params.id });
+      if (usedClient) {
+        return res.status(400).json({
+          msgErr: true,
+          message:
+            "Can't Delete this client. This Client carrying some employee timesheet records.",
+        });
+      }
       await ClientDetails.findByIdAndDelete(
         { _id: req.params.id },
         (err, result) => {
           if (err) {
             return res
               .status(400)
-              .json({ status: false, message: 'Error ' + err });
+              .json({ msgErr: true, message: 'Error ' + err });
           } else if (!result) {
             return res
               .status(400)
-              .json({ status: false, message: 'Invalid Id' });
+              .json({ msgErr: true, message: 'Invalid Id' });
           } else {
             return res.status(200).json({
-              status: true,
-              message: 'Client Details Deleted Succesfully.',
+              msgErr: false,
+              message: 'Client result Deleted Succesfully.',
             });
           }
         }
@@ -130,7 +139,7 @@ class ClientDetailsService {
     } catch (error) {
       return res
         .status(500)
-        .json({ status: false, message: 'Internal server error ' + error });
+        .json({ msgErr: true, message: 'Internal server error ' + error });
     }
   }
 }

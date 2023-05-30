@@ -12,11 +12,6 @@ const ClientDetailsSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    employee_name: {
-      type: String,
-      trim: true,
-      required: true,
-    },
     mobile_number: {
       type: Number,
       trim: true,

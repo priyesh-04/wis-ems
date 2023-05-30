@@ -28,4 +28,8 @@ export class CustomErrorhandler extends Error {
   static serverError(message = 'Internal server error') {
     return new CustomErrorhandler(500, message);
   }
+
+  static badRequest(message = 'Bad Request.') {
+    return new CustomErrorhandler(400, message);
+  }
 }

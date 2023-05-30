@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const designation = require('../../models/designation/designation');
+const user = require('../../models/auth/user');
 
 class DesignationService {
   async addDesignation(req, res, next) {
@@ -14,7 +15,7 @@ class DesignationService {
       }
 
       const newRequest = await designation(payload);
-      newRequest.save((err, details) => {
+      newRequest.save((err, result) => {
         if (err) {
           return res
             .status(400)
@@ -23,7 +24,7 @@ class DesignationService {
           return res.status(201).json({
             msgError: false,
             message: 'Designation created succesfully',
-            details,
+            result,
           });
         }
       });
@@ -48,7 +49,7 @@ class DesignationService {
       await designation.findByIdAndUpdate(
         { _id: req.params.id },
         payload,
-        (err, details) => {
+        (err, result) => {
           if (err) {
             return res
               .status(400)
@@ -70,7 +71,7 @@ class DesignationService {
 
   async allDesignation(req, res, next) {
     try {
-      await designation.find({}, (err, details) => {
+      await designation.find({}, (err, result) => {
         if (err) {
           return res
             .status(400)
@@ -79,7 +80,7 @@ class DesignationService {
           return res.status(201).json({
             msgError: false,
             message: 'All Designations.',
-            details,
+            result,
           });
         }
       });
@@ -92,6 +93,15 @@ class DesignationService {
 
   async deleteDesignation(req, res, next) {
     try {
+      const existActiveDesignation = await user.find({
+        designation: req.params.id,
+      });
+      if (existActiveDesignation.length > 0) {
+        return res.status(400).json({
+          msgError: true,
+          message: "Designation already used. Can't Delete.",
+        });
+      }
       await designation.findByIdAndDelete(
         { _id: req.params.id },
         (err, done) => {
