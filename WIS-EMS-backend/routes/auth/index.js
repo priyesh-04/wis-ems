@@ -42,7 +42,12 @@ router.get(
   ApiAuthValidator.validateAccessToken,
   UserController.getAllHR
 );
-// router.post('/employee/create', auth, employeeController.createEmployee);
-// router.post('/taskAsign', auth, taskAsignController.taskAsign);
+
+router.post(
+  '/user/active-deactive/:id',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  UserController.userActiveDeactive
+);
 
 module.exports = router;
