@@ -50,20 +50,20 @@ class AuthService {
       const imagename =
         Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
 
-      const existUser = await User.findOne({
-        $or: [
-          { emp_id: payload.emp_id },
-          { email_id: payload.email_id },
-          { phone_num: payload.phone_num },
-        ],
-      });
-      if (existUser) {
-        return res.status(400).json({
-          errMsg: true,
-          message:
-            'User Already Exist with same EMP Id or Email Id or Phone Number.',
-        });
-      }
+      // const existUser = await User.findOne({
+      //   $or: [
+      //     { emp_id: payload.emp_id },
+      //     { email_id: payload.email_id },
+      //     { phone_num: payload.phone_num },
+      //   ],
+      // });
+      // if (existUser) {
+      //   return res.status(400).json({
+      //     errMsg: true,
+      //     message:
+      //       'User Already Exist with same EMP Id or Email Id or Phone Number.',
+      //   });
+      // }
       if (image) {
         fs.appendFileSync(
           './uploads/users/' + imagename,
@@ -92,6 +92,40 @@ class AuthService {
         created_by: Joi.string(),
       });
 
+      // const registerSchema = Joi.object({
+      //   name: Joi.string()
+      //     .min(3)
+      //     .max(50)
+      //     .required()
+      //     .message('Name is required.'),
+      //   emp_id: Joi.string()
+      //     .min(3)
+      //     .max(10)
+      //     .required()
+      //     .message('Emp Id is required'),
+      //   email_id: Joi.string()
+      //     .email()
+      //     .required()
+      //     .message('Email id is required.'),
+      //   phone_num: Joi.number()
+      //     .required()
+      //     .min(10 ** 9)
+      //     .max(10 ** 10 - 1)
+      //     .message('valid phone number is required.'),
+      //   address: Joi.string().required().message('Address is required.'),
+      //   designation: Joi.string()
+      //     .required()
+      //     .length(24)
+      //     .message('Designation is required.'),
+      //   role: Joi.string().message('Role is required.'),
+      //   password: Joi.string()
+      //     .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
+      //     .required()
+      //     .message('Password should be length of 8-15'),
+      //   image: Joi.string(),
+      //   created_by: Joi.string(),
+      // });
+
       const { error } = registerSchema.validate(req.body);
 
       if (error) {
@@ -104,7 +138,36 @@ class AuthService {
       const newRequest = await new User(payload);
       newRequest.save((err, result) => {
         if (err) {
-          return next(CustomErrorhandler.badRequest());
+          if (
+            err.keyValue.email_id != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Email must be unique.',
+            });
+          } else if (
+            err.keyValue.phone_num != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Phone Number must be unique.',
+            });
+          } else if (
+            err.keyValue.emp_id != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Employee Id must be unique. ',
+            });
+          } else {
+            return next(CustomErrorhandler.badRequest());
+          }
         } else {
           return res
             .status(201)
