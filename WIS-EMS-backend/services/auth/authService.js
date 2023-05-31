@@ -50,20 +50,20 @@ class AuthService {
       const imagename =
         Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
 
-      // const existUser = await User.findOne({
-      //   $or: [
-      //     { emp_id: payload.emp_id },
-      //     { email_id: payload.email_id },
-      //     { phone_num: payload.phone_num },
-      //   ],
-      // });
-      // if (existUser) {
-      //   return res.status(400).json({
-      //     errMsg: true,
-      //     message:
-      //       'User Already Exist with same EMP Id or Email Id or Phone Number.',
-      //   });
-      // }
+      const existUser = await User.findOne({
+        $or: [
+          { emp_id: payload.emp_id },
+          { email_id: payload.email_id },
+          { phone_num: payload.phone_num },
+        ],
+      });
+      if (existUser) {
+        return res.status(400).json({
+          errMsg: true,
+          message:
+            'User Already Exist with same EMP Id or Email Id or Phone Number.',
+        });
+      }
       if (image) {
         fs.appendFileSync(
           './uploads/users/' + imagename,
@@ -76,17 +76,17 @@ class AuthService {
       }
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
-        emp_id: Joi.string().min(3).max(10).required(),
+        emp_id: Joi.string().min(3).max(15).required(),
         email_id: Joi.string().email().required(),
         phone_num: Joi.number()
           .required()
           .min(10 ** 9)
           .max(10 ** 10 - 1),
         address: Joi.string().required(),
-        designation: Joi.string().required(),
+        designation: Joi.string().required().length(24),
         role: Joi.string(),
         password: Joi.string()
-          .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
+          .pattern(new RegExp('^[a-zA-Z0-9]{8,30}$'))
           .required(),
         image: Joi.string(),
         created_by: Joi.string(),
@@ -97,31 +97,31 @@ class AuthService {
       //     .min(3)
       //     .max(50)
       //     .required()
-      //     .message('Name is required.'),
+      //     .label('Name is required.'),
       //   emp_id: Joi.string()
       //     .min(3)
       //     .max(10)
       //     .required()
-      //     .message('Emp Id is required'),
+      //     .label('Emp Id is required'),
       //   email_id: Joi.string()
       //     .email()
       //     .required()
-      //     .message('Email id is required.'),
+      //     .label('Email id is required.'),
       //   phone_num: Joi.number()
       //     .required()
       //     .min(10 ** 9)
       //     .max(10 ** 10 - 1)
-      //     .message('valid phone number is required.'),
-      //   address: Joi.string().required().message('Address is required.'),
+      //     .label('valid phone number is required.'),
+      //   address: Joi.string().required().label('Address is required.'),
       //   designation: Joi.string()
       //     .required()
       //     .length(24)
-      //     .message('Designation is required.'),
-      //   role: Joi.string().message('Role is required.'),
+      //     .label('Designation is required.'),
+      //   role: Joi.string().label('Role is required.'),
       //   password: Joi.string()
       //     .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
       //     .required()
-      //     .message('Password should be length of 8-15'),
+      //     .label('Password should be length of 8-15'),
       //   image: Joi.string(),
       //   created_by: Joi.string(),
       // });
@@ -213,13 +213,13 @@ class AuthService {
 
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
-        emp_id: Joi.string().min(3).max(10).required(),
+        emp_id: Joi.string().min(3).max(15).required(),
         phone_num: Joi.number()
           .required()
           .min(10 ** 9)
           .max(10 ** 10 - 1),
         address: Joi.string().required(),
-        designation: Joi.string().required(),
+        designation: Joi.string().required().length(24),
         role: Joi.string(),
         image: Joi.string(),
         created_by: Joi.string(),
@@ -325,6 +325,7 @@ class AuthService {
     try {
       await User.find({ role: { $in: ['employee', 'hr'] } })
         .select('-password ')
+        .populate('designation', '_id name')
         .lean()
         .exec((err, result) => {
           if (err) {

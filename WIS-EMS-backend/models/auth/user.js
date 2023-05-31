@@ -30,8 +30,10 @@ const UserSchema = new mongoose.Schema(
       trim: true,
     },
     designation: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       trim: true,
+      ref: 'designation',
+      default: null,
     },
     role: {
       type: String,
