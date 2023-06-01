@@ -5,6 +5,7 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { TokenService } = require('../../utils');
 const UserToken = require('../../models/auth/userToken');
+const designation = require('../../models/designation/designation');
 
 class AuthService {
   async login(req, res, next) {
@@ -57,11 +58,19 @@ class AuthService {
           { phone_num: payload.phone_num },
         ],
       });
+      const existDesignation = await designation.findById({
+        _id: payload.designation,
+      });
       if (existUser) {
         return res.status(400).json({
           errMsg: true,
           message:
             'User Already Exist with same EMP Id or Email Id or Phone Number.',
+        });
+      } else if (existDesignation) {
+        return res.status(400).json({
+          errMsg: true,
+          message: 'Designation Incorrect. Please Select Correct one.',
         });
       }
       if (image) {
@@ -192,6 +201,9 @@ class AuthService {
           { phone_num: payload.phone_num },
         ],
       });
+      const existDesignation = await designation.findById({
+        _id: payload.designation,
+      });
       if (
         existUser.length > 0 &&
         existUser.filter((el) => el._id != req.params.id).length > 0
@@ -200,6 +212,11 @@ class AuthService {
           msgErr: true,
           message:
             'User Already Exist with same EMP Id or Email Id or Phone Number.',
+        });
+      } else if (existDesignation) {
+        return res.status(400).json({
+          errMsg: true,
+          message: 'Designation Incorrect. Please Select Correct one.',
         });
       }
       const imagename =

@@ -15,10 +15,17 @@ router.put(
   ApiAuthValidator.validateAccessToken,
   TimeSheetController.updateTimesheet
 );
+
 router.get(
   '/user/:id',
   ApiAuthValidator.validateAccessToken,
   TimeSheetController.getAllTimesheetByUser
+);
+
+router.get(
+  '/task-details/user/:id',
+  ApiAuthValidator.validateAccessToken,
+  TimeSheetController.taskdetailsByUserDateWise
 );
 
 module.exports = router;
