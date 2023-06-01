@@ -9,7 +9,6 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
 import { EmployeeService } from "app/services/employee/employee.service";
-import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.component";
 
 @Component({
   selector: "app-employee-list",
@@ -29,33 +28,12 @@ export class EmployeeListComponent implements OnInit {
     private elRef: ElementRef
   ) {}
 
-  confirmDeleteDialog(id: number): void {
-    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
-      data: {
-        title: "Delete Employee",
-        message: "Are you sure you want to delete this employee?",
-        id: id,
-      },
-    });
-
-    deleteDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
-      if (result === "success") {
-        this.refreshEmployeeList();
-        this.alertType = "success";
-        this.alertMessage = "Employee Deleted Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      }
-    });
-  }
-
   addEmployeeDialog() {
     const employeeDialogRef = this.dialog.open(EmployeeFormComponent, {
       data: {
         matDialogTitle: "Add New Employee",
         mode: "add",
+        role: "employee",
       },
       width: "90%",
       height: "90%",
@@ -110,6 +88,7 @@ export class EmployeeListComponent implements OnInit {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {
         this.employeeList = res.result;
+        console.log(this.employeeList, "employeeList");
       },
       (err) => {
         console.log(err, "error");

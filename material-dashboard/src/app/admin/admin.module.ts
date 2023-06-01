@@ -12,12 +12,15 @@ import { MatStepperModule } from "@angular/material/stepper";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatDatepickerModule } from "@angular/material/datepicker";
 import { EmployeeListComponent } from "./employee-list/employee-list.component";
 import { AdminListComponent } from "./admin-list/admin-list.component";
 import { MatIconModule } from "@angular/material/icon";
 import { DesignationListComponent } from "./designation-list/designation-list.component";
 import { DesignationFormComponent } from "./designation-form/designation-form.component";
 import { EmployeeFormComponent } from "./employee-form/employee-form.component";
+import { ClientListComponent } from "./client-list/client-list.component";
+import { ClientFormComponent } from "./client-form/client-form.component";
 
 @NgModule({
   imports: [
@@ -43,6 +46,8 @@ import { EmployeeFormComponent } from "./employee-form/employee-form.component";
     EmployeeFormComponent,
     DesignationListComponent,
     DesignationFormComponent,
+    ClientListComponent,
+    ClientFormComponent,
   ],
   exports: [
     MatButtonModule,
@@ -56,6 +61,7 @@ import { EmployeeFormComponent } from "./employee-form/employee-form.component";
     MatDialogModule,
     MatCheckboxModule,
     MatIconModule,
+    // MatDatepickerModule,
   ],
 })
 export class AdminViewModule {}

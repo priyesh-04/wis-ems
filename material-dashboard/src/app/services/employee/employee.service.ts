@@ -41,4 +41,22 @@ export class EmployeeService {
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
+
+  getAllAdmins(): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/all-admin`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
+  addTimesheet(data): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, data, httpOptions);
+  }
+
+  getTimesheet(): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
 }

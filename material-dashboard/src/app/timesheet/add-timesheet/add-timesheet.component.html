@@ -1,1 +1,66 @@
-<h1>Add Timesheet works</h1>
+<div class="row">
+    <div class="col-lg col-md col-sm">
+        <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
+        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+            {{timesheetDialogData.matDialogTitle}}
+        </h2>
+        <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
+            <div class="fields-main-div">
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="date" class="form-control rounded-0" formControlName="date"
+                            placeholder="Date">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="time" class="form-control rounded-0" formControlName="in_time"
+                            placeholder="In Time">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="time" class="form-control rounded-0" formControlName="out_time"
+                            placeholder="Out Time">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group" id="client-wrapper">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Client</mat-label>
+                        <mat-select formControlName="client" [(value)]="selectedClient">
+                            <mat-option *ngFor="let client of clientList" value="{{client._id}}">
+                                {{client.client_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
+                            placeholder="Project Name">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="time" class="form-control rounded-0" formControlName="start_time"
+                            placeholder="Start Time">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="time" class="form-control rounded-0" formControlName="end_time"
+                            placeholder="End Time">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="description"
+                            placeholder="Description">
+                    </mat-form-field>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-danger"
+                [disabled]="myTimesheetForm.invalid && (timesheetDialogData.mode === 'add')">Submit</button>
+        </form>
+    </div>
+</div>

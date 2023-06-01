@@ -5,9 +5,9 @@ import { AdminGuard } from "../../authentication/guards/admin.guard";
 import { StaffGuard } from "../../authentication/guards/staff.guard";
 import { AdminListComponent } from "../../admin/admin-list/admin-list.component";
 import { EmployeeListComponent } from "../../admin/employee-list/employee-list.component";
-import { ClientListComponent } from "app/client/client-list/client-list.component";
 import { TimesheetListComponent } from "app/timesheet/timesheet-list/timesheet-list.component";
 import { DesignationListComponent } from "app/admin/designation-list/designation-list.component";
+import { ClientListComponent } from "app/admin/client-list/client-list.component";
 
 export const UserRoutes: Routes = [
   // Common Routes

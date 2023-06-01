@@ -1,0 +1,61 @@
+<div class="row">
+    <div class="col-lg col-md col-sm">
+        <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
+        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+            {{clientDialogData.matDialogTitle}}
+        </h2>
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit(clientForm)">
+            <div class="fields-main-div">
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="client_name"
+                            placeholder="Client Name">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="company_name"
+                            placeholder="Company Name">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="email" class="form-control rounded-0" formControlName="company_email"
+                            placeholder="Company Email Id">
+                    </mat-form-field>
+                    <div *ngIf="myClientForm.email_id?.touched && myClientForm?.email_id?.invalid" class="text-danger">
+                        <div *ngIf="myClientForm?.email_id?.errors?.pattern">
+                            Please, Enter Valid Email Id.
+                        </div>
+                    </div>
+                </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="number" class="form-control rounded-0" formControlName="mobile_number"
+                            placeholder="Mobile Number">
+                    </mat-form-field>
+                    <div *ngIf="myClientForm?.phone_num?.touched && myClientForm?.phone_num?.invalid"
+                        class="text-danger">
+                        <div *ngIf="!myClientForm?.phone_num?.mobileNumberValidator?.valid">
+                            Please, Enter a valid Mobile Number.
+                        </div>
+                    </div>
+                </div>
+                <div class="field-container form-group" id="designation-wrapper">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="date" class="form-control rounded-0" formControlName="start_date"
+                            placeholder="Start Date">
+                    </mat-form-field>
+                </div>
+                <div class="field-container form-group" id="designation-wrapper">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="date" class="form-control rounded-0" formControlName="end_date"
+                            placeholder="End Date">
+                    </mat-form-field>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-danger"
+                [disabled]="clientForm.invalid && (clientDialogData.mode === 'add')">Submit</button>
+        </form>
+    </div>
+</div>

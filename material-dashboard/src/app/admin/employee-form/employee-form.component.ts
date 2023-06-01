@@ -20,6 +20,11 @@ export class EmployeeFormComponent implements OnInit {
   employeeData: any;
   designationList: any;
   selectedDesignation: any;
+  selectedRole: any;
+  roleList = [
+    { value: "employee", viewValue: "Employee" },
+    { value: "hr", viewValue: "HR" },
+  ];
 
   constructor(
     private _employeeService: EmployeeService,
@@ -38,6 +43,7 @@ export class EmployeeFormComponent implements OnInit {
       phone_num: ["", [Validators.required, validatorIndianMobileNumber]],
       address: ["", [Validators.required]],
       designation: ["", [Validators.required]],
+      role: ["", [Validators.required]],
       password: ["", [Validators.required]],
     });
 
@@ -45,6 +51,11 @@ export class EmployeeFormComponent implements OnInit {
       this.getDesignationList();
       this.selectedDesignation =
         this.employeeDialogData.employeeData.designation;
+      if (this.employeeDialogData.employeeData.role === "admin") {
+        this.roleList.push({ value: "admin", viewValue: "Admin" });
+      }
+      this.selectedRole = this.employeeDialogData.employeeData.role;
+      console.log(this.employeeDialogData, "employeeData", this.selectedRole);
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
         name: this.employeeDialogData.employeeData.name,
@@ -52,6 +63,7 @@ export class EmployeeFormComponent implements OnInit {
         phone_num: this.employeeDialogData.employeeData.phone_num,
         address: this.employeeDialogData.employeeData.address,
         designation: this.employeeDialogData.employeeData.designation,
+        role: this.employeeDialogData.employeeData.role,
       });
       document.getElementById("password-div").style.display = "none";
     } else if (this.employeeDialogData.mode === "add") {
@@ -81,6 +93,7 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit(employeeForm: FormGroup) {
     this.employeeData = employeeForm.value;
+    console.log(this.employeeData, "submitted employeeData");
     if (this.employeeDialogData.mode === "edit") {
       this._employeeService
         .updateEmployee(

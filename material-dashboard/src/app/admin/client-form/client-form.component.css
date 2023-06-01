@@ -39,10 +39,10 @@ a.close {
     z-index: 10001;
 }
 
-::ng-deep .cdk-overlay-pane.update-timesheet-dialog {
+::ng-deep .cdk-overlay-pane.update-employee-dialog {
     height: 400px !important;
 }
 
-::ng-deep .cdk-overlay-pane.add-new-timesheet-dialog {
+::ng-deep .cdk-overlay-pane.add-new-employee-dialog {
     height: 520px !important;
 }

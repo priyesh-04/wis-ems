@@ -29,4 +29,16 @@ export class ClientService {
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, data, httpOptions);
   }
+
+  getClientList(): Observable<any> {
+    const endpoint = `${this.baseUrl}/client`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
+  updateClient(id, data: any): Observable<any> {
+    const endpoint = `${this.baseUrl}/client/${id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.put(endpoint, data, httpOptions);
+  }
 }
