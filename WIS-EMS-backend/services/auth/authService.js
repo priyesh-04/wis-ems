@@ -5,6 +5,8 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { TokenService } = require('../../utils');
 const UserToken = require('../../models/auth/userToken');
+const designation = require('../../models/designation/designation');
+const jwt = require('jsonwebtoken');
 
 class AuthService {
   async login(req, res, next) {
@@ -12,18 +14,24 @@ class AuthService {
       const payload = req.body;
       const user = await User.findOne({ email_id: payload.email_id });
       if (!user) {
-        return next(CustomErrorhandler.wrongCredentials());
+        return res
+          .status(401)
+          .json({ msgErr: true, message: 'Email ID or password is wrong!' });
       }
 
       // Compare password
       const match = await bcrypt.compare(req.body.password, user.password);
       if (!match) {
-        return next(CustomErrorhandler.wrongCredentials());
+        return res
+          .status(401)
+          .json({ msgErr: true, message: 'Email ID or password is wrong!' });
       }
 
       // Check user is active or not
       if (!user.is_active) {
-        return next(CustomErrorhandler.inActive());
+        return res
+          .status(409)
+          .json({ msgErr: true, message: 'Employee currently deactivated!' });
       }
 
       const { accessToken, refreshToken } = await TokenService.generateToken(
@@ -37,9 +45,12 @@ class AuthService {
         _id: user._id,
         accessToken,
         refreshToken,
+        msgErr: false,
       });
     } catch (error) {
-      return next(CustomErrorhandler.serverError());
+      return res
+        .status(409)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
     }
   }
 
@@ -50,20 +61,6 @@ class AuthService {
       const imagename =
         Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
 
-      const existUser = await User.findOne({
-        $or: [
-          { emp_id: payload.emp_id },
-          { email_id: payload.email_id },
-          { phone_num: payload.phone_num },
-        ],
-      });
-      if (existUser) {
-        return res.status(400).json({
-          errMsg: true,
-          message:
-            'User Already Exist with same EMP Id or Email Id or Phone Number.',
-        });
-      }
       if (image) {
         fs.appendFileSync(
           './uploads/users/' + imagename,
@@ -80,11 +77,13 @@ class AuthService {
         email_id: Joi.string().email().required(),
         phone_num: Joi.number()
           .required()
-          .min(10 ** 9)
+          .min(6 * 10 ** 9)
           .max(10 ** 10 - 1),
         address: Joi.string().required(),
         designation: Joi.string().required().length(24),
-        role: Joi.string(),
+        role: Joi.string()
+          .required()
+          .valid('admin', 'hr', 'employee', 'accountant'),
         password: Joi.string()
           .pattern(new RegExp('^[a-zA-Z0-9]{8,30}$'))
           .required(),
@@ -92,44 +91,30 @@ class AuthService {
         created_by: Joi.string(),
       });
 
-      // const registerSchema = Joi.object({
-      //   name: Joi.string()
-      //     .min(3)
-      //     .max(50)
-      //     .required()
-      //     .label('Name is required.'),
-      //   emp_id: Joi.string()
-      //     .min(3)
-      //     .max(10)
-      //     .required()
-      //     .label('Emp Id is required'),
-      //   email_id: Joi.string()
-      //     .email()
-      //     .required()
-      //     .label('Email id is required.'),
-      //   phone_num: Joi.number()
-      //     .required()
-      //     .min(10 ** 9)
-      //     .max(10 ** 10 - 1)
-      //     .label('valid phone number is required.'),
-      //   address: Joi.string().required().label('Address is required.'),
-      //   designation: Joi.string()
-      //     .required()
-      //     .length(24)
-      //     .label('Designation is required.'),
-      //   role: Joi.string().label('Role is required.'),
-      //   password: Joi.string()
-      //     .pattern(new RegExp('^[a-zA-Z0-9]{8,15}$'))
-      //     .required()
-      //     .label('Password should be length of 8-15'),
-      //   image: Joi.string(),
-      //   created_by: Joi.string(),
-      // });
-
       const { error } = registerSchema.validate(req.body);
 
       if (error) {
         return res.status(400).json({ message: error.message });
+      }
+      const existDesignation = await designation.findById({
+        _id: payload.designation,
+      });
+      if (!existDesignation) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Designation Incorrect. Please Select Correct one.',
+        });
+      }
+
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      payload.created_by = user._id;
+      if (payload.role === 'admin' && user.role === 'hr') {
+        return res.status(403).json({
+          msgErr: true,
+          message: `Sorry, ${user.role} cant't create ${payload.role}.`,
+        });
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -138,6 +123,129 @@ class AuthService {
       const newRequest = await new User(payload);
       newRequest.save((err, result) => {
         if (err) {
+          if (image) {
+            fs.unlinkSync('./uploads/users/' + imagename);
+          }
+          if (
+            err?.keyValue?.email_id != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Email must be unique.',
+            });
+          } else if (
+            err?.keyValue?.phone_num != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Phone Number must be unique.',
+            });
+          } else if (
+            err?.keyValue?.emp_id != null &&
+            err.name === 'MongoError' &&
+            err.code === 11000
+          ) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Employee Id must be unique. ',
+            });
+          } else {
+            return next(CustomErrorhandler.badRequest());
+          }
+        } else {
+          return res.status(201).json({
+            msgErr: false,
+            message: 'Registration Succesfully',
+            result,
+          });
+        }
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async updateUser(req, res, next) {
+    try {
+      const payload = req.body;
+      delete payload['password'];
+      const image = req.file;
+      const imagename =
+        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
+      const user = await User.findById({ _id: req.params.id });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: 'User Not Found', msgErr: true });
+      }
+
+      const registerSchema = Joi.object({
+        name: Joi.string().min(3).max(50).required(),
+        emp_id: Joi.string().min(3).max(15).required(),
+        email_id: Joi.string().email(),
+        phone_num: Joi.number()
+          .required()
+          .min(6 * 10 ** 9)
+          .max(10 ** 10 - 1),
+        address: Joi.string().required(),
+        designation: Joi.string().required().length(24),
+        role: Joi.string()
+          .required()
+          .valid('admin', 'hr', 'employee', 'accountant'),
+        image: Joi.string(),
+        created_by: Joi.string(),
+      });
+      const { error } = registerSchema.validate(payload);
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+      const existDesignation = await designation.findById({
+        _id: payload.designation,
+      });
+      if (!existDesignation) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Designation Incorrect. Please Select Correct one.',
+        });
+      }
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const userDetails = await TokenService.getLoggedInUser(token);
+      payload.created_by = userDetails._id;
+      if (payload.role === 'admin' && userDetails.role === 'hr') {
+        return res.status(403).json({
+          msgErr: true,
+          message: `Sorry, ${userDetails.role} cant't update ${payload.role}.`,
+        });
+      }
+
+      if (image) {
+        if (fs.existsSync('.' + user.image)) {
+          fs.unlinkSync('.' + user.image);
+        }
+
+        fs.appendFileSync(
+          './uploads/users/' + imagename,
+          image.buffer,
+          (err) => {
+            console.log('Error' + err);
+          }
+        );
+        payload.image = '/uploads/users/' + imagename;
+      }
+      await User.findByIdAndUpdate({ _id: req.params.id }, payload, {
+        new: true,
+      }).exec((err, result) => {
+        if (err) {
+          if (image) {
+            fs.unlinkSync('./uploads/users/' + imagename);
+          }
           if (
             err.keyValue.email_id != null &&
             err.name === 'MongoError' &&
@@ -168,87 +276,6 @@ class AuthService {
           } else {
             return next(CustomErrorhandler.badRequest());
           }
-        } else {
-          return res
-            .status(201)
-            .json({ message: 'Registration Succesfully', result });
-        }
-      });
-    } catch (error) {
-      return next(CustomErrorhandler.serverError());
-    }
-  }
-
-  async updateUser(req, res, next) {
-    try {
-      const payload = req.body;
-      delete payload['email_id'];
-      delete payload['password'];
-      const image = req.file;
-      const existUser = await User.find({
-        $or: [
-          { emp_id: payload.emp_id },
-          { email_id: payload.email_id },
-          { phone_num: payload.phone_num },
-        ],
-      });
-      if (
-        existUser.length > 0 &&
-        existUser.filter((el) => el._id != req.params.id).length > 0
-      ) {
-        return res.status(400).json({
-          msgErr: true,
-          message:
-            'User Already Exist with same EMP Id or Email Id or Phone Number.',
-        });
-      }
-      const imagename =
-        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
-      const user = await User.findById({ _id: req.params.id });
-      if (!user) {
-        return res
-          .status(400)
-          .json({ message: 'User Not Found', msgErr: true });
-      }
-
-      const registerSchema = Joi.object({
-        name: Joi.string().min(3).max(50).required(),
-        emp_id: Joi.string().min(3).max(15).required(),
-        phone_num: Joi.number()
-          .required()
-          .min(10 ** 9)
-          .max(10 ** 10 - 1),
-        address: Joi.string().required(),
-        designation: Joi.string().required().length(24),
-        role: Joi.string(),
-        image: Joi.string(),
-        created_by: Joi.string(),
-      });
-
-      const { error } = registerSchema.validate(payload);
-
-      if (error) {
-        return res.status(400).json({ msgErr: true, message: error.message });
-      }
-      if (image) {
-        if (fs.existsSync('.' + user.image)) {
-          fs.unlinkSync('.' + user.image);
-        }
-
-        fs.appendFileSync(
-          './uploads/users/' + imagename,
-          image.buffer,
-          (err) => {
-            console.log('Error' + err);
-          }
-        );
-        payload.image = '/uploads/users/' + imagename;
-      }
-      await User.findByIdAndUpdate({ _id: req.params.id }, payload, {
-        new: true,
-      }).exec((err, result) => {
-        if (err) {
-          return next(CustomErrorhandler.badRequest());
         } else {
           return res
             .status(200)
