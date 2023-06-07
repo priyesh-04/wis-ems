@@ -9,7 +9,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        // employee_name: Joi.string().required(),
+        person_name: Joi.string().required(),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),
@@ -49,7 +49,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        // employee_name: Joi.string().required(),
+        person_name: Joi.string().required(),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),

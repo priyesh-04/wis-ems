@@ -17,6 +17,11 @@ const ClientDetailsSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    person_name: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     company_email: {
       type: String,
       trim: true,

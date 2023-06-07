@@ -2,6 +2,8 @@ const Joi = require('joi');
 const TaskDetails = require('../../models/timesheets/taskDetails');
 const Timesheets = require('../../models/timesheets/timesheets');
 const user = require('../../models/auth/user');
+const clientDetails = require('../../models/clientDetails/clientDetails');
+const { TokenService } = require('../../utils');
 
 class TimeSheetService {
   async addTimeSheet(req, res, next) {
@@ -11,7 +13,6 @@ class TimeSheetService {
       const timesheetSchema = Joi.object({
         in_time: Joi.string().required(),
         out_time: Joi.string().required(),
-        created_by: Joi.string().length(24).required(),
         date: Joi.string().required(),
         task_details: Joi.array().items(
           Joi.object({
@@ -29,6 +30,10 @@ class TimeSheetService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      payload.created_by = user._id;
 
       const taskdetails = payload.task_details;
       delete payload['task_details'];
@@ -37,6 +42,24 @@ class TimeSheetService {
         const e = new Date(end);
         return e - s;
       };
+      async function checkClient(td) {
+        for (let i = 0; i < td.length; i++) {
+          const client = await clientDetails.findById({
+            _id: td[i].client,
+          });
+          if (!client) {
+            return false;
+          }
+        }
+        return true;
+      }
+      const checkedClient = await checkClient(taskdetails);
+      if (checkedClient == false) {
+        return res.status(403).json({
+          msgErr: true,
+          message: 'Please Provide correct client id.',
+        });
+      }
 
       async function getId(task) {
         let taskId = [];
@@ -53,9 +76,10 @@ class TimeSheetService {
               taskId.push(data._id);
             })
             .catch((err) => {
-              return res
-                .status(400)
-                .json({ message: 'Error while saving task details.' });
+              return res.status(400).json({
+                msgErr: true,
+                message: 'Error while saving task details.',
+              });
             });
         }
         return taskId;
@@ -111,6 +135,26 @@ class TimeSheetService {
         return e - s;
       };
       const taskdetails = payload.task_details;
+
+      async function checkClient(td) {
+        for (let i = 0; i < td.length; i++) {
+          const client = await clientDetails.findById({
+            _id: td[i].client,
+          });
+          if (!client) {
+            return false;
+          }
+        }
+        return true;
+      }
+      const checkedClient = await checkClient(taskdetails);
+      if (checkedClient == false) {
+        return res.status(403).json({
+          msgErr: true,
+          message: 'Please Provide correct client id.',
+        });
+      }
+
       for (let i = 0; i < taskdetails.length; i++) {
         await TaskDetails.findByIdAndUpdate(
           { _id: taskdetails[i]._id },
@@ -153,6 +197,7 @@ class TimeSheetService {
             select: '_id company_name person_name company_email',
           },
         })
+        .sort({ createdAt: -1 })
         .exec((err, result) => {
           if (err) {
             return res
@@ -218,6 +263,7 @@ class TimeSheetService {
             select: '_id company_name person_name company_email',
           },
         })
+        .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res

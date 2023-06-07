@@ -32,19 +32,43 @@ class TokenService {
     return new Promise((resolve, reject) => {
       UserToken.findOne({ token: refreshToken }, (err, doc) => {
         if (!doc)
-          return reject({ error: true, message: 'Invalid refresh token' });
+          return reject({ msgErr: true, message: 'Invalid refresh token' });
 
         jwt.verify(refreshToken, privateKey, (err, tokenDetails) => {
           if (err)
-            return reject({ error: true, message: 'Invalid refresh token' });
+            return reject({ msgErr: true, message: 'Invalid refresh token' });
           resolve({
             tokenDetails,
-            error: false,
+            msgErr: false,
             message: 'Valid refresh token',
           });
         });
       });
     });
+  }
+
+  async getLoggedInUser(token) {
+    try {
+      let userDetails;
+      if (token) {
+        jwt.verify(
+          token,
+          process.env.JWT_ACCESS_TOKEN_SECRET,
+          function (err, decoded) {
+            if (err) {
+              return res
+                .status(401)
+                .json({ msgErr: true, message: 'Access Token Expired' });
+            } else {
+              userDetails = decoded;
+            }
+          }
+        );
+      }
+      return Promise.resolve(userDetails);
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 }
 

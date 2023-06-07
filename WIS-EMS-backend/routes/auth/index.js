@@ -23,6 +23,7 @@ router.get(
 router.put(
   '/user/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
   upload.single('image'),
   LoginController.updateUser
 );
