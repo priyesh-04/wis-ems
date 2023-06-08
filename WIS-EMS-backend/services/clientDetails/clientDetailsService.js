@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const ClientDetails = require('../../models/clientDetails/clientDetails');
 const taskDetails = require('../../models/timesheets/taskDetails');
+const user = require('../../models/auth/user');
 
 class ClientDetailsService {
   async addClient(req, res, next) {
@@ -9,7 +10,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        person_name: Joi.string().required(),
+        person_name: Joi.string().required().length(24),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),
@@ -21,6 +22,13 @@ class ClientDetailsService {
 
       if (error) {
         return res.status(400).json({ message: error.message });
+      }
+      const existUser = await user.findById({ _id: payload.person_name });
+      if (!existUser) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Invalid User Id. Please Select Correct one.',
+        });
       }
       const newRequest = await new ClientDetails(payload);
       newRequest.save((err, result) => {
@@ -49,7 +57,7 @@ class ClientDetailsService {
       const clientdetails = Joi.object({
         client_name: Joi.string().required(),
         company_name: Joi.string().required(),
-        person_name: Joi.string().required(),
+        person_name: Joi.string().required().length(24),
         mobile_number: Joi.number().required(),
         company_email: Joi.string().email().required(),
         employee_assigned: Joi.array(),
@@ -61,6 +69,14 @@ class ClientDetailsService {
 
       if (error) {
         return res.status(400).json({ message: error.message });
+      }
+
+      const existUser = await user.findById({ _id: payload.person_name });
+      if (!existUser) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Invalid User Id. Please Select Correct one.',
+        });
       }
       await ClientDetails.findByIdAndUpdate(
         { _id: req.params.id },

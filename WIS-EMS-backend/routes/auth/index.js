@@ -11,13 +11,20 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post('/create-user', upload.single('image'), LoginController.createUser);
+router.post(
+  '/create-user',
+  upload.single('image'),
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
+  LoginController.createUser
+);
 router.post('/login', LoginController.login);
 router.post('/refreshtoken', UserTokenController.refresh);
 router.post('/logout/:id', LoginController.logout);
 router.get(
-  '/profile/:id',
+  '/my-profile',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr', 'employee', 'accountant'),
   LoginController.myProfile
 );
 router.put(
@@ -31,16 +38,19 @@ router.put(
 router.get(
   '/user/all-admin',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllAdmin
 );
 router.get(
   '/user/all-employee',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllEmployee
 );
 router.get(
   '/user/all-hr',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllHR
 );
 
