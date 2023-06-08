@@ -14,7 +14,7 @@ router.post(
 router.get(
   '/',
   ApiAuthValidator.validateAccessToken,
-  ApiAuthValidator.authorizeRole('hr', 'admin'),
+  ApiAuthValidator.authorizeRole('hr', 'admin', 'employee', 'accountant'),
   ClientDetailsController.getAllClient
 );
 
