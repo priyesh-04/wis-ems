@@ -58,19 +58,7 @@ class AuthService {
     try {
       const payload = req.body;
       const image = req.file;
-      const imagename =
-        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
 
-      if (image) {
-        fs.appendFileSync(
-          './uploads/users/' + imagename,
-          image.buffer,
-          (err) => {
-            console.log('Error' + err);
-          }
-        );
-        payload.image = '/uploads/users/' + imagename;
-      }
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         emp_id: Joi.string().min(3).max(15).required(),
@@ -115,6 +103,20 @@ class AuthService {
           msgErr: true,
           message: `Sorry, ${user.role} cant't create ${payload.role}.`,
         });
+      }
+
+      const imagename =
+        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
+
+      if (image) {
+        fs.appendFileSync(
+          './uploads/users/' + imagename,
+          image.buffer,
+          (err) => {
+            console.log('Error' + err);
+          }
+        );
+        payload.image = '/uploads/users/' + imagename;
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -195,9 +197,7 @@ class AuthService {
           .max(10 ** 10 - 1),
         address: Joi.string().required(),
         designation: Joi.string().required().length(24),
-        role: Joi.string()
-          .required()
-          .valid('admin', 'hr', 'employee', 'accountant'),
+        role: Joi.string().valid('admin', 'hr', 'employee', 'accountant'),
         image: Joi.string(),
         created_by: Joi.string(),
       });
@@ -308,8 +308,12 @@ class AuthService {
 
   async myProfile(req, res, next) {
     try {
-      await User.findById({ _id: req.params.id })
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      await User.findById({ _id: user._id })
         .select('-password ')
+        .populate('designation', '_id name')
         .lean()
         .exec((err, result) => {
           if (err) {
@@ -333,6 +337,7 @@ class AuthService {
     try {
       await User.find({ role: 'admin' })
         .select('-password ')
+        .populate('designation', '_id name')
         .lean()
         .exec((err, result) => {
           if (err) {
@@ -353,6 +358,7 @@ class AuthService {
       await User.find({ role: { $in: ['employee', 'hr'] } })
         .select('-password ')
         .populate('designation', '_id name')
+        .populate('created_by', '_id name emp_id email_id phone_num')
         .lean()
         .exec((err, result) => {
           if (err) {

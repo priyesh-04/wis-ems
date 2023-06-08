@@ -18,9 +18,10 @@ const ClientDetailsSchema = new mongoose.Schema(
       required: true,
     },
     person_name: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       trim: true,
       required: true,
+      ref: 'user',
     },
     company_email: {
       type: String,
