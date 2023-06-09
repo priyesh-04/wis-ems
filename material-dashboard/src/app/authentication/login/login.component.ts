@@ -21,6 +21,9 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   isLoaded = false;
 
+  alertMessage: string = "";
+  alertType: string = "";
+
   constructor(
     public _authService: AuthService,
     public _router: Router,
@@ -61,11 +64,15 @@ export class LoginComponent implements OnInit {
         }
       },
       (err) => {
-        alert(err.error.detail);
         if (this.isLoaded) {
           this.isLoading = false;
           this.isLoaded = false;
         }
+        this.alertType = "danger";
+        this.alertMessage = err.error.message || "Login Failed";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
         console.log(err);
       }
     );

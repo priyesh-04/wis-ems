@@ -49,6 +49,13 @@ export class EmployeeListComponent implements OnInit {
           this.alertMessage = "";
         }, 3000);
       }
+      // else if (result.error) {
+      //   this.alertType = "danger";
+      //   this.alertMessage = result.error.message;
+      //   setTimeout(() => {
+      //     this.alertMessage = "";
+      //   }, 3000);
+      // }
     });
   }
 

@@ -49,14 +49,23 @@ export class EmployeeService {
   }
 
   addTimesheet(data): Observable<any> {
+    console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, data, httpOptions);
   }
 
-  getTimesheet(): Observable<any> {
-    const endpoint = `${this.baseUrl}/timesheet`;
+  getTimesheet(userID): Observable<any> {
+    console.log(userID, "service data");
+    const endpoint = `${this.baseUrl}/timesheet/user/${userID}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
+  }
+
+  updateTimesheet(taskID, data): Observable<any> {
+    console.log(data, "service data");
+    const endpoint = `${this.baseUrl}/timesheet/${taskID}`;
+    const httpOptions = this.createHeaders();
+    return this.http.put(endpoint, data, httpOptions);
   }
 }

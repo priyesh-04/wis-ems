@@ -4,6 +4,7 @@ import {
   validatorIndianMobileNumber,
   validatorEmail,
   validatorTextOnly,
+  getFormattedDate,
 } from "../../utils/custom-validators";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ClientService } from "app/services/client/client.service";
@@ -34,6 +35,7 @@ export class ClientFormComponent implements OnInit {
       mobile_number: ["", [Validators.required, validatorIndianMobileNumber]],
       start_date: ["", [Validators.required]],
       end_date: ["", [Validators.required]],
+      person_name: ["", [Validators.required, validatorTextOnly]],
     });
 
     if (this.clientDialogData.mode === "edit") {
@@ -42,8 +44,11 @@ export class ClientFormComponent implements OnInit {
         company_name: this.clientDialogData.clientData.company_name,
         company_email: this.clientDialogData.clientData.company_email,
         mobile_number: this.clientDialogData.clientData.mobile_number,
-        start_date: this.clientDialogData.clientData.start_date,
-        end_date: this.clientDialogData.clientData.end_date,
+        start_date: getFormattedDate(
+          this.clientDialogData.clientData.start_date
+        ),
+        end_date: getFormattedDate(this.clientDialogData.clientData.end_date),
+        person_name: this.clientDialogData.clientData.person_name,
       });
     }
   }

@@ -8,6 +8,7 @@ import { EmployeeListComponent } from "../../admin/employee-list/employee-list.c
 import { TimesheetListComponent } from "app/timesheet/timesheet-list/timesheet-list.component";
 import { DesignationListComponent } from "app/admin/designation-list/designation-list.component";
 import { ClientListComponent } from "app/admin/client-list/client-list.component";
+import { ListTimesheetComponent } from "../../timesheet/list-timesheet/list-timesheet.component";
 
 export const UserRoutes: Routes = [
   // Common Routes
@@ -58,7 +59,7 @@ export const UserRoutes: Routes = [
   // Timesheet Routes
   {
     path: "timesheet-list",
-    component: TimesheetListComponent,
+    component: ListTimesheetComponent,
     canActivate: [AuthGuard],
   },
 ];

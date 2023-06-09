@@ -50,7 +50,8 @@ export class EmployeeFormComponent implements OnInit {
     if (this.employeeDialogData.mode === "edit") {
       this.getDesignationList();
       this.selectedDesignation =
-        this.employeeDialogData.employeeData.designation;
+        this.employeeDialogData.employeeData.designation._id;
+      console.log(this.employeeDialogData, "employeeData");
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
@@ -62,7 +63,7 @@ export class EmployeeFormComponent implements OnInit {
         email_id: this.employeeDialogData.employeeData.email_id,
         phone_num: this.employeeDialogData.employeeData.phone_num,
         address: this.employeeDialogData.employeeData.address,
-        designation: this.employeeDialogData.employeeData.designation,
+        designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
       });
       document.getElementById("password-div").style.display = "none";
@@ -83,7 +84,7 @@ export class EmployeeFormComponent implements OnInit {
   getDesignationList() {
     this._designationService.getDesignationList().subscribe(
       (res) => {
-        this.designationList = res.details;
+        this.designationList = res.result;
       },
       (err) => {
         console.log(err, "error");
@@ -95,6 +96,9 @@ export class EmployeeFormComponent implements OnInit {
     this.employeeData = employeeForm.value;
     console.log(this.employeeData, "submitted employeeData");
     if (this.employeeDialogData.mode === "edit") {
+      // delete this.employeeData.emp_id;
+      // delete this.employeeData.email_id;
+      console.log(this.employeeData, "edit employeeData");
       this._employeeService
         .updateEmployee(
           this.employeeDialogData.employeeData._id,
@@ -105,7 +109,8 @@ export class EmployeeFormComponent implements OnInit {
             this.dialogRef.close("success");
           },
           (err) => {
-            alert(err.error.detail);
+            // this.dialogRef.close(err);
+            alert(err.error.message);
             console.log(err, "error");
           }
         );
@@ -115,7 +120,8 @@ export class EmployeeFormComponent implements OnInit {
           this.dialogRef.close("success");
         },
         (err) => {
-          alert(err.error.detail);
+          // this.dialogRef.close(err);
+          alert(err.error.message);
           console.log(err, "error");
         }
       );

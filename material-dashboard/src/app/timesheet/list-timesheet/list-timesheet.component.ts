@@ -9,24 +9,29 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 import { EmployeeService } from "app/services/employee/employee.service";
 import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component";
+import { AuthService } from "app/services/auth/auth.service";
 
 @Component({
-  selector: "app-timesheet-list",
-  templateUrl: "./timesheet-list.component.html",
-  styleUrls: ["./timesheet-list.component.css"],
+  selector: "app-list-timesheet",
+  templateUrl: "./list-timesheet.component.html",
+  styleUrls: ["./list-timesheet.component.css"],
 })
-export class TimesheetListComponent implements OnInit {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
+export class ListTimesheetComponent implements OnInit {
   timesheetList: any;
+  userID: string = this._authService.getUserDetail().id;
   searchText: string;
   alertMessage: string = "";
   alertType: string = "";
+  todayDate: Date = new Date();
 
   constructor(
     private _employeeService: EmployeeService,
+    private _authService: AuthService,
     public dialog: MatDialog,
     private elRef: ElementRef
   ) {}
+
+  deleteTimesheetDialog(timesheetData) {}
 
   addTimesheetDialog() {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
@@ -51,11 +56,36 @@ export class TimesheetListComponent implements OnInit {
     });
   }
 
-  updateTimesheetDialog(timesheetData) {
+  addTasksDialog(timesheetData) {
+    const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
+      data: {
+        matDialogTitle: "Add New Task to timesheet",
+        mode: "Task-add",
+        timesheetData: timesheetData,
+      },
+      width: "90%",
+      height: "90%",
+      panelClass: "add-new-timesheet-dialog",
+    });
+    timesheetDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "New Task Added Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
+
+  updateTimesheetDialog(timesheetData, taskID) {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
         matDialogTitle: "Update Timesheet",
         timesheetData: timesheetData,
+        taskID: taskID,
         mode: "edit",
       },
       width: "90%",
@@ -84,10 +114,10 @@ export class TimesheetListComponent implements OnInit {
   }
 
   refreshTimesheetList(searchText?: string) {
-    this._employeeService.getTimesheet("abc").subscribe(
+    this._employeeService.getTimesheet(this.userID).subscribe(
       (res) => {
         this.timesheetList = res.result;
-        console.log(this.timesheetList, "timesheetList");
+        console.log(this.timesheetList, "timesheetList", res);
       },
       (err) => {
         console.log(err, "error");

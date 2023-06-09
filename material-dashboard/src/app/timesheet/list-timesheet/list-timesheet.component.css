@@ -1,0 +1,29 @@
+.container {
+    margin-top: 100px;
+}
+.page-operations {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.working-date-wrapper {
+    /* width: 300px; */
+}
+.working-date {
+    font-weight: bold;
+}
+
+.client-name {
+    font-weight: bold;
+    color: #3f51b5;
+}
+
+.project-name {
+    font-weight: bold;
+    color: #4caf50;
+}
+
+.task-details {
+    color: black;
+    font-family: 'Times New Roman', Times, serif;
+}

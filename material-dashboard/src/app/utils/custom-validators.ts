@@ -1,5 +1,31 @@
 import { FormControl } from "@angular/forms";
 
+export function getFormattedDate(date) {
+  const d = new Date(date);
+  let month = "" + (d.getMonth() + 1);
+  let day = "" + d.getDate();
+  const year = d.getFullYear();
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+  return [year, month, day].join("-");
+}
+
+export function getFormattedDatetime(dateString) {
+  const d = new Date(dateString);
+  let month = "" + (d.getMonth() + 1);
+  let day = "" + d.getDate();
+  const year = d.getFullYear();
+  let hour = "" + d.getHours();
+  let min = "" + d.getMinutes();
+  let sec = "" + d.getSeconds();
+  if (month.length < 2) month = "0" + month;
+  if (day.length < 2) day = "0" + day;
+  if (hour.length < 2) hour = "0" + hour;
+  if (min.length < 2) min = "0" + min;
+  if (sec.length < 2) sec = "0" + sec;
+  return [year, month, day].join("-") + "T" + [hour, min, sec].join(":");
+}
+
 export function validatorAlphaNumeric(control: FormControl) {
   const regExp = /^[a-zA-Z0-9 ]*$/;
   if (control.value && !regExp.test(control.value)) {

@@ -41,4 +41,10 @@ export class ClientService {
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
   }
+
+  deleteClient(id): Observable<any> {
+    const endpoint = `${this.baseUrl}/client/${id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.delete(endpoint, httpOptions);
+  }
 }

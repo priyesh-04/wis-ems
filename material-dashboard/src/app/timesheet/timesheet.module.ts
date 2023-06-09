@@ -10,9 +10,10 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
 import { TimesheetListComponent } from "./timesheet-list/timesheet-list.component";
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
+import { ListTimesheetComponent } from './list-timesheet/list-timesheet.component';
 
 @NgModule({
-  declarations: [TimesheetListComponent, AddTimesheetComponent],
+  declarations: [TimesheetListComponent, AddTimesheetComponent, ListTimesheetComponent],
   imports: [
     CommonModule,
     FormsModule,

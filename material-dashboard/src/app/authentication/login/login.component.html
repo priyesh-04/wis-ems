@@ -12,6 +12,13 @@
   <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
 </div>
 <div class="container" *ngIf="!isLoading">
+  <div class="alert alert-{{alertType}} alert-dismissible fade show" role="alert" *ngIf="alertMessage"
+    style="margin-top: 120px;">
+    <strong>{{alertMessage}}</strong>
+    <button type="button" class="close" aria-label="Close" (click)="alertMessage = null">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
   <div class="row">
     <div class="col-md-6 mx-auto">
       <div>

@@ -14,13 +14,13 @@
                 </div>
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
-                        <input matInput type="time" class="form-control rounded-0" formControlName="in_time"
+                        <input matInput type="datetime-local" class="form-control rounded-0" formControlName="in_time"
                             placeholder="In Time">
                     </mat-form-field>
                 </div>
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
-                        <input matInput type="time" class="form-control rounded-0" formControlName="out_time"
+                        <input matInput type="datetime-local" class="form-control rounded-0" formControlName="out_time"
                             placeholder="Out Time">
                     </mat-form-field>
                 </div>
@@ -42,13 +42,13 @@
                 </div>
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
-                        <input matInput type="time" class="form-control rounded-0" formControlName="start_time"
-                            placeholder="Start Time">
+                        <input matInput type="datetime-local" class="form-control rounded-0"
+                            formControlName="start_time" placeholder="Start Time">
                     </mat-form-field>
                 </div>
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
-                        <input matInput type="time" class="form-control rounded-0" formControlName="end_time"
+                        <input matInput type="datetime-local" class="form-control rounded-0" formControlName="end_time"
                             placeholder="End Time">
                     </mat-form-field>
                 </div>
@@ -59,8 +59,7 @@
                     </mat-form-field>
                 </div>
             </div>
-            <button type="submit" class="btn btn-danger"
-                [disabled]="myTimesheetForm.invalid && (timesheetDialogData.mode === 'add')">Submit</button>
+            <button type="submit" class="btn btn-danger">Submit</button>
         </form>
     </div>
 </div>

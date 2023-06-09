@@ -42,6 +42,7 @@ export class AuthService {
       this._cookieService.set("token", user.accessToken, expiryDate, "/");
       this._cookieService.set("currentUser", user.name, expiryDate, "/");
       this._cookieService.set("role", user.role, expiryDate, "/");
+      this._cookieService.set("id", user._id, expiryDate, "/");
     }
   }
 
@@ -94,6 +95,7 @@ export class AuthService {
     const user = {
       name: this._cookieService.get("currentUser"),
       role: this._cookieService.get("role"),
+      id: this._cookieService.get("id"),
     };
     if (user.name === "" && user.role === "") {
       return null;

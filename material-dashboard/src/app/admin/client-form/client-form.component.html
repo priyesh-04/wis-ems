@@ -53,6 +53,12 @@
                             placeholder="End Date">
                     </mat-form-field>
                 </div>
+                <div class="field-container form-group">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="text" class="form-control rounded-0" formControlName="person_name"
+                            placeholder="Person Name">
+                    </mat-form-field>
+                </div>
             </div>
             <button type="submit" class="btn btn-danger"
                 [disabled]="clientForm.invalid && (clientDialogData.mode === 'add')">Submit</button>

@@ -34,6 +34,7 @@ export class ClientListComponent implements OnInit {
         title: "Delete Client",
         message: "Are you sure you want to delete this client?",
         id: id,
+        callingFrom: "client",
       },
     });
 
@@ -45,6 +46,12 @@ export class ClientListComponent implements OnInit {
         setTimeout(() => {
           this.alertMessage = "";
         }, 3000);
+      } else if (result.error) {
+        this.alertType = "danger";
+        this.alertMessage = result.error.message;
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
       }
     });
   }
@@ -52,7 +59,7 @@ export class ClientListComponent implements OnInit {
   addClientDialog() {
     const clientDialogRef = this.dialog.open(ClientFormComponent, {
       data: {
-        matDialogTitle: "Add New Employee",
+        matDialogTitle: "Add New Client",
         mode: "add",
       },
       width: "90%",

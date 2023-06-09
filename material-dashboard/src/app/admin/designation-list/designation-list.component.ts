@@ -39,6 +39,7 @@ export class DesignationListComponent implements OnInit {
         title: "Delete Designation",
         message: "Are you sure you want to delete this designation?",
         id: id,
+        callingFrom: "designation",
       },
     });
 
@@ -48,6 +49,12 @@ export class DesignationListComponent implements OnInit {
         this.refreshDesignationList();
         this.alertType = "success";
         this.alertMessage = "Designation Deleted Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      } else if (result.error) {
+        this.alertType = "danger";
+        this.alertMessage = result.error.message;
         setTimeout(() => {
           this.alertMessage = "";
         }, 3000);
@@ -113,7 +120,7 @@ export class DesignationListComponent implements OnInit {
   refreshDesignationList(searchText?: string) {
     this._designationService.getDesignationList().subscribe(
       (res) => {
-        this.designationList = res.details;
+        this.designationList = res.result;
         console.log(this.designationList, "designationList");
       },
       (err) => {
