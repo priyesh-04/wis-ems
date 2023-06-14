@@ -40,7 +40,7 @@ a.close {
 }
 
 ::ng-deep .cdk-overlay-pane.update-timesheet-dialog {
-    height: 520px !important;
+    height: 400px !important;
 }
 
 ::ng-deep .cdk-overlay-pane.add-new-timesheet-dialog {

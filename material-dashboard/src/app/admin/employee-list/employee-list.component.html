@@ -29,6 +29,7 @@
                     <th scope="col" class="font-weight-bold">Role</th>
                     <th scope="col" class="font-weight-bold">Email Id</th>
                     <th scope="col" class="font-weight-bold">Mobile Number</th>
+                    <th scope="col" class="font-weight-bold">Timesheet</th>
                     <th scope="col" class="font-weight-bold">Actions</th>
                 </tr>
             </thead>
@@ -36,15 +37,20 @@
                 <tr>
                     <th scope="row">{{i+1}}</th>
                     <td>
-                        <a>
+                        <a [routerLink]="['/timesheet-list', employee._id]">
                             {{employee.emp_id}}
                         </a>
                     </td>
-                    <td>{{employee._id}}</td>
+                    <td>{{employee.name}}</td>
                     <td>{{employee.designation?.name}}</td>
                     <td class="text-uppercase">{{employee.role}}</td>
                     <td>{{employee.email_id}}</td>
                     <td>{{employee.phone_num}}</td>
+                    <td>
+                        <a [routerLink]="['/timesheet-list', employee._id]">
+                            View
+                        </a>
+                    </td>
                     <td>
                         <button class="mr-3" mat-raised-button color="primary" (click)="updateEmployeeDialog(employee)">
                             <mat-icon>edit</mat-icon>

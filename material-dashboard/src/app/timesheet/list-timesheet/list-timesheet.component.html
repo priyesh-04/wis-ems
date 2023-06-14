@@ -1,12 +1,20 @@
-<div class="container">
-    <div class="page-operations">
+<div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" style="height:100%" *ngIf="isLoading">
+    <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
+</div>
+<div class="container" *ngIf="!timesheetList && !isLoading">
+    <div>
+        <h1>No Timesheet Found</h1>
+    </div>
+</div>
+<div class="container" *ngIf="!isLoading">
+    <div class="page-operations" *ngIf="isAdmin == 'false'">
         <form class="form-inline m-0" #f="ngForm" (ngSubmit)="onSearch()">
-            <mat-form-field>
+            <!-- <mat-form-field>
                 <input matInput placeholder="Search" [(ngModel)]="searchText" name="searchText">
             </mat-form-field>
             <button type="submit" mat-mini-fab color="primary">
                 <mat-icon>search</mat-icon>
-            </button>
+            </button> -->
         </form>
         <button id="add-more-btn" mat-mini-fab color="primary" (click)="addTimesheetDialog()">
             <mat-icon>add</mat-icon>
@@ -19,8 +27,8 @@
                 ( {{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
                 date:'shortTime'}} )
             </span>
-            <span style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2"
-                (click)="addTasksDialog(timesheet)">Add
+            <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'"
+                style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addTasksDialog(timesheet)">Add
                 Task</span>
         </div>
         <div class="client-project ml-5 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
@@ -29,7 +37,7 @@
                 ( {{task.start_time| date:'shortTime'}} - {{task.end_time|
                 date:'shortTime'}} )
             </span>
-            <span *ngIf="(timesheet.date | date) == (todayDate | date)">
+            <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'">
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
                     (click)="updateTimesheetDialog(timesheet, task._id)">Edit</span>
                 <span style="color: rgb(15, 137, 252); cursor: pointer;"

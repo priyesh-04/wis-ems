@@ -62,4 +62,9 @@ export const UserRoutes: Routes = [
     component: ListTimesheetComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: "timesheet-list/:id",
+    component: ListTimesheetComponent,
+    canActivate: [AuthGuard],
+  },
 ];

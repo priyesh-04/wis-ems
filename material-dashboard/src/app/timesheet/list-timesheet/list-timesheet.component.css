@@ -6,8 +6,10 @@
     justify-content: space-between;
     align-items: center;
 }
-.working-date-wrapper {
-    /* width: 300px; */
+#spinner-div {
+    display: flex;
+    justify-content: center;
+    margin-top: 30vh;
 }
 .working-date {
     font-weight: bold;

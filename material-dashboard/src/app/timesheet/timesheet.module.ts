@@ -10,10 +10,17 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
 import { TimesheetListComponent } from "./timesheet-list/timesheet-list.component";
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
-import { ListTimesheetComponent } from './list-timesheet/list-timesheet.component';
+import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.component';
 
 @NgModule({
-  declarations: [TimesheetListComponent, AddTimesheetComponent, ListTimesheetComponent],
+  declarations: [
+    TimesheetListComponent,
+    AddTimesheetComponent,
+    ListTimesheetComponent,
+    TimesheetUpdateComponent,
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -25,6 +32,7 @@ import { ListTimesheetComponent } from './list-timesheet/list-timesheet.componen
     MatSelectModule,
     MatTooltipModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class TimesheetModule {}

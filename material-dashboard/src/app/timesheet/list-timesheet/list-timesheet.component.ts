@@ -10,6 +10,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { EmployeeService } from "app/services/employee/employee.service";
 import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component";
 import { AuthService } from "app/services/auth/auth.service";
+import { ActivatedRoute } from "@angular/router";
+import { TimesheetUpdateComponent } from "../timesheet-update/timesheet-update.component";
 
 @Component({
   selector: "app-list-timesheet",
@@ -18,17 +20,22 @@ import { AuthService } from "app/services/auth/auth.service";
 })
 export class ListTimesheetComponent implements OnInit {
   timesheetList: any;
-  userID: string = this._authService.getUserDetail().id;
+  userID: string = "";
   searchText: string;
   alertMessage: string = "";
   alertType: string = "";
   todayDate: Date = new Date();
 
+  isAdmin = "";
+  isLoading = false;
+  isLoaded = false;
+
   constructor(
     private _employeeService: EmployeeService,
     private _authService: AuthService,
     public dialog: MatDialog,
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private route: ActivatedRoute
   ) {}
 
   deleteTimesheetDialog(timesheetData) {}
@@ -57,7 +64,7 @@ export class ListTimesheetComponent implements OnInit {
   }
 
   addTasksDialog(timesheetData) {
-    const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
+    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
         matDialogTitle: "Add New Task to timesheet",
         mode: "Task-add",
@@ -81,7 +88,7 @@ export class ListTimesheetComponent implements OnInit {
   }
 
   updateTimesheetDialog(timesheetData, taskID) {
-    const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
+    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
         matDialogTitle: "Update Timesheet",
         timesheetData: timesheetData,
@@ -106,6 +113,12 @@ export class ListTimesheetComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isAdmin = this._authService.isAdmin();
+    if (this.isAdmin == "true") {
+      this.userID = this.route.snapshot.paramMap.get("id");
+    } else {
+      this.userID = this._authService.getUserDetail().id;
+    }
     this.refreshTimesheetList();
   }
 
@@ -114,12 +127,25 @@ export class ListTimesheetComponent implements OnInit {
   }
 
   refreshTimesheetList(searchText?: string) {
+    if (!this.isLoaded) {
+      this.isLoading = true;
+      this.isLoaded = true;
+    }
+    console.log(this.userID, "userID");
     this._employeeService.getTimesheet(this.userID).subscribe(
       (res) => {
         this.timesheetList = res.result;
+        if (this.isLoaded) {
+          this.isLoading = false;
+          this.isLoaded = false;
+        }
         console.log(this.timesheetList, "timesheetList", res);
       },
       (err) => {
+        if (this.isLoaded) {
+          this.isLoading = false;
+          this.isLoaded = false;
+        }
         console.log(err, "error");
       }
     );

@@ -24,56 +24,6 @@
                             placeholder="Out Time">
                     </mat-form-field>
                 </div>
-            </div>
-        </form>
-
-        <div class="taskList-table-wrapper">
-            <div class="d-flex justify-content-between bg-dark align-items-center p-3">
-                <div>
-                    <h4 class="text-white m-0">Tasks</h4>
-                </div>
-                <div>
-                    <button mat-raised-button color="accent" (click)="showAddTaskForm()">
-                        <mat-icon>add</mat-icon>
-                        Add New Task
-                    </button>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Client</th>
-                            <th>Project Name</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let task of taskList">
-                            <td>{{task.client}}</td>
-                            <td>{{task.project_name}}</td>
-                            <td>{{task.start_time}}</td>
-                            <td>{{task.end_time}}</td>
-                            <td>
-                                <button mat-mini-fab (click)="editTask(task._id)">
-                                    <mat-icon>edit</mat-icon>
-                                </button>
-                                <button mat-mini-fab (click)="deleteTask(task._id)">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <form [formGroup]="taskForm" (ngSubmit)="addTask(taskForm)" class="d-none" id="addTaskForm">
-            <div class="fields-main-div">
-                <input matInput type="hidden" formControlName="_id">
                 <div class="field-container form-group" id="client-wrapper">
                     <mat-form-field appearance="fill">
                         <mat-label>Client</mat-label>
@@ -103,16 +53,13 @@
                     </mat-form-field>
                 </div>
                 <div class="field-container form-group">
-                    <mat-form-field appearance="fill">
+                    <mat-form-field appearance="legacy">
                         <mat-label>Description</mat-label>
                         <textarea matInput formControlName="description" placeholder="Description"></textarea>
                     </mat-form-field>
                 </div>
             </div>
-            <button type="submit" mat-raised-button color="primary">{{taskButton}}</button>
+            <button type="submit" class="btn btn-danger">Submit</button>
         </form>
-        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()">
-            Submit
-        </button>
     </div>
 </div>
