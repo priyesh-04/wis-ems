@@ -274,7 +274,7 @@ class TimeSheetService {
 
       delete payload['task_details'];
       payload.task_details = taskId;
-      payload.is_editable = false;
+      // payload.is_editable = false;
       await Timesheets.findByIdAndUpdate(
         { _id: timesheetId },
         payload,
