@@ -28,4 +28,11 @@ router.get(
   TimeSheetController.taskdetailsByUserDateWise
 );
 
+router.post(
+  '/active-deactive/:id',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  TimeSheetController.timesheetEditable
+);
+
 module.exports = router;
