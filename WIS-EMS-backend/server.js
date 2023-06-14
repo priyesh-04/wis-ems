@@ -8,6 +8,8 @@ const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
+const cron = require('node-cron');
+const { TimesheetCron } = require('./middlewares/cronJobs');
 
 // Database connection
 DB_Connection();
@@ -32,6 +34,22 @@ app.use('/api', routes);
 app.use('/uploads', express.static('uploads'));
 
 app.use(errorHandler);
+
+function cronFunction() {
+  // everyday 7:30AM
+  cron.schedule(
+    // '10 30 7 * * *',
+    '10 * * * * *',
+    () => {
+      TimesheetCron.resetTimesheetEditPermission();
+    },
+    {
+      scheduled: true,
+      timezone: 'Asia/Kolkata',
+    }
+  );
+}
+cronFunction();
 app.listen(process.env.APP_PORT, () =>
   console.log(`Listening on port ${process.env.APP_PORT}`)
 );

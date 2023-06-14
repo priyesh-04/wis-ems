@@ -30,10 +30,51 @@ class TimeSheetService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
+
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
       payload.created_by = user._id;
+
+      let date = new Date();
+      const today =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() > 8
+          ? date.getMonth() + 1
+          : '0' + (date.getMonth() + 1)) +
+        '-' +
+        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
+        'T00:00:00+05:30';
+
+      let currentDate = new Date(date);
+      let selectedDate = new Date(payload.date);
+      let selectedInTime = new Date(payload.in_time);
+      let selectedOutTime = new Date(payload.out_time);
+      if (
+        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
+          selectedDate.getTime() ||
+        currentDate.getTime() - 3 * 24 * 60 * 60 * 1000 >=
+          selectedInTime.getTime() ||
+        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
+          selectedOutTime.getTime()
+      ) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Date cannot be accepted before two days from current date.',
+        });
+      }
+
+      const presentOneTime = await Timesheets.find({
+        created_by: user._id,
+        date: { $gte: today },
+      });
+      if (presentOneTime.length) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You have already created a tasksheet.',
+        });
+      }
 
       const taskdetails = payload.task_details;
       delete payload['task_details'];
@@ -110,11 +151,13 @@ class TimeSheetService {
   async updateTimesheet(req, res, next) {
     try {
       const payload = req.body;
-
+      const timesheetId = req.params.id;
       const timesheetSchema = Joi.object({
+        in_time: Joi.string().required(),
+        out_time: Joi.string().required(),
         task_details: Joi.array().items(
           Joi.object({
-            _id: Joi.string().length(24).required(),
+            _id: Joi.string(),
             client: Joi.string().length(24).required(),
             project_name: Joi.string().required(),
             start_time: Joi.string().required(),
@@ -127,8 +170,21 @@ class TimeSheetService {
       const { error } = timesheetSchema.validate(payload);
 
       if (error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ msgErr: true, message: error.message });
       }
+
+      const existTimesheet = await Timesheets.findById({ _id: timesheetId });
+      if (!existTimesheet.is_editable) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "Can't Edit Timesheet. For Edit need permission from admin.",
+        });
+      }
+
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+
       const calculateSpendTime = (start, end) => {
         const s = new Date(start);
         const e = new Date(end);
@@ -154,29 +210,87 @@ class TimeSheetService {
           message: 'Please Provide correct client id.',
         });
       }
+      let taskId = [];
 
-      for (let i = 0; i < taskdetails.length; i++) {
-        await TaskDetails.findByIdAndUpdate(
-          { _id: taskdetails[i]._id },
-          {
-            ...taskdetails[i],
-            time_spend: calculateSpendTime(
-              taskdetails[i].start_time,
-              taskdetails[i].end_time
-            ),
-          },
-          (err, result) => {
-            if (err) {
-              return res.status(400).json({
-                message: `Can't Update ${taskdetails[i].project_name} task`,
+      async function checkdetailsAndUpload() {
+        for (let i = 0; i < taskdetails.length; i++) {
+          if (taskdetails[i]._id) {
+            await TaskDetails.findByIdAndUpdate(
+              { _id: taskdetails[i]._id },
+              {
+                ...taskdetails[i],
+                time_spend: calculateSpendTime(
+                  taskdetails[i].start_time,
+                  taskdetails[i].end_time
+                ),
+              },
+              (err, result) => {
+                if (err) {
+                  return res.status(400).json({
+                    message: `Can't Update ${taskdetails[i].project_name} task`,
+                  });
+                } else {
+                  taskId.push(taskdetails[i]._id);
+                }
+              }
+            );
+          } else {
+            await TaskDetails.create({
+              ...taskdetails[i],
+              created_by: user._id,
+              time_spend: calculateSpendTime(
+                taskdetails[i].start_time,
+                taskdetails[i].end_time
+              ),
+            })
+              .then((data) => {
+                taskId.push(data._id);
+              })
+              .catch((err) => {
+                return res.status(400).json({
+                  msgErr: true,
+                  message: 'Error while saving task details.' + err,
+                });
               });
-            }
           }
-        );
+        }
+        return true;
       }
-      return res
-        .status(200)
-        .json({ message: 'Timesheet Updated Successful !' });
+      await checkdetailsAndUpload();
+
+      async function checkAndDelete() {
+        for (let i = 0; i < existTimesheet.task_details.length; i++) {
+          const isPresent = taskId.filter(
+            (el) => el == existTimesheet.task_details[i]
+          );
+          if (isPresent.length === 0) {
+            await TaskDetails.findByIdAndDelete({
+              _id: existTimesheet.task_details[i],
+            });
+          }
+        }
+      }
+      await checkAndDelete();
+
+      delete payload['task_details'];
+      payload.task_details = taskId;
+      payload.is_editable = false;
+      await Timesheets.findByIdAndUpdate(
+        { _id: timesheetId },
+        payload,
+        { new: true },
+        (err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Bad Request ' + err });
+          } else {
+            return res
+              .status(200)
+              .json({ message: 'Timesheet Updated Successful !' });
+          }
+        }
+      );
     } catch (error) {
       return res
         .status(500)
@@ -291,6 +405,36 @@ class TimeSheetService {
             }
           }
         });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async timesheetEditable(req, res, next) {
+    try {
+      const is_editable = req.body.is_editable;
+      await Timesheets.findByIdAndUpdate(
+        { _id: req.params.id },
+        { is_editable },
+        (err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something Went Wrong.' });
+          } else {
+            return res.status(200).json({
+              msgErr: false,
+              message:
+                'Timesheet Edit mode ' +
+                (is_editable ? 'Activated' : 'Deactivated') +
+                '. ' +
+                'After 7:30AM it will be deactivated automatically.',
+            });
+          }
+        }
+      );
     } catch (error) {
       return res
         .status(500)

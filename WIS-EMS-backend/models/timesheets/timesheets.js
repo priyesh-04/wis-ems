@@ -6,18 +6,21 @@ const TimeSheetSchema = new mongoose.Schema(
       type: Date,
       required: true,
       trim: true,
-      immutable: true,
     },
     out_time: {
       type: Date,
       required: true,
       trim: true,
-      immutable: true,
     },
     date: {
       type: Date,
       required: true,
       trim: true,
+    },
+    is_editable: {
+      type: Boolean,
+      enum: [true, false],
+      default: true,
     },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
