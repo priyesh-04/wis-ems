@@ -47,4 +47,18 @@ router.post(
   TimeSheetController.addTaskSingle
 );
 
+router.delete(
+  '/single-task/:id/:taskDetailsId',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('hr', 'admin', 'employee', 'accountant'),
+  TimeSheetController.deleteSingleTaskDetails
+);
+
+router.get(
+  '/get-all-editable-sheet',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  TimeSheetController.getAllEditableTimesheet
+);
+
 module.exports = router;

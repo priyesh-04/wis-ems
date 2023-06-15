@@ -33,6 +33,14 @@ class TimeSheetController {
     }
   }
 
+  async deleteSingleTaskDetails(req, res, next) {
+    try {
+      await TimeSheetService.deleteSingleTaskDetails(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
   async getAllTimesheetByUser(req, res, next) {
     try {
       await TimeSheetService.getAllTimesheetByUser(req, res, next);
@@ -52,6 +60,14 @@ class TimeSheetController {
   async timesheetEditable(req, res, next) {
     try {
       await TimeSheetService.timesheetEditable(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
+  async getAllEditableTimesheet(req, res, next) {
+    try {
+      await TimeSheetService.getAllEditableTimesheet(req, res, next);
     } catch (error) {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }

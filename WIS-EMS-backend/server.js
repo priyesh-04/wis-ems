@@ -44,7 +44,7 @@ function cronFunction() {
   // rule1.minute = 30;
   // rule1.hour = 7;
   // rule1.dayOfWeek = new schedule.Range(0, 6);
-  schedule.scheduleJob('* */10 * * * *', () => {
+  schedule.scheduleJob('1 */12 * * * *', () => {
     TimesheetCron.resetTimesheetEditPermission();
     console.log('All Timesheet edit permission Ended.');
   });
