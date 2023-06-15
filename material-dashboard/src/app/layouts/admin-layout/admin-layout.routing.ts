@@ -13,7 +13,7 @@ import { ListTimesheetComponent } from "../../timesheet/list-timesheet/list-time
 export const UserRoutes: Routes = [
   // Common Routes
   {
-    path: "home",
+    path: "dashboard",
     component: HomeComponent,
   },
 
