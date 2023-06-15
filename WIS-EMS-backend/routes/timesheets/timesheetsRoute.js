@@ -35,4 +35,16 @@ router.post(
   TimeSheetController.timesheetEditable
 );
 
+router.put(
+  '/single-task/:id',
+  ApiAuthValidator.validateAccessToken,
+  TimeSheetController.updateSingleTaskDetails
+);
+
+router.post(
+  '/single-task/:id',
+  ApiAuthValidator.validateAccessToken,
+  TimeSheetController.addTaskSingle
+);
+
 module.exports = router;

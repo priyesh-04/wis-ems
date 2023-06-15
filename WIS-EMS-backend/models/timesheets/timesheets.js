@@ -9,7 +9,7 @@ const TimeSheetSchema = new mongoose.Schema(
     },
     out_time: {
       type: Date,
-      required: true,
+      default: null,
       trim: true,
     },
     date: {

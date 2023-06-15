@@ -38,15 +38,18 @@ app.use(errorHandler);
 function cronFunction() {
   // everyday 7:30AM
   // cron job schedule rules ...
-  let rule1 = new schedule.RecurrenceRule();
-  rule1.tz = 'Asia/Kolkata';
-  rule1.minute = new schedule.Range(0, 59, 2);
-  schedule.scheduleJob(rule1, () => {
+  // let rule1 = new schedule.RecurrenceRule();
+  // rule1.tz = 'Asia/Kolkata';
+  // rule1.minute = new schedule.Range(0, 59, 20);
+  // rule1.minute = 30;
+  // rule1.hour = 7;
+  // rule1.dayOfWeek = new schedule.Range(0, 6);
+  schedule.scheduleJob('* */10 * * * *', () => {
     TimesheetCron.resetTimesheetEditPermission();
     console.log('All Timesheet edit permission Ended.');
   });
 }
-cronFunction();
+// cronFunction();
 
 // end of cron jobs
 

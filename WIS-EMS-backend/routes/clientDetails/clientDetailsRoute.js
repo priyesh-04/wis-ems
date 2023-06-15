@@ -32,4 +32,11 @@ router.delete(
   ClientDetailsController.deleteClient
 );
 
+router.get(
+  '/all-task-by-client/:id',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  ClientDetailsController.getAllTaskClientWise
+);
+
 module.exports = router;

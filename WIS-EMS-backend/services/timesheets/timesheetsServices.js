@@ -298,6 +298,185 @@ class TimeSheetService {
     }
   }
 
+  async updateSingleTaskDetails(req, res, next) {
+    try {
+      const payload = req.body;
+      let taskSchema = Joi.object({
+        _id: Joi.string().length(24).required(),
+        client: Joi.string().length(24).required(),
+        project_name: Joi.string().required(),
+        start_time: Joi.string().required(),
+        end_time: Joi.string().required(),
+        description: Joi.string(),
+      });
+
+      const { error } = taskSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+
+      const client = await clientDetails.findById({ _id: payload.client });
+      if (!client) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Please Provide a valid Client Id' });
+      }
+      let currentDate = Date.now();
+      let start_time = new Date(payload.start_time);
+      let end_time = new Date(payload.end_time);
+
+      const existTimesheet = await Timesheets.findById({ _id: req.params.id });
+      const existTaskDetails = await TaskDetails.findById({ _id: payload._id });
+      console.log(existTimesheet);
+      if (!existTimesheet) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
+        });
+      } else if (!existTimesheet.is_editable) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "Can't Edit Timesheet. For Edit need permission from admin.",
+        });
+      } else if (!existTaskDetails) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Task Details Not Exist. Please Provide a valid _id.',
+        });
+      } else if (end_time.getTime() < end_time.getTime()) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'End Time should be greater than start time.',
+        });
+      } else if (
+        currentDate - 3 * 24 * 60 * 60 * 1000 >= start_time.getTime() ||
+        currentDate - 2 * 24 * 60 * 60 * 1000 >= end_time.getTime()
+      ) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Date cannot be accepted before two days from current date.',
+        });
+      }
+
+      return res.status(200).json('ok');
+
+      await TaskDetails.findByIdAndUpdate(
+        { _id: payload._id },
+        payload,
+        (err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+            return res
+              .status(200)
+              .json({ msgErr: false, message: 'Task Update Successfully.' });
+          }
+        }
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async addTaskSingle(req, res, next) {
+    try {
+      const payload = req.body;
+      let taskSchema = Joi.object({
+        client: Joi.string().length(24).required(),
+        project_name: Joi.string().required(),
+        start_time: Joi.string().required(),
+        end_time: Joi.string().required(),
+        description: Joi.string(),
+      });
+
+      const { error } = taskSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+
+      const client = await clientDetails.findById({ _id: payload.client });
+      if (!client) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Please Provide a valid Client Id' });
+      }
+      let currentDate = Date.now();
+      let start_time = new Date(payload.start_time);
+      let end_time = new Date(payload.end_time);
+
+      const existTimesheet = await Timesheets.findById({ _id: req.params.id });
+      if (
+        !existTimesheet ||
+        !existTimesheet.task_details.some((el) => el === payload._id)
+      ) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
+        });
+      } else if (!existTimesheet.is_editable) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "Can't Edit Timesheet. For Edit need permission from admin.",
+        });
+      } else if (
+        currentDate - 3 * 24 * 60 * 60 * 1000 >= start_time.getTime() ||
+        currentDate - 2 * 24 * 60 * 60 * 1000 >= end_time.getTime()
+      ) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Date cannot be accepted before two days from current date.',
+        });
+      }
+      const calculateSpendTime = (start, end) => {
+        const s = new Date(start);
+        const e = new Date(end);
+        return e - s;
+      };
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      await TaskDetails.create({
+        ...payload,
+        created_by: user._id,
+        time_spend: calculateSpendTime(payload.start_time, payload.end_time),
+      })
+        .then(async (data) => {
+          await Timesheets.findByIdAndUpdate(
+            { _id: req.params.id },
+            { task_details: [...existTimesheet.task_details, data._id] },
+            (err, details) => {
+              if (err) {
+                return res
+                  .status(400)
+                  .json({ msgErr: true, message: 'Error ' + err });
+              } else {
+                return res.status(200).json({
+                  msgErr: false,
+                  message: 'New Task Details Added succesfully.',
+                });
+              }
+            }
+          );
+        })
+        .catch((err) => {
+          return res.status(400).json({
+            msgErr: true,
+            message: 'Error while saving task details.',
+          });
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
   async getAllTimesheetByUser(req, res, next) {
     try {
       await Timesheets.find({ created_by: req.params.id })

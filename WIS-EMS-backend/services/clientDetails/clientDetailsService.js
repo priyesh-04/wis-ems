@@ -143,6 +143,33 @@ class ClientDetailsService {
         .json({ msgErr: true, message: 'Internal server error ' + error });
     }
   }
+
+  async getAllTaskClientWise(req, res, next) {
+    try {
+      await taskDetails
+        .find({ client: req.params.id })
+        .populate('client', '_id client_name')
+        .populate('created_by', '_id name')
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec((err, docs) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+            return res.status(200).json({
+              msgErr: false,
+              result: docs,
+            });
+          }
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal server error ' + error });
+    }
+  }
 }
 
 module.exports = new ClientDetailsService();
