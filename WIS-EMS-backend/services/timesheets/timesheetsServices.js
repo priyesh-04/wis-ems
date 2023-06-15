@@ -326,10 +326,16 @@ class TimeSheetService {
       let start_time = new Date(payload.start_time);
       let end_time = new Date(payload.end_time);
 
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+
       const existTimesheet = await Timesheets.findById({ _id: req.params.id });
       const existTaskDetails = await TaskDetails.findById({ _id: payload._id });
-      console.log(existTimesheet);
-      if (!existTimesheet) {
+      if (
+        !existTimesheet ||
+        !existTimesheet.task_details.some((el) => el == payload._id)
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
@@ -344,7 +350,7 @@ class TimeSheetService {
           msgErr: true,
           message: 'Task Details Not Exist. Please Provide a valid _id.',
         });
-      } else if (end_time.getTime() < end_time.getTime()) {
+      } else if (end_time.getTime() < start_time.getTime()) {
         return res.status(400).json({
           msgErr: true,
           message: 'End Time should be greater than start time.',
@@ -357,9 +363,12 @@ class TimeSheetService {
           msgErr: true,
           message: 'Date cannot be accepted before two days from current date.',
         });
+      } else if (user._id != existTimesheet.created_by) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are not authenticated user.',
+        });
       }
-
-      return res.status(200).json('ok');
 
       await TaskDetails.findByIdAndUpdate(
         { _id: payload._id },
@@ -411,10 +420,7 @@ class TimeSheetService {
       let end_time = new Date(payload.end_time);
 
       const existTimesheet = await Timesheets.findById({ _id: req.params.id });
-      if (
-        !existTimesheet ||
-        !existTimesheet.task_details.some((el) => el === payload._id)
-      ) {
+      if (!existTimesheet) {
         return res.status(400).json({
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
@@ -423,6 +429,11 @@ class TimeSheetService {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
+        });
+      } else if (end_time.getTime() < start_time.getTime()) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'End Time should be greater than start time.',
         });
       } else if (
         currentDate - 3 * 24 * 60 * 60 * 1000 >= start_time.getTime() ||
@@ -441,6 +452,12 @@ class TimeSheetService {
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
+      if (user._id != existTimesheet.created_by) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are not authenticated user.',
+        });
+      }
       await TaskDetails.create({
         ...payload,
         created_by: user._id,
@@ -470,6 +487,75 @@ class TimeSheetService {
             message: 'Error while saving task details.',
           });
         });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async deleteSingleTaskDetails(req, res, next) {
+    try {
+      const existTimesheet = await Timesheets.findById({ _id: req.params.id });
+      const taskDetailsId = req.params.taskDetailsId;
+      const existTaskSheet = await TaskDetails.findById({ _id: taskDetailsId });
+      if (!existTimesheet) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
+        });
+      } else if (!existTimesheet.is_editable) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "Can't Edit Timesheet. For Edit need permission from admin.",
+        });
+      } else if (!existTaskSheet) {
+        return res.status(400).json({
+          msgErr: true,
+          message:
+            'Task Sheet Not Exist. Please Provide a valid Task Sheet id.',
+        });
+      }
+
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      if (user._id != existTimesheet.created_by) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are not authenticated user.',
+        });
+      }
+      let taskId = existTimesheet.task_details.filter(
+        (el) => el != taskDetailsId
+      );
+      await TaskDetails.findByIdAndDelete(
+        { _id: taskDetailsId },
+        (err, done) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+            Timesheets.findByIdAndUpdate(
+              { _id: req.params.id },
+              { task_details: taskId },
+              (errors, details) => {
+                if (errors) {
+                  return res
+                    .status(400)
+                    .json({ msgErr: true, message: 'Error ' + err });
+                } else {
+                  return res.status(200).json({
+                    msgErr: false,
+                    message: 'Task Deleted Succesfully',
+                  });
+                }
+              }
+            );
+          }
+        }
+      );
     } catch (error) {
       return res
         .status(500)
@@ -614,6 +700,41 @@ class TimeSheetService {
           }
         }
       );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async getAllEditableTimesheet(req, res, next) {
+    try {
+      await Timesheets.find({ is_editable: true })
+        // .populate({
+        //   path: 'task_details',
+        //   modal: 'TaskDetails',
+        //   select: '_id project_name start_time end_time time_spend description',
+        //   populate: {
+        //     path: 'client',
+        //     modal: 'ClientDetails',
+        //     select: '_id company_name person_name company_email',
+        //   },
+        // })
+        .populate('created_by', '_id name email_id')
+        .sort({ createdAt: -1 })
+        .exec((err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something Went Wrong.' });
+          } else {
+            return res.status(200).json({
+              msgErr: false,
+              message: 'All Editable timesheet',
+              result,
+            });
+          }
+        });
     } catch (error) {
       return res
         .status(500)
