@@ -12,7 +12,7 @@ declare interface RouteInfo {
 
 export const employeeROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
-  { path: "/home", title: "Home", icon: "home", class: "" },
+  // { path: "/home", title: "Home", icon: "home", class: "" },
   {
     path: "/timesheet-list",
     title: "Timesheet List",
@@ -66,6 +66,12 @@ export const adminROUTES: RouteInfo[] = [
   {
     path: "/admin/designation-list",
     title: "Designation List",
+    icon: "article",
+    class: "",
+  },
+  {
+    path: "/admin/task-request",
+    title: "Task Request",
     icon: "article",
     class: "",
   },

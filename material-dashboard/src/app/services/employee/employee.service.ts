@@ -56,16 +56,23 @@ export class EmployeeService {
   }
 
   getTimesheet(userID): Observable<any> {
-    console.log(userID, "service data");
+    // console.log(userID, "service data");
     const endpoint = `${this.baseUrl}/timesheet/user/${userID}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
   updateTimesheet(taskID, data): Observable<any> {
-    console.log(data, "service data");
+    // console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet/${taskID}`;
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
+  }
+  
+  deleteSingleTask(timesheet_id, tasksheet_id, data): Observable<any> {
+    console.log(data, "delete service data");
+    const endpoint = `${this.baseUrl}/timesheet/single-task/${timesheet_id}/${tasksheet_id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.delete(endpoint, httpOptions);
   }
 }

@@ -29,7 +29,14 @@
             </span>
             <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'"
                 style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addTasksDialog(timesheet)">Add
-                Task</span>
+                Task
+            </span>
+            <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'"
+            style="cursor: pointer;" class="ml-2 bg-primary py-1 px-2 text-white rounded" (click)="addTasksDialog(timesheet)">Edit Task
+            </span>
+            <span *ngIf="((timesheet.date | date) != (todayDate | date)) && isAdmin == 'false'"
+            style="cursor: pointer;" class="ml-2 bg-primary py-1 px-2 text-white rounded" (click)="addTasksDialog(timesheet)">Request
+            </span>
         </div>
         <div class="client-project ml-5 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
             <span class="client-name">
@@ -41,7 +48,7 @@
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
                     (click)="updateTimesheetDialog(timesheet, task._id)">Edit</span>
                 <span style="color: rgb(15, 137, 252); cursor: pointer;"
-                    (click)="deleteTimesheetDialog(task._id)">Delete</span>
+                    (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
             </span>
             <div class="project ml-5">
                 <p class="mb-0 project-name">- {{task.project_name}}</p>

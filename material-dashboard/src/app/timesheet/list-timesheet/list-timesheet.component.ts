@@ -12,6 +12,7 @@ import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component"
 import { AuthService } from "app/services/auth/auth.service";
 import { ActivatedRoute } from "@angular/router";
 import { TimesheetUpdateComponent } from "../timesheet-update/timesheet-update.component";
+import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.component";
 
 @Component({
   selector: "app-list-timesheet",
@@ -38,7 +39,36 @@ export class ListTimesheetComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  deleteTimesheetDialog(timesheetData) {}
+  deleteTimesheetDialog(timesheet_id:number, tasksheet_id:number) {
+    console.log(timesheet_id, 'ttt' , tasksheet_id);
+    
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Delete Your Task",
+        message: "Are you sure you want to delete this Task ?",
+        timesheet_id: timesheet_id,
+        tasksheet_id: tasksheet_id,
+        callingFrom: "deleteSingleTask",
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "Task Deleted Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      } else if (result.error) {
+        this.alertType = "danger";
+        this.alertMessage = result.error.message;
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
 
   addTimesheetDialog() {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
