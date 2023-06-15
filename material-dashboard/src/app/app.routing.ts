@@ -11,7 +11,7 @@ import { LoginRouteGuard } from "./authentication/guards/login-route.guard";
 const routes: Routes = [
   {
     path: "",
-    redirectTo: "home",
+    redirectTo: "dashboard",
     pathMatch: "full",
   },
   { path: "login", component: LoginComponent, canActivate: [LoginRouteGuard] },
