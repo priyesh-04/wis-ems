@@ -32,6 +32,14 @@ class ClientDetailsController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async getAllTaskClientWise(req, res, next) {
+    try {
+      await ClientDetailsService.getAllTaskClientWise(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new ClientDetailsController();

@@ -17,6 +17,22 @@ class TimeSheetController {
     }
   }
 
+  async updateSingleTaskDetails(req, res, next) {
+    try {
+      await TimeSheetService.updateSingleTaskDetails(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
+  async addTaskSingle(req, res, next) {
+    try {
+      await TimeSheetService.addTaskSingle(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
   async getAllTimesheetByUser(req, res, next) {
     try {
       await TimeSheetService.getAllTimesheetByUser(req, res, next);
