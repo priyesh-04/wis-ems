@@ -91,6 +91,9 @@ class TimeSheetService {
           if (!client) {
             return false;
           }
+          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
+            return false;
+          }
         }
         return true;
       }
@@ -98,7 +101,8 @@ class TimeSheetService {
       if (checkedClient == false) {
         return res.status(403).json({
           msgErr: true,
-          message: 'Please Provide correct client id.',
+          message:
+            'Please Provide correct client id or start time and end time.',
         });
       }
 
@@ -200,6 +204,9 @@ class TimeSheetService {
           if (!client) {
             return false;
           }
+          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
+            return false;
+          }
         }
         return true;
       }
@@ -207,7 +214,8 @@ class TimeSheetService {
       if (checkedClient == false) {
         return res.status(403).json({
           msgErr: true,
-          message: 'Please Provide correct client id.',
+          message:
+            'Please Provide correct client id or start time and end time.',
         });
       }
       let taskId = [];
@@ -544,7 +552,10 @@ class TimeSheetService {
                 if (errors) {
                   return res
                     .status(400)
-                    .json({ msgErr: true, message: 'Error ' + err });
+                    .json({
+                      msgErr: true,
+                      message: 'Something went wrong ' + err,
+                    });
                 } else {
                   return res.status(200).json({
                     msgErr: false,

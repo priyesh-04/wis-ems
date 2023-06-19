@@ -61,4 +61,11 @@ router.post(
   UserController.userActiveDeactive
 );
 
+router.get(
+  '/user/user-spend-time',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  UserController.usetListWithSpendTime
+);
+
 module.exports = router;
