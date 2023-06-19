@@ -28,14 +28,13 @@
                 date:'shortTime'}} )
             </span>
             <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'"
-                style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addTasksDialog(timesheet)">Add
-                Task
+                style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">Add Task
             </span>
             <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'"
-            style="cursor: pointer;" class="ml-2 bg-primary py-1 px-2 text-white rounded" (click)="addTasksDialog(timesheet)">Edit Task
+            style="cursor: pointer;" class="ml-2 text-danger" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">Edit All Task
             </span>
             <span *ngIf="((timesheet.date | date) != (todayDate | date)) && isAdmin == 'false'"
-            style="cursor: pointer;" class="ml-2 bg-primary py-1 px-2 text-white rounded" (click)="addTasksDialog(timesheet)">Request
+            style="cursor: pointer;" class="ml-2 text-danger text-white" (click)="addTasksDialog(timesheet)"> Edit Request
             </span>
         </div>
         <div class="client-project ml-5 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
@@ -46,7 +45,7 @@
             </span>
             <span *ngIf="((timesheet.date | date) == (todayDate | date)) && isAdmin == 'false'">
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
-                    (click)="updateTimesheetDialog(timesheet, task._id)">Edit</span>
+                    (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
                 <span style="color: rgb(15, 137, 252); cursor: pointer;"
                     (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
             </span>

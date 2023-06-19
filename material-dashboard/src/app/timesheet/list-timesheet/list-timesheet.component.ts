@@ -40,7 +40,7 @@ export class ListTimesheetComponent implements OnInit {
   ) {}
 
   deleteTimesheetDialog(timesheet_id:number, tasksheet_id:number) {
-    console.log(timesheet_id, 'ttt' , tasksheet_id);
+   // console.log(timesheet_id, 'ttt' , tasksheet_id);
     
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
@@ -93,11 +93,61 @@ export class ListTimesheetComponent implements OnInit {
     });
   }
 
+  allEditTimesheetDialog(timesheet_id:number, timesheetData) {
+    console.log('allEditTimesheetDialog', timesheet_id ,timesheetData);
+    
+    const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
+      data: {
+        matDialogTitle: "Edit Timesheet",
+        mode: "all-edit",
+        id : timesheet_id,
+        timesheetData: timesheetData,
+      },
+      width: "90%",
+      height: "90%",
+      panelClass: "edit-new-timesheet-dialog",
+    });
+    timesheetDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "Timesheet Added Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
   addTasksDialog(timesheetData) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
         matDialogTitle: "Add New Task to timesheet",
         mode: "Task-add",
+        // timesheetData: timesheetData,
+      },
+      width: "90%",
+      height: "90%",
+      panelClass: "add-new-timesheet-dialog",
+    });
+    timesheetDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "New Task Added Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
+  addSingleTasks(id:number ,timesheetData) {
+    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
+      data: {
+        matDialogTitle: "Add New Task to timesheet",
+        mode: "single-Task-add",
+        id :id,
         timesheetData: timesheetData,
       },
       width: "90%",
@@ -116,7 +166,7 @@ export class ListTimesheetComponent implements OnInit {
       }
     });
   }
-
+  
   updateTimesheetDialog(timesheetData, taskID) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
@@ -141,7 +191,30 @@ export class ListTimesheetComponent implements OnInit {
       }
     });
   }
-
+  updateSingleTaskDialog(timesheetData, taskID) {
+    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
+      data: {
+        matDialogTitle: "Update Timesheet",
+        timesheetData: timesheetData,
+        taskID: taskID,
+        mode: "single-edit",
+      },
+      width: "90%",
+      height: "90%",
+      panelClass: "update-timesheet-dialog",
+    });
+    timesheetDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "Timesheet Details Updated Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
   ngOnInit(): void {
     this.isAdmin = this._authService.isAdmin();
     if (this.isAdmin == "true") {
