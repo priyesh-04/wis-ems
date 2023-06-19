@@ -7,6 +7,7 @@ const { TokenService } = require('../../utils');
 const UserToken = require('../../models/auth/userToken');
 const designation = require('../../models/designation/designation');
 const jwt = require('jsonwebtoken');
+const taskDetails = require('../../models/timesheets/taskDetails');
 
 class AuthService {
   async login(req, res, next) {
@@ -416,6 +417,74 @@ class AuthService {
       );
     } catch (error) {
       return next(CustomErrorhandler.serverError());
+    }
+  }
+
+  async usetListWithSpendTime(req, res, next) {
+    try {
+      let start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
+      let end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+
+      if (
+        !start_date ||
+        !end_date ||
+        start_date == 'Invalid Date' ||
+        end_date == 'Invalid Date'
+      ) {
+        end_date = new Date();
+        start_date = new Date();
+        start_date = new Date(start_date.setMonth(end_date.getMonth() - 1));
+      }
+
+      const timeStamptoRedableTime = (tt) => {
+        let times = '';
+        let hour = 1 * 60 * 60 * 1000;
+        let minute = 1 * 60 * 1000;
+
+        if (tt / hour > 0) {
+          times = Math.floor(tt / hour) + ' Hours ';
+        }
+        if (tt / minute > 0) {
+          times += Math.floor((tt % hour) / minute) + ' Minutes';
+        }
+        return times;
+      };
+
+      await User.find({
+        role: { $in: ['employee', 'hr'] },
+      })
+        .select('-password -createdAt -updatedAt -image -created_by')
+        .populate('designation', '_id name')
+        .sort({ createdAt: -1 })
+        .exec(async (err, details) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+            let result = [];
+            for (let i = 0; i < details.length; i++) {
+              let task = await taskDetails.find({
+                created_by: details[i],
+                createdAt: { $gte: start_date, $lte: end_date },
+              });
+              let workingTime = task.reduce((v, item) => {
+                return v + parseInt(item.time_spend);
+              }, 0);
+
+              result.push({
+                ...details[i]._doc,
+                day_present: task.length,
+                workingTime: timeStamptoRedableTime(workingTime),
+              });
+            }
+            return res.status(200).json({ msgErr: false, result });
+          }
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
     }
   }
 }

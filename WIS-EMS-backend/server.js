@@ -8,7 +8,7 @@ const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
-const schedule = require('node-schedule');
+const cron = require('node-cron');
 const { TimesheetCron } = require('./middlewares/cronJobs');
 
 // Database connection
@@ -37,19 +37,19 @@ app.use(errorHandler);
 
 function cronFunction() {
   // everyday 7:30AM
-  // cron job schedule rules ...
-  // let rule1 = new schedule.RecurrenceRule();
-  // rule1.tz = 'Asia/Kolkata';
-  // rule1.minute = new schedule.Range(0, 59, 20);
-  // rule1.minute = 30;
-  // rule1.hour = 7;
-  // rule1.dayOfWeek = new schedule.Range(0, 6);
-  schedule.scheduleJob('1 */12 * * * *', () => {
-    TimesheetCron.resetTimesheetEditPermission();
-    console.log('All Timesheet edit permission Ended.');
-  });
+  cron.schedule(
+    '30 2 12 * * *',
+    () => {
+      // TimesheetCron.resetTimesheetEditPermission();
+      console.log('All Timesheet edit permission Ended.');
+    },
+    {
+      scheduled: true,
+      timezone: 'Asia/Kolkata',
+    }
+  );
 }
-// cronFunction();
+cronFunction();
 
 // end of cron jobs
 
