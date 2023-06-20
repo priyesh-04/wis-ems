@@ -22,6 +22,11 @@ const TimeSheetSchema = new mongoose.Schema(
       enum: [true, false],
       default: true,
     },
+    edit_request: {
+      type: Boolean,
+      enum: [true, false],
+      default: false,
+    },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

@@ -550,12 +550,10 @@ class TimeSheetService {
               { task_details: taskId },
               (errors, details) => {
                 if (errors) {
-                  return res
-                    .status(400)
-                    .json({
-                      msgErr: true,
-                      message: 'Something went wrong ' + err,
-                    });
+                  return res.status(400).json({
+                    msgErr: true,
+                    message: 'Something went wrong ' + err,
+                  });
                 } else {
                   return res.status(200).json({
                     msgErr: false,
@@ -584,7 +582,7 @@ class TimeSheetService {
           populate: {
             path: 'client',
             modal: 'ClientDetails',
-            select: '_id company_name person_name company_email',
+            select: '_id company_name client_name person_name',
           },
         })
         .sort({ createdAt: -1 })
@@ -707,6 +705,32 @@ class TimeSheetService {
                 (is_editable ? 'Activated' : 'Deactivated') +
                 '. ' +
                 'After 7:30AM it will be deactivated automatically.',
+            });
+          }
+        }
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async timesheetEditReq(req, res, next) {
+    try {
+      const edit_request = req.body.edit_request;
+      await Timesheets.findByIdAndUpdate(
+        { _id: req.params.id },
+        { edit_request },
+        (err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something Went Wrong.' });
+          } else {
+            return res.status(200).json({
+              msgErr: false,
+              message: 'Timesheet Edit Request Sended.',
             });
           }
         }
