@@ -129,7 +129,8 @@ export class AddTimesheetComponent implements OnInit {
   public addNewTask() {
     const taskData = {
       _id: this.taskForm.value._id,
-      client: this.getClientName(this.taskForm.value.client),
+      client: this.taskForm.value.client,
+      clientName: this.getClientName(this.taskForm.value.client),
       project_name: this.taskForm.value.project_name,
       start_time: this.taskForm.value.start_time,
       end_time: this.taskForm.value.end_time,
@@ -180,6 +181,7 @@ export class AddTimesheetComponent implements OnInit {
     this.timesheetData = timesheetForm.value;
     this.taskList.forEach((task) => {
       delete task._id;
+      delete task.clientName;
     });
     const myData = {
       date: this.timesheetData.date,
