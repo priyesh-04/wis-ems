@@ -718,6 +718,23 @@ class TimeSheetService {
 
   async timesheetEditReq(req, res, next) {
     try {
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+      const existTimesheet = await Timesheets.findById({ _id: req.params.id });
+      if (!existTimesheet) {
+        return res
+          .status(400)
+          .json({
+            msgErr: true,
+            message: 'Timesheet not found. Please provide valid id.',
+          });
+      } else if (existTimesheet.created_by != user._id) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "You can't edit. This is not your timesheet.",
+        });
+      }
       const edit_request = req.body.edit_request;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
@@ -735,6 +752,31 @@ class TimeSheetService {
           }
         }
       );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async getAllEditRequest(req, res, next) {
+    try {
+      await Timesheets.find({ edit_request: true })
+        .populate('created_by', '_id name email_id')
+        .sort({ createdAt: -1 })
+        .exec((err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something Went Wrong.' });
+          } else {
+            return res.status(200).json({
+              msgErr: false,
+              message: 'All Edit Request timesheet',
+              result,
+            });
+          }
+        });
     } catch (error) {
       return res
         .status(500)
