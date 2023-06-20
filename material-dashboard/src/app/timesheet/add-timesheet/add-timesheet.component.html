@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-lg col-md col-sm">
         <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
-        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+        <h3 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
-        </h2>
+        </h3>
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
             <div class="fields-main-div">
                 <div class="field-container form-group">
@@ -54,17 +54,12 @@
                     <tbody>
                         <tr *ngFor="let task of taskList">
                            
-                            <td >{{task.clientName || task.client.company_name}}</td>   
-                            <!-- <ng-template #defaultClient>
-                            </ng-template>                          -->
-                            <!-- <td *ngIf="timesheetDialogData.mode == 'all-edit'; else defaultClient">
-                                {{task.client.company_name}}
-                            </td>                             -->
+                            <td >{{task.clientName || task.client.company_name}}</td>                           
                             <td>{{task.project_name}}</td>
                             <td>{{task.start_time}}</td>
                             <td>{{task.end_time}}</td>
                             <td>
-                                <button mat-mini-fab (click)="editTask(task._id)">
+                                <button mat-mini-fab class="mr-2" (click)="editTask(task._id)">
                                     <mat-icon>edit</mat-icon>
                                 </button>
                                 <button mat-mini-fab (click)="deleteTask(task._id)">

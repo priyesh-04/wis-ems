@@ -5,11 +5,12 @@ import { AdminGuard } from "../../authentication/guards/admin.guard";
 import { StaffGuard } from "../../authentication/guards/staff.guard";
 import { AdminListComponent } from "../../admin/admin-list/admin-list.component";
 import { EmployeeListComponent } from "../../admin/employee-list/employee-list.component";
-import { TimesheetListComponent } from "app/timesheet/timesheet-list/timesheet-list.component";
-import { DesignationListComponent } from "app/admin/designation-list/designation-list.component";
-import { ClientListComponent } from "app/admin/client-list/client-list.component";
+import { TimesheetListComponent } from "../../timesheet/timesheet-list/timesheet-list.component";
+import { DesignationListComponent } from "../../admin/designation-list/designation-list.component";
+import { ClientListComponent } from "../../admin/client-list/client-list.component";
 import { ListTimesheetComponent } from "../../timesheet/list-timesheet/list-timesheet.component";
-
+import { TaskRequestComponent } from "../../admin/task-request/task-request.component";
+// import { EmployeeListComponent } from "app/admin/shared/employee-list-table/employee-list.component";
 export const UserRoutes: Routes = [
   // Common Routes
   {
@@ -41,6 +42,11 @@ export const UserRoutes: Routes = [
   {
     path: "admin/designation-list",
     component: DesignationListComponent,
+    canActivate: [AuthGuard, AdminGuard],
+  },
+  {
+    path: "admin/task-request",
+    component: TaskRequestComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
 

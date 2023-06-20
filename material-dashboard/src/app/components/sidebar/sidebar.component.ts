@@ -54,13 +54,13 @@ export const adminROUTES: RouteInfo[] = [
   {
     path: "/admin/employee-list",
     title: "Employee List",
-    icon: "article",
+    icon: "list",
     class: "",
   },
   {
     path: "/admin/client-list",
     title: "Client List",
-    icon: "article",
+    icon: "supervised_user_circle",
     class: "",
   },
   {
@@ -72,10 +72,10 @@ export const adminROUTES: RouteInfo[] = [
   {
     path: "/admin/task-request",
     title: "Task Request",
-    icon: "article",
+    icon: "work",
     class: "",
   },
-  { path: "/logout", title: "Logout", icon: "exit_to_app", class: "" },
+  { path: "/logout", title: "Logout", icon: "power_settings_new", class: "" },
 ];
 
 @Component({

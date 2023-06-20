@@ -1,9 +1,9 @@
 <div class="row">
     <div class="col-lg col-md col-sm">
         <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
-        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+        <h3 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
-        </h2>
+        </h3>
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
             <div class="fields-main-div">
                 <div class="field-container form-group">

@@ -49,50 +49,61 @@ export class EmployeeService {
   }
 
   addTimesheet(data): Observable<any> {
-    console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, data, httpOptions);
   }
 
   allEditTimesheet(timesheet_id, data): Observable<any> {
-    console.log(data, "service data");
+    console.log(data , '2222');
+    
     const endpoint = `${this.baseUrl}/timesheet/${timesheet_id}`;
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
   }
   addSingleTask(taskID, data): Observable<any> {
-    console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet/single-task/${taskID}`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, data, httpOptions);
   }
 
   getTimesheet(userID): Observable<any> {
-    // console.log(userID, "service data");
     const endpoint = `${this.baseUrl}/timesheet/user/${userID}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
   updateTimesheet(taskID, data): Observable<any> {
-    // console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet/${taskID}`;
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
   }
 
   updateSingleTask(taskID, data): Observable<any> {
-    // console.log(data, "service data");
     const endpoint = `${this.baseUrl}/timesheet/single-task/${taskID}`;
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
   }
   
   deleteSingleTask(timesheet_id, tasksheet_id, data): Observable<any> {
-    // console.log(data, "delete service data");
     const endpoint = `${this.baseUrl}/timesheet/single-task/${timesheet_id}/${tasksheet_id}`;
     const httpOptions = this.createHeaders();
     return this.http.delete(endpoint, httpOptions);
+  }
+
+  editReqAdmin(timesheet_id, data): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet/edit-req/${timesheet_id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, {edit_request:true}, httpOptions);
+  }
+  allEditReqAdmin(): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet/get-all-edit-req-sheet`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+  actionAdmin(timesheet_id): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet/active-deactive/${timesheet_id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, {is_editable:true}, httpOptions);
   }
 }

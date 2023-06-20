@@ -40,6 +40,7 @@ export class AuthService {
         expiryDate = expires;
       }
       this._cookieService.set("token", user.accessToken, expiryDate, "/");
+      this._cookieService.set("refreshToken", user.refreshToken, expiryDate, "/");
       this._cookieService.set("currentUser", user.name, expiryDate, "/");
       this._cookieService.set("role", user.role, expiryDate, "/");
       this._cookieService.set("id", user._id, expiryDate, "/");
