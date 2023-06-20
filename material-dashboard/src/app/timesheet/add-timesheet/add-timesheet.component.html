@@ -53,7 +53,13 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let task of taskList">
-                            <td>{{task.client}}</td>
+                           
+                            <td >{{task.clientName || task.client.company_name}}</td>   
+                            <!-- <ng-template #defaultClient>
+                            </ng-template>                          -->
+                            <!-- <td *ngIf="timesheetDialogData.mode == 'all-edit'; else defaultClient">
+                                {{task.client.company_name}}
+                            </td>                             -->
                             <td>{{task.project_name}}</td>
                             <td>{{task.start_time}}</td>
                             <td>{{task.end_time}}</td>
@@ -69,9 +75,10 @@
                     </tbody>
                 </table>
             </div>
+            
         </div>
 
-        <form [formGroup]="taskForm" (ngSubmit)="addTask(taskForm)" class="d-none" id="addTaskForm">
+        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" class="d-none" id="addTaskForm">
             <div class="fields-main-div">
                 <input matInput type="hidden" formControlName="_id">
                 <div class="field-container form-group" id="client-wrapper">
@@ -89,7 +96,9 @@
                         <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
                             placeholder="Project Name">
                     </mat-form-field>
-                </div>
+                </div>                
+            </div>
+            <div class="fields-main-div">
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0"
@@ -101,7 +110,9 @@
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="end_time"
                             placeholder="End Time">
                     </mat-form-field>
-                </div>
+                </div>               
+            </div>
+            <div class="fields-main-div">
                 <div class="field-container form-group">
                     <mat-form-field appearance="fill">
                         <mat-label>Description</mat-label>

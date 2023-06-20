@@ -19,6 +19,11 @@ export const UserRoutes: Routes = [
 
   // Admin Routes
   {
+    path: "dashboard",
+    component: EmployeeListComponent,
+    canActivate: [AuthGuard, AdminGuard],
+  },
+  {
     path: "admin/admin-list",
     component: AdminListComponent,
     canActivate: [AuthGuard, AdminGuard],

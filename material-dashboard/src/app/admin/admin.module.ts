@@ -21,6 +21,7 @@ import { DesignationFormComponent } from "./designation-form/designation-form.co
 import { EmployeeFormComponent } from "./employee-form/employee-form.component";
 import { ClientListComponent } from "./client-list/client-list.component";
 import { ClientFormComponent } from "./client-form/client-form.component";
+import { TaskRequestComponent } from './task-request/task-request.component';
 
 @NgModule({
   imports: [
@@ -48,6 +49,7 @@ import { ClientFormComponent } from "./client-form/client-form.component";
     DesignationFormComponent,
     ClientListComponent,
     ClientFormComponent,
+    TaskRequestComponent,
   ],
   exports: [
     MatButtonModule,
@@ -61,6 +63,7 @@ import { ClientFormComponent } from "./client-form/client-form.component";
     MatDialogModule,
     MatCheckboxModule,
     MatIconModule,
+    EmployeeListComponent
     // MatDatepickerModule,
   ],
 })
