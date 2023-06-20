@@ -35,6 +35,13 @@ router.post(
   TimeSheetController.timesheetEditable
 );
 
+router.post(
+  '/edit-req/:id',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('hr', 'admin', 'employee', 'accountant'),
+  TimeSheetController.timesheetEditReq
+);
+
 router.put(
   '/single-task/:id',
   ApiAuthValidator.validateAccessToken,

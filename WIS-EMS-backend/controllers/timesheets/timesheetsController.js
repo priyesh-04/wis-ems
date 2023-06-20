@@ -72,6 +72,14 @@ class TimeSheetController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async timesheetEditReq(req, res, next) {
+    try {
+      await TimeSheetService.timesheetEditReq(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new TimeSheetController();
