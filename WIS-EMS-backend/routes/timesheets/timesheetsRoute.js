@@ -68,4 +68,11 @@ router.get(
   TimeSheetController.getAllEditableTimesheet
 );
 
+router.get(
+  '/get-all-edit-req-sheet',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.authorizeRole('admin'),
+  TimeSheetController.getAllEditRequest
+);
+
 module.exports = router;
