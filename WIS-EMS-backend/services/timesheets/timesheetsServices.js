@@ -28,7 +28,7 @@ class TimeSheetService {
       const { error } = timesheetSchema.validate(payload);
 
       if (error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ msgErr: true, message: error.message });
       }
 
       const bearerToken = req.headers.authorization;
@@ -688,7 +688,17 @@ class TimeSheetService {
 
   async timesheetEditable(req, res, next) {
     try {
-      const is_editable = req.body.is_editable;
+      const payload = req.body;
+      const editTsSchema = Joi.object({
+        is_editable: Joi.boolean(),
+      });
+
+      const { error } = editTsSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+      const is_editable = payload.is_editable;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
         { is_editable },
@@ -718,24 +728,33 @@ class TimeSheetService {
 
   async timesheetEditReq(req, res, next) {
     try {
+      const payload = req.body;
+      const editreqSchema = Joi.object({
+        edit_request: Joi.boolean(),
+      });
+
+      const { error } = editreqSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
       const existTimesheet = await Timesheets.findById({ _id: req.params.id });
       if (!existTimesheet) {
-        return res
-          .status(400)
-          .json({
-            msgErr: true,
-            message: 'Timesheet not found. Please provide valid id.',
-          });
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Timesheet not found. Please provide valid id.',
+        });
       } else if (existTimesheet.created_by != user._id) {
         return res.status(400).json({
           msgErr: true,
           message: "You can't edit. This is not your timesheet.",
         });
       }
-      const edit_request = req.body.edit_request;
+      const edit_request = payload.edit_request;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
         { edit_request },
@@ -762,7 +781,7 @@ class TimeSheetService {
   async getAllEditRequest(req, res, next) {
     try {
       await Timesheets.find({ edit_request: true })
-        .populate('created_by', '_id name email_id')
+        .populate('created_by', '_id name email_id emp_id')
         .sort({ createdAt: -1 })
         .exec((err, result) => {
           if (err) {

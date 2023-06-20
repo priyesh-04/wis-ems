@@ -58,6 +58,11 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    first_login: {
+      type: Boolean,
+      enum: [true, false],
+      default: true,
+    },
   },
   { timestamps: true }
 );

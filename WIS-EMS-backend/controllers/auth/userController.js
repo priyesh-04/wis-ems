@@ -38,6 +38,14 @@ class UserController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async resetPassword(req, res, next) {
+    try {
+      await AuthService.resetPassword(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new UserController();

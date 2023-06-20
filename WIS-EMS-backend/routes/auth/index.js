@@ -21,6 +21,12 @@ router.post(
 router.post('/login', LoginController.login);
 router.post('/refreshtoken', UserTokenController.refresh);
 router.post('/logout/:id', LoginController.logout);
+router.post(
+  '/reset-password',
+  ApiAuthValidator.validateAccessToken,
+  UserController.resetPassword
+);
+
 router.get(
   '/my-profile',
   ApiAuthValidator.validateAccessToken,

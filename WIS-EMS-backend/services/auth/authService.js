@@ -19,7 +19,13 @@ class AuthService {
           .status(401)
           .json({ msgErr: true, message: 'Email ID or password is wrong!' });
       }
-
+      // to be compleate
+      // if (user.first_login) {
+      //   return res.status(200).json({
+      //     msgErr: false,
+      //     message: 'Please Reset Your Password. Please Check Your Email.',
+      //   });
+      // }
       // Compare password
       const match = await bcrypt.compare(req.body.password, user.password);
       if (!match) {
@@ -481,6 +487,75 @@ class AuthService {
             return res.status(200).json({ msgErr: false, result });
           }
         });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async resetPassword(req, res, next) {
+    try {
+      const payload = req.body;
+      let passwordSchema = Joi.object({
+        old_password: Joi.string().required(),
+        new_password: Joi.string().required(),
+      });
+
+      const { error } = passwordSchema.validate(payload);
+
+      if (error) {
+        return res.status(400).json({ msgErr: true, message: error.message });
+      }
+
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+
+      const userDetails = await User.findById({ _id: user._id });
+
+      // Check user is active or not
+      if (!userDetails) {
+        return res.status(409).json({
+          msgErr: true,
+          message: 'User not Found. Something went worong',
+        });
+      }
+      if (!userDetails.is_active) {
+        return res
+          .status(409)
+          .json({ msgErr: true, message: 'Employee currently deactivated!' });
+      }
+
+      // Compare password
+      const match = await bcrypt.compare(
+        payload.old_password,
+        userDetails.password
+      );
+      if (!match) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Old Password does not match.' });
+      }
+
+      const salt = await bcrypt.genSalt(Number(process.env.SALT));
+      const hashPassword = await bcrypt.hash(payload.new_password, salt);
+      await User.findByIdAndUpdate(
+        { _id: user._id },
+        { password: hashPassword },
+        (err, detaisl) => {
+          if (err) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Something went Wrong. Try again after some time later.',
+            });
+          } else {
+            return res
+              .status(200)
+              .json({ msgErr: false, message: 'Password Update Succesfully' });
+          }
+        }
+      );
     } catch (error) {
       return res
         .status(500)
