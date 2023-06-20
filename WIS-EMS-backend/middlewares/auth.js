@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const UserToken = require('../models/auth/userToken');
-const user = require('../models/auth/user');
 
 class ApiAuthValidator {
   validateAccessToken(req, res, next) {
@@ -72,6 +71,29 @@ class ApiAuthValidator {
         });
       }
     };
+  }
+
+  async isLoggedInUser(req, res, next) {
+    const bearerToken = req.headers.authorization;
+    if (!bearerToken) {
+      return res
+        .status(401)
+        .json({ status: false, message: 'Unauthorized. Please Add Token.' });
+    }
+    if (!req?.user?.role) {
+      return res.status(403).json({
+        message: `Please Logged In to view resources`,
+      });
+    }
+    let loggedinUser = await UserToken.findOne({ user_id: req.user._id });
+    if (!loggedinUser) {
+      return res.status(403).json({
+        message: `Please Logged In to view resources`,
+      });
+    }
+
+    //admin
+    next();
   }
 }
 

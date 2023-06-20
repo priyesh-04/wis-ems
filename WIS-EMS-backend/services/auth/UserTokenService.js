@@ -7,9 +7,9 @@ class UserTokenService {
       const payload = req.body;
       await TokenService.verifyToken(payload.refreshToken)
         .then(({ tokenDetails }) => {
-          const payload = { _id: tokenDetails._id, roles: tokenDetails.roles };
+          const userData = { _id: tokenDetails._id, role: tokenDetails.role };
           const accessToken = jwt.sign(
-            payload,
+            userData,
             process.env.JWT_ACCESS_TOKEN_SECRET,
             { expiresIn: process.env.JWT_ACCESS_TOKEN_LIFE }
           );

@@ -71,6 +71,7 @@ router.get(
 router.get(
   '/get-all-edit-req-sheet',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),
   TimeSheetController.getAllEditRequest
 );

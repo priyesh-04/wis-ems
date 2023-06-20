@@ -28,7 +28,7 @@ class TimeSheetService {
       const { error } = timesheetSchema.validate(payload);
 
       if (error) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ msgErr: true, message: error.message });
       }
 
       const bearerToken = req.headers.authorization;
@@ -781,7 +781,7 @@ class TimeSheetService {
   async getAllEditRequest(req, res, next) {
     try {
       await Timesheets.find({ edit_request: true })
-        .populate('created_by', '_id name email_id')
+        .populate('created_by', '_id name email_id emp_id')
         .sort({ createdAt: -1 })
         .exec((err, result) => {
           if (err) {
