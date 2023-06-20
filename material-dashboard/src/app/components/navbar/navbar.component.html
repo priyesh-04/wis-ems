@@ -10,14 +10,17 @@
             <span class="navbar-toggler-icon icon-bar"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <ul class="navbar-nav">
-                <li>
-                    <a href="javascript:void(0)" class="dropdown-toggle d-flex align-items-center" data-toggle="dropdown">
-                       <i class="material-icons">person</i>
-                       <p class="hidden-lg hidden-md mb-0">Profile</p>
-                    </a>
-                </li>
-            </ul>
+            
+            <div class="d-flef">
+                <span class="fw-bold">Welcome to EMS </span>
+                <button mat-button [matMenuTriggerFor]="menu">
+                    <!-- <img src="" alt=""> -->Menu
+                </button>
+            </div>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item>Profile</button>
+                <button mat-menu-item>Logout</button>
+            </mat-menu>
         </div>
     </div>
 </nav>

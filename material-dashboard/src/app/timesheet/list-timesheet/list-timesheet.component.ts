@@ -40,8 +40,6 @@ export class ListTimesheetComponent implements OnInit {
   ) {}
 
   deleteTimesheetDialog(timesheet_id:number, tasksheet_id:number) {
-   // console.log(timesheet_id, 'ttt' , tasksheet_id);
-    
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
         title: "Delete Your Task",
@@ -52,7 +50,6 @@ export class ListTimesheetComponent implements OnInit {
       },
     });
     deleteDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -70,6 +67,33 @@ export class ListTimesheetComponent implements OnInit {
     });
   }
 
+  public editRequestDialog(timesheet_id:number) {
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Edit Request To Admin",
+        message: "Are you sure you want to edit this Task ?",
+        timesheet_id : timesheet_id,
+        callingFrom: "editReqAdmin",
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      if (result === "success") {
+        this.refreshTimesheetList();
+        this.alertType = "success";
+        this.alertMessage = "Task Edit Request Send Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      } else if (result.error) {
+        this.alertType = "danger";
+        this.alertMessage = result.error.message;
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
+  }
+  
   addTimesheetDialog() {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
@@ -81,7 +105,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "add-new-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -94,8 +117,6 @@ export class ListTimesheetComponent implements OnInit {
   }
 
   allEditTimesheetDialog(timesheet_id:number, timesheetData) {
-    console.log('allEditTimesheetDialog', timesheet_id ,timesheetData);
-    
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
         matDialogTitle: "Edit Timesheet",
@@ -108,7 +129,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "edit-new-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -131,7 +151,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "add-new-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -155,7 +174,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "add-new-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -180,7 +198,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "update-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";
@@ -204,7 +221,6 @@ export class ListTimesheetComponent implements OnInit {
       panelClass: "update-timesheet-dialog",
     });
     timesheetDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshTimesheetList();
         this.alertType = "success";

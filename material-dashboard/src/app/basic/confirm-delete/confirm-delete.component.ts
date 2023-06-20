@@ -32,6 +32,10 @@ export class ConfirmDeleteComponent {
       this.deleteDesignation(data.id);
     } else if (data.callingFrom === "deleteSingleTask") {
       this.deleteSingleTask(data);      
+    } else if (data.callingFrom === "editReqAdmin") {
+      this.editReqAdmin(data.timesheet_id, data);     
+    } else if (data.callingFrom === "reqTaskApprove") {
+      this.reqTaskApprove(data.timesheet_id);     
     } else if (data.callingFrom === "client") {
       this.deleteClient(data.id);
     }
@@ -48,6 +52,19 @@ export class ConfirmDeleteComponent {
       }
     );
   }
+  editReqAdmin(timesheet_id:number, data) {
+    this._employeeService.editReqAdmin(timesheet_id, data).subscribe(      
+      (res) => {
+        console.log(res, "res");
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this.deleteDialogRef.close(err);
+        console.log(err, "error");
+      }
+    );
+  }
+  
   deleteDesignation(id: number) {
     this._designationService.deleteDesignation(id).subscribe(
       (res) => {
@@ -73,4 +90,17 @@ export class ConfirmDeleteComponent {
       }
     );
   }
+  reqTaskApprove(timesheet_id: number) {
+    this._employeeService.actionAdmin(timesheet_id).subscribe(
+      (res) => {
+        console.log(res, "res");
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this.deleteDialogRef.close(err);
+        console.log(err, "error");
+      }
+    );
+  }
+  
 }
