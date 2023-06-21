@@ -107,9 +107,9 @@ export class EmployeeService {
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
-  actionAdmin(timesheet_id): Observable<any> {
+  actionAdmin(timesheet_id, isApprove): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/active-deactive/${timesheet_id}`;
     const httpOptions = this.createHeaders();
-    return this.http.post(endpoint, {is_editable:true}, httpOptions);
-  }
+    return this.http.post(endpoint, {is_editable:`${isApprove}`}, httpOptions);
+  }  
 }

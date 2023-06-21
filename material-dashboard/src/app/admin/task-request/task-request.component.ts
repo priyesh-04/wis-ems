@@ -61,6 +61,31 @@ export class TaskRequestComponent implements OnInit {
     });
   }
   public rejectDialog(id:number) {
-    
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Requested Task",
+        message: "Are you sure you want to Reject the Task Edit Request?",
+        timesheet_id: id,
+        callingFrom: "reqTaskReject",
+      },
+    });
+
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result === "success") {
+        this.getAllEditReqAdmin();
+        this.alertType = "success";
+        this.alertMessage = "Designation Deleted Successfully!";
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      } else if (result.error) {
+        this.alertType = "danger";
+        this.alertMessage = result.error.message;
+        setTimeout(() => {
+          this.alertMessage = "";
+        }, 3000);
+      }
+    });
   }
 }
