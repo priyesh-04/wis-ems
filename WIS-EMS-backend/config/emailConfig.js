@@ -1,6 +1,8 @@
 module.exports = {
-  HOST: process.env.EMAIL_HOST,
-  PORT: process.env.EMAIL_PORT,
-  USER: process.env.EMAIL_USER,
-  PASS: process.env.EMAIL_PASS,
+  SUBJECT: {
+    FORGOT_PASSWORD: 'Forgot Password',
+  },
+  TEMPLATES: {
+    FORGOT_PASSWORD: 'forgot_password.hbs',
+  },
 };
