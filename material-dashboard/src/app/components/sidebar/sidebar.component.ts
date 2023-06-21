@@ -19,7 +19,7 @@ export const employeeROUTES: RouteInfo[] = [
     icon: "article",
     class: "",
   },
-  { path: "/logout", title: "Logout", icon: "exit_to_app", class: "" },
+  { path: "/logout", title: "Logout", icon: "power_settings_new", class: "" },
 ];
 export const hrROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
@@ -41,7 +41,7 @@ export const hrROUTES: RouteInfo[] = [
     icon: "article",
     class: "",
   },
-  { path: "/logout", title: "Logout", icon: "exit_to_app", class: "" },
+  { path: "/logout", title: "Logout", icon: "power_settings_new", class: "" },
 ];
 export const adminROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },

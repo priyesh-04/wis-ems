@@ -86,6 +86,12 @@ export class AuthService {
     return this.http.post(endpoint, userData, httpOptions);
   }
 
+  getProfile(): Observable<any> {
+    const endpoint = `${this.baseUrl}/my-profile`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
   changePassword(userData: any): Observable<any> {
     const endpoint = `${this.baseUrl}/auth/user/password/change/`;
     const httpOptions = this.createHeaders();

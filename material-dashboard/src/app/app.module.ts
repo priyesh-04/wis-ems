@@ -18,6 +18,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { BasicModule } from "./basic/basic.module";
 import { AdminViewModule } from "./admin/admin.module";
 import { PasswordChangeComponent } from "./authentication/password-change/password-change.component";
+import { UserProfileComponent } from './authentication/profile/user-profile/user-profile.component';
 
 @NgModule({
   imports: [
@@ -46,6 +47,7 @@ import { PasswordChangeComponent } from "./authentication/password-change/passwo
     AdminLayoutComponent,
     LoginComponent,
     PasswordChangeComponent,
+    UserProfileComponent,
   ],
   providers: [
     AuthGuard,

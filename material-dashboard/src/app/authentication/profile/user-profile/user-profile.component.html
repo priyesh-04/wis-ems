@@ -1,0 +1,53 @@
+<div class="container mt-5 pt-5 px-4">
+    <h3 class="pb-2 border-bottom">Personal Details</h3>
+    <form class="example-form" [formGroup]="profileForm" (ngSubmit)="onSubmit(profileForm)">
+        <div class="fields-main-div row">
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <input type="file" matInput name="profile" (change)="onFileSelect($event)" accept="image/png, image/jpeg">
+                <img src={{this.userProfile}} alt="" width="200">
+            </div> 
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <button class="mr-3" mat-raised-button color="primary" (click)="editProfile()">
+                    <mat-icon>edit</mat-icon> Edit Profile
+                </button>
+            </div>            
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Name</mat-label>
+                    <input matInput placeholder="Name" formControlName="name" [readonly]="!editable">
+                </mat-form-field>
+            </div>
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Email</mat-label>
+                    <input matInput placeholder="Email" formControlName="email_id" [readonly]="!editable">
+                </mat-form-field>
+            </div>           
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput placeholder="Phone Number" formControlName="phone_num" [readonly]="!editable">
+                </mat-form-field>
+            </div>
+            <div class="field-container col-sm-12 col-md-6 form-group">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Designation</mat-label>
+                    <input matInput placeholder="Designation" formControlName="designation" [readonly]="!editable">
+                </mat-form-field>                
+            </div>
+            <mat-form-field class="col-sm-12 col-md-6">
+                <mat-label>Employee Id</mat-label>
+                <input matInput placeholder="Employee Id" formControlName="emp_id" [readonly]="!editable">
+            </mat-form-field>
+            <mat-form-field class="col-sm-12 col-md-6">
+                <mat-label>Address</mat-label>
+                <input matInput placeholder="Address" formControlName="address" [readonly]="!editable">
+            </mat-form-field>
+            <div class="col-12" *ngIf="editable">
+                <button type="submit" mat-raised-button color="accent">Upload</button>
+            </div>
+        </div>    
+      
+        
+      </form>
+</div>

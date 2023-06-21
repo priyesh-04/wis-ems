@@ -13,6 +13,8 @@ export interface DialogData {
   templateUrl: "confirm-delete.html",
 })
 export class ConfirmDeleteComponent {
+  public isApprove :boolean
+
   constructor(
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
@@ -35,7 +37,9 @@ export class ConfirmDeleteComponent {
     } else if (data.callingFrom === "editReqAdmin") {
       this.editReqAdmin(data.timesheet_id, data);     
     } else if (data.callingFrom === "reqTaskApprove") {
-      this.reqTaskApprove(data.timesheet_id);     
+      this.reqTaskApprove(data.timesheet_id, this.isApprove = true);     
+    } else if (data.callingFrom === "reqTaskReject") {
+      this.reqTaskReject(data.timesheet_id, this.isApprove = false);     
     } else if (data.callingFrom === "client") {
       this.deleteClient(data.id);
     }
@@ -90,8 +94,8 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  reqTaskApprove(timesheet_id: number) {
-    this._employeeService.actionAdmin(timesheet_id).subscribe(
+  reqTaskApprove(timesheet_id: number, isApprove:boolean) {
+    this._employeeService.actionAdmin(timesheet_id, isApprove ).subscribe(
       (res) => {
         console.log(res, "res");
         this.deleteDialogRef.close("success");
@@ -102,5 +106,16 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  
+  reqTaskReject(timesheet_id: number, isApprove:boolean) {
+    this._employeeService.actionAdmin(timesheet_id, isApprove).subscribe(
+      (res) => {
+        console.log(res, "res");
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this.deleteDialogRef.close(err);
+        console.log(err, "error");
+      }
+    );
+  }
 }

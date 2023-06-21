@@ -11,15 +11,20 @@
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
             
-            <div class="d-flef">
+            <div class="d-flex align-items-center">
                 <span class="fw-bold">Welcome to EMS </span>
-                <button mat-button [matMenuTriggerFor]="menu">
-                    <!-- <img src="" alt=""> -->Menu
+                <button mat-button [matMenuTriggerFor]="menu" class="profile-icon ml-2">
+                    <!-- <img src="" alt=""> -->
+                    <i class="fa fa-user" aria-hidden="true"></i>
                 </button>
             </div>
             <mat-menu #menu="matMenu">
-                <button mat-menu-item>Profile</button>
-                <button mat-menu-item>Logout</button>
+                <a class="nav-link" [routerLink]="['/profile']" mat-menu-item>
+                    Profile
+                </a>
+                <!-- <button mat-menu-item >Profile</button> -->
+                <a class="nav-link" [routerLink]="['/change-password']" mat-menu-item>Change Password</a>
+                <a class="nav-link" [routerLink]="['/profile']" mat-menu-item (click)="_authService.performLogout()">Logout</a>
             </mat-menu>
         </div>
     </div>
