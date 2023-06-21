@@ -134,7 +134,7 @@ class AuthService {
       const hashPassword = await bcrypt.hash(req.body.password, salt);
       payload.password = hashPassword;
       const newRequest = await new User(payload);
-      newRequest.save((err, result) => {
+      newRequest.save(async (err, result) => {
         if (err) {
           if (image) {
             fs.unlinkSync('./uploads/users/' + imagename);
@@ -170,6 +170,30 @@ class AuthService {
             return next(CustomErrorhandler.badRequest());
           }
         } else {
+          // compleated part -- have to be test
+
+          // let tokenData = {
+          //   user_id: result._id,
+          //   email: payload.email_id,
+          //   token: crypto.randomBytes(32).toString('hex'),
+          // };
+          // const link = `${process.env.CLIENT_BASE_URL}/reset-password/${result._id}/${tokenData.token}`;
+          // const emailData = {
+          //   template: EmailConfig.TEMPLATES.FIRST_LOGIN,
+          //   subject: EmailConfig.SUBJECT.FIRST_LOGIN,
+          //   email: payload.email_id,
+          //   emailBody: {
+          //     name: payload.name,
+          //     url: link,
+          //   },
+          // };
+          // let emailSendStatus = EmailSend(emailData);
+          // if (!emailSendStatus) {
+          //   return res
+          //     .status(400)
+          //     .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          // }
+
           return res.status(201).json({
             msgErr: false,
             message: 'Registration Succesfully',
