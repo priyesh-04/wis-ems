@@ -701,7 +701,7 @@ class TimeSheetService {
       const is_editable = payload.is_editable;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
-        { is_editable },
+        { is_editable, edit_request: false },
         (err, result) => {
           if (err) {
             return res
