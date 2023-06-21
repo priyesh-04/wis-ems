@@ -22,6 +22,7 @@ import { EmployeeFormComponent } from "./employee-form/employee-form.component";
 import { ClientListComponent } from "./client-list/client-list.component";
 import { ClientFormComponent } from "./client-form/client-form.component";
 import { TaskRequestComponent } from './task-request/task-request.component';
+import { ComponentsModule } from "../components/components.module";
 
 @NgModule({
   imports: [
@@ -40,6 +41,7 @@ import { TaskRequestComponent } from './task-request/task-request.component';
     MatDialogModule,
     MatCheckboxModule,
     MatIconModule,
+    ComponentsModule
   ],
   declarations: [
     EmployeeListComponent,

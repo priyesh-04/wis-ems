@@ -42,6 +42,12 @@ export class EmployeeService {
     return this.http.get(endpoint, httpOptions);
   }
 
+  getAllEmployeesSpendTime(): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/user-spend-time?start_date=&end_date=`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
   getAllAdmins(): Observable<any> {
     const endpoint = `${this.baseUrl}/user/all-admin`;
     const httpOptions = this.createHeaders();

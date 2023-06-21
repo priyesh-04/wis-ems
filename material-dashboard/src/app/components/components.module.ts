@@ -7,6 +7,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
+import { EmployeeTableComponent } from './employee-table/employee-table.component';
 
 @NgModule({
   imports: [
@@ -18,12 +19,14 @@ import {MatButtonModule} from '@angular/material/button';
   declarations: [
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    EmployeeTableComponent
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    EmployeeTableComponent
   ]
 })
 export class ComponentsModule { }

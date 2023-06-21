@@ -18,47 +18,5 @@
             <mat-icon>add</mat-icon>
         </button>
     </div>
-    <div class="table-responsive">
-        <table class="table table-bordered bg-white">
-            <thead>
-                <tr>
-                    <th scope="col" class="font-weight-bold">#</th>
-                    <th scope="col" class="font-weight-bold">Employee Id</th>
-                    <th scope="col" class="font-weight-bold">Employee Name</th>
-                    <th scope="col" class="font-weight-bold">Designation</th>
-                    <th scope="col" class="font-weight-bold">Role</th>
-                    <th scope="col" class="font-weight-bold">Email Id</th>
-                    <th scope="col" class="font-weight-bold">Mobile Number</th>
-                    <th scope="col" class="font-weight-bold">Timesheet</th>
-                    <th scope="col" class="font-weight-bold">Actions</th>
-                </tr>
-            </thead>
-            <tbody *ngFor="let employee of employeeList; let i = index">
-                <tr>
-                    <th scope="row">{{i+1}}</th>
-                    <td>
-                        <a [routerLink]="['/timesheet-list', employee._id]">
-                            {{employee.emp_id}}
-                        </a>
-                    </td>
-                    <td>{{employee.name}}</td>
-                    <td>{{employee.designation?.name}}</td>
-                    <td class="text-uppercase">{{employee.role}}</td>
-                    <td>{{employee.email_id}}</td>
-                    <td>{{employee.phone_num}}</td>
-                    <td>
-                        <a [routerLink]="['/timesheet-list', employee._id]">
-                            View
-                        </a>
-                    </td>
-                    <td>
-                        <button class="mr-3" mat-raised-button color="primary" (click)="updateEmployeeDialog(employee)">
-                            <mat-icon>edit</mat-icon>
-                            Edit
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <app-employee-table [isDashboard]="false" [refreshTable]="refreshTable" (updateDialog)="updateDialog($event)"></app-employee-table>
 </div>
