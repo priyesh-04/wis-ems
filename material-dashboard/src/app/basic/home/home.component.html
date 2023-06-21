@@ -1,11 +1,8 @@
 <div class="container">
-    <!-- <div class="home-page-header text-center">
+    <div class="home-page-header text-center" *ngIf="user.role !== 'admin'">
         Homepage
-    </div> -->
-    <!-- <div class="alert alert-{{alertType}} alert-dismissible fade show" role="alert" *ngIf="alertMessage">
-        <strong>{{alertMessage}}</strong>
-        <button type="button" class="close" aria-label="Close" (click)="successMessage = null">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div> -->
+    </div>
+    <ng-container *ngIf="user.role === 'admin'">
+        <app-employee-table [isDashboard]="true"></app-employee-table>
+    </ng-container>
 </div>

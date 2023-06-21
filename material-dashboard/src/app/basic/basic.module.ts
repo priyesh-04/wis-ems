@@ -6,9 +6,10 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { ConfirmDeleteComponent } from "./confirm-delete/confirm-delete.component";
 import { AlertMessageComponent } from './alert-message/alert-message.component';
+import { ComponentsModule } from "../components/components.module";
 
 @NgModule({
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, ComponentsModule],
   declarations: [HomeComponent, ConfirmDeleteComponent, AlertMessageComponent],
   exports: [HomeComponent, MatButtonModule, MatIconModule],
 })
