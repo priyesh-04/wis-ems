@@ -8,6 +8,10 @@ const UserToken = require('../../models/auth/userToken');
 const designation = require('../../models/designation/designation');
 const jwt = require('jsonwebtoken');
 const taskDetails = require('../../models/timesheets/taskDetails');
+const ForgotPasswordToken = require('../../models/auth/forgotPasswordToken');
+const crypto = require('crypto');
+const { EmailSend } = require('../../helper/email/emailSend');
+const EmailConfig = require('../../config/emailConfig');
 
 class AuthService {
   async login(req, res, next) {
@@ -514,7 +518,6 @@ class AuthService {
 
       const userDetails = await User.findById({ _id: user._id });
 
-      // Check user is active or not
       if (!userDetails) {
         return res.status(409).json({
           msgErr: true,
@@ -543,13 +546,155 @@ class AuthService {
       await User.findByIdAndUpdate(
         { _id: user._id },
         { password: hashPassword },
-        (err, detaisl) => {
+        (err, details) => {
           if (err) {
             return res.status(400).json({
               msgErr: true,
               message: 'Something went Wrong. Try again after some time later.',
             });
           } else {
+            return res
+              .status(200)
+              .json({ msgErr: false, message: 'Password Update Succesfully' });
+          }
+        }
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async forgotPasswordEmailSend(req, res, next) {
+    try {
+      let alreadyRequestedToken = await ForgotPasswordToken.findOne({
+        user_id: req.user._id,
+      });
+      const userDetails = await User.findById({ _id: req.user._id });
+      if (!userDetails) {
+        return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
+      }
+      let tokenData = {
+        user_id: req.user._id,
+        email: userDetails.email_id,
+        token: crypto.randomBytes(32).toString('hex'),
+      };
+      if (!alreadyRequestedToken) {
+        let newRequest = await new ForgotPasswordToken(tokenData);
+        newRequest.save((err, result) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          }
+        });
+      } else {
+        await ForgotPasswordToken.findByIdAndUpdate(
+          { _id: alreadyRequestedToken._id },
+          tokenData,
+          (err, result) => {
+            if (err) {
+              return res.status(400).json({
+                msgErr: true,
+                message: 'Something went wrong. ' + err,
+              });
+            }
+          }
+        );
+      }
+
+      const link = `${process.env.CLIENT_BASE_URL}/reset-password/${userDetails._id}/${tokenData.token}`;
+      const emailData = {
+        template: EmailConfig.TEMPLATES.FORGOT_PASSWORD,
+        subject: EmailConfig.SUBJECT.FORGOT_PASSWORD,
+        email: userDetails.email_id,
+        emailBody: {
+          name: userDetails.name,
+          url: link,
+        },
+      };
+      let emailSendStatus = await EmailSend(emailData);
+      if (!emailSendStatus) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Something went wrong. ' + err });
+      }
+      return res.status(200).json({
+        msgErr: false,
+        message:
+          'Please Check your existing email. Reset link will be provided there.',
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async changePassword(req, res, next) {
+    try {
+      const payload = req.body;
+      const schema = Joi.object({
+        password: Joi.string().required(),
+      });
+      const { error } = schema.validate(payload);
+      if (error) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Error ' + error });
+      }
+      const user = await User.findById({ _id: req.params.userId });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Invalid Link or User' });
+      }
+      const token = await ForgotPasswordToken.findOne({
+        user_id: req.params.userId,
+        token: req.params.token,
+      });
+      if (!token) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Invalid Link or User' });
+      }
+
+      const salt = await bcrypt.genSalt(Number(process.env.SALT));
+      const hashPassword = await bcrypt.hash(payload.password, salt);
+      await User.findByIdAndUpdate(
+        { _id: user._id },
+        { password: hashPassword },
+        async (err, details) => {
+          if (err) {
+            return res.status(400).json({
+              msgErr: true,
+              message: 'Something went Wrong. Try again after some time later.',
+            });
+          } else {
+            await ForgotPasswordToken.findByIdAndDelete(
+              { _id: token._id },
+              (e, _) => {
+                if (e) {
+                  return res
+                    .status(400)
+                    .json({ msgErr: true, message: 'Error ' + e });
+                }
+              }
+            );
+            await UserToken.findOneAndDelete(
+              {
+                user_id: user._id,
+              },
+              (e, _) => {
+                if (e) {
+                  return res
+                    .status(400)
+                    .json({ msgErr: true, message: 'Error ' + e });
+                }
+              }
+            );
+
             return res
               .status(200)
               .json({ msgErr: false, message: 'Password Update Succesfully' });

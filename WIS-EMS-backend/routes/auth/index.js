@@ -27,10 +27,17 @@ router.post(
   UserController.resetPassword
 );
 
+router.post(
+  '/forgot-password-email-send',
+  ApiAuthValidator.validateAccessToken,
+  UserController.forgotPasswordEmailSend
+);
+
+router.post('/change-password/:userId/:token', UserController.changePassword);
+
 router.get(
   '/my-profile',
   ApiAuthValidator.validateAccessToken,
-  ApiAuthValidator.authorizeRole('admin', 'hr', 'employee', 'accountant'),
   LoginController.myProfile
 );
 router.put(

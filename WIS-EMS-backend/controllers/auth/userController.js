@@ -46,6 +46,22 @@ class UserController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async forgotPasswordEmailSend(req, res, next) {
+    try {
+      await AuthService.forgotPasswordEmailSend(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
+  async changePassword(req, res, next) {
+    try {
+      await AuthService.changePassword(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new UserController();
