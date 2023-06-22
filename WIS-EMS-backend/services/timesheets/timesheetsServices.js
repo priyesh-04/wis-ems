@@ -574,6 +574,8 @@ class TimeSheetService {
 
   async getAllTimesheetByUser(req, res, next) {
     try {
+      let { limit, page } = req.query;
+
       await Timesheets.find({ created_by: req.params.id })
         .populate({
           path: 'task_details',
@@ -586,19 +588,39 @@ class TimeSheetService {
           },
         })
         .sort({ createdAt: -1 })
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
-          } else if (result.length === 0) {
-            return res
-              .status(200)
-              .json({ msgErr: false, message: 'Timesheet not Found !!' });
-          } else {
+          } else if (details.length === 0) {
             return res.status(200).json({
               msgErr: false,
-              result,
+              result: details,
+              message: 'Timesheet not Found !!',
+            });
+          } else {
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
             });
           }
         });
@@ -613,7 +635,7 @@ class TimeSheetService {
     try {
       const start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
       const end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
-      const { limit, page } = req.query;
+      let { limit, page } = req.query;
       const userid = req.params.id;
       if (userid.length != 24) {
         return res
@@ -664,19 +686,28 @@ class TimeSheetService {
               message: 'No Task Available !',
             });
           } else {
-            let sliceArr =
-              details &&
-              details.slice(
-                parseInt(limit) * (parseInt(page) - 1),
-                parseInt(limit) * parseInt(page)
-              );
-            if (sliceArr && sliceArr.length > 0) {
-              return res.status(200).json({ msgErr: false, result: sliceArr });
-            } else {
-              return res
-                .status(400)
-                .json({ msgErr: true, message: 'Something Went Wrong.' });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
             }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -780,19 +811,37 @@ class TimeSheetService {
 
   async getAllEditRequest(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await Timesheets.find({ edit_request: true })
         .populate('created_by', '_id name email_id emp_id')
         .sort({ createdAt: -1 })
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Something Went Wrong.' });
           } else {
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
             return res.status(200).json({
               msgErr: false,
-              message: 'All Edit Request timesheet',
-              result,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
             });
           }
         });
@@ -805,6 +854,7 @@ class TimeSheetService {
 
   async getAllEditableTimesheet(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await Timesheets.find({ is_editable: true })
         // .populate({
         //   path: 'task_details',
@@ -818,16 +868,33 @@ class TimeSheetService {
         // })
         .populate('created_by', '_id name email_id')
         .sort({ createdAt: -1 })
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Something Went Wrong.' });
           } else {
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
             return res.status(200).json({
               msgErr: false,
-              message: 'All Editable timesheet',
-              result,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
             });
           }
         });

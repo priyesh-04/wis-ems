@@ -134,7 +134,7 @@ class AuthService {
       const hashPassword = await bcrypt.hash(req.body.password, salt);
       payload.password = hashPassword;
       const newRequest = await new User(payload);
-      newRequest.save((err, result) => {
+      newRequest.save(async (err, result) => {
         if (err) {
           if (image) {
             fs.unlinkSync('./uploads/users/' + imagename);
@@ -170,6 +170,30 @@ class AuthService {
             return next(CustomErrorhandler.badRequest());
           }
         } else {
+          // compleated part -- have to be test
+
+          // let tokenData = {
+          //   user_id: result._id,
+          //   email: payload.email_id,
+          //   token: crypto.randomBytes(32).toString('hex'),
+          // };
+          // const link = `${process.env.CLIENT_BASE_URL}/reset-password/${result._id}/${tokenData.token}`;
+          // const emailData = {
+          //   template: EmailConfig.TEMPLATES.FIRST_LOGIN,
+          //   subject: EmailConfig.SUBJECT.FIRST_LOGIN,
+          //   email: payload.email_id,
+          //   emailBody: {
+          //     name: payload.name,
+          //     url: link,
+          //   },
+          // };
+          // let emailSendStatus = EmailSend(emailData);
+          // if (!emailSendStatus) {
+          //   return res
+          //     .status(400)
+          //     .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          // }
+
           return res.status(201).json({
             msgErr: false,
             message: 'Registration Succesfully',
@@ -346,17 +370,38 @@ class AuthService {
 
   async getAllAdmin(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: 'admin' })
         .select('-password ')
         .populate('designation', '_id name')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -366,18 +411,40 @@ class AuthService {
 
   async getAllEmployee(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: { $in: ['employee', 'hr'] } })
         .select('-password ')
         .populate('designation', '_id name')
         .populate('created_by', '_id name emp_id email_id phone_num')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -387,16 +454,37 @@ class AuthService {
 
   async getAllHR(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: 'hr' })
         .select('-password ')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -432,8 +520,12 @@ class AuthService {
 
   async usetListWithSpendTime(req, res, next) {
     try {
-      let start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
-      let end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      let { limit, page, start_date, end_date } = req.query;
+
+      if (start_date && end_date) {
+        start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
+        end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      }
 
       if (
         !start_date ||
@@ -488,7 +580,28 @@ class AuthService {
                 workingTime: timeStamptoRedableTime(workingTime),
               });
             }
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {

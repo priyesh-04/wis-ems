@@ -37,10 +37,11 @@ app.use(errorHandler);
 
 function cronFunction() {
   // everyday 7:30AM
+  //  '1 30 7 * * *'
   cron.schedule(
-    '30 2 12 * * *',
+    '0 0 */1 * * *',
     () => {
-      // TimesheetCron.resetTimesheetEditPermission();
+      TimesheetCron.resetTimesheetEditPermission();
       console.log('All Timesheet edit permission Ended.');
     },
     {
