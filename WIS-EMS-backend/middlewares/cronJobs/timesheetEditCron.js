@@ -8,7 +8,7 @@ class TimesheetCron {
       for (let i = 0; i < result.length; i++) {
         await Timesheet.findByIdAndUpdate(
           { _id: result[i]._id },
-          { is_editable: false },
+          { is_editable: false, edit_request: false },
           { new: true }
           // (err, done) => {
           //   if (err) {

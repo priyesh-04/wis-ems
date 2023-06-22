@@ -370,17 +370,38 @@ class AuthService {
 
   async getAllAdmin(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: 'admin' })
         .select('-password ')
         .populate('designation', '_id name')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -390,18 +411,40 @@ class AuthService {
 
   async getAllEmployee(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: { $in: ['employee', 'hr'] } })
         .select('-password ')
         .populate('designation', '_id name')
         .populate('created_by', '_id name emp_id email_id phone_num')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -411,16 +454,37 @@ class AuthService {
 
   async getAllHR(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await User.find({ role: 'hr' })
         .select('-password ')
         .lean()
-        .exec((err, result) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
@@ -456,8 +520,12 @@ class AuthService {
 
   async usetListWithSpendTime(req, res, next) {
     try {
-      let start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
-      let end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      let { limit, page, start_date, end_date } = req.query;
+
+      if (start_date && end_date) {
+        start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
+        end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      }
 
       if (
         !start_date ||
@@ -512,7 +580,28 @@ class AuthService {
                 workingTime: timeStamptoRedableTime(workingTime),
               });
             }
-            return res.status(200).json({ msgErr: false, result });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {

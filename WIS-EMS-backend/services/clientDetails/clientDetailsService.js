@@ -89,15 +89,33 @@ class ClientDetailsService {
 
   async getAllClient(req, res, next) {
     try {
-      await ClientDetails.find({}, (err, result) => {
+      let { limit, page } = req.query;
+      await ClientDetails.find({}, (err, details) => {
         if (err) {
           return res
             .status(400)
             .json({ msgErr: true, message: 'Error ' + err });
         } else {
+          if (!limit || !page) {
+            limit = 10;
+            page = 1;
+          }
+          if (limit > 100) {
+            limit = 100;
+          }
+          limit = parseInt(limit);
+          page = parseInt(page);
+          let total_page = Math.ceil(details.length / limit);
+          let sliceArr =
+            details && details.slice(limit * (page - 1), limit * page);
           return res.status(200).json({
             msgErr: false,
-            result,
+            result: sliceArr,
+            pagination: {
+              limit,
+              current_page: page,
+              total_page: total_page,
+            },
           });
         }
       });
@@ -146,21 +164,39 @@ class ClientDetailsService {
 
   async getAllTaskClientWise(req, res, next) {
     try {
+      let { limit, page } = req.query;
       await taskDetails
         .find({ client: req.params.id })
         .populate('client', '_id client_name')
         .populate('created_by', '_id name')
         .sort({ createdAt: -1 })
         .lean()
-        .exec((err, docs) => {
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
             return res.status(200).json({
               msgErr: false,
-              result: docs,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
             });
           }
         });
