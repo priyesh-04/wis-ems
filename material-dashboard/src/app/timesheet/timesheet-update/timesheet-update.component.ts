@@ -155,10 +155,9 @@ export class TimesheetUpdateComponent implements OnInit {
     this._clientService.getClientList().subscribe(
       (res) => {
         this.clientList = res.result;
-        console.log(this.clientList, "client list");
       },
       (err) => {
-        console.log(err, "error");
+        alert(err.error.detail);
       }
     );
   }
@@ -179,9 +178,7 @@ export class TimesheetUpdateComponent implements OnInit {
         },
       ],
       id : this.timesheetDialogData.timesheetData._id
-    };
-    console.log('myData', myData);
-    
+    };   
     
     if (this.timesheetDialogData.mode === "edit") {
       delete myData.date;
@@ -196,7 +193,6 @@ export class TimesheetUpdateComponent implements OnInit {
           },
           (err) => {
             alert(err.error.detail);
-            console.log(err, "error");
           }
         );
     } else if (this.timesheetDialogData.mode === "single-edit") {
@@ -218,12 +214,9 @@ export class TimesheetUpdateComponent implements OnInit {
           },
           (err) => {
             alert(err.error.detail);
-            console.log(err, "error");
           }
         );
     } else if (this.timesheetDialogData.mode === "single-Task-add") {
-
-      console.log('000',this.timesheetData);
       let clientSingleData = {
         client: this.timesheetData.client,
         project_name: this.timesheetData.project_name,
@@ -238,7 +231,6 @@ export class TimesheetUpdateComponent implements OnInit {
         },
         (err) => {
           alert(err.error.detail);
-          console.log(err, "error");
         }
       );
     } else if (this.timesheetDialogData.mode === "all-edit") {
@@ -249,7 +241,6 @@ export class TimesheetUpdateComponent implements OnInit {
         },
         (err) => {
           alert(err.error.detail);
-          console.log(err, "error");
         }
       );
     } else if (this.timesheetDialogData.mode === "add" || "Task-add") {
@@ -260,7 +251,6 @@ export class TimesheetUpdateComponent implements OnInit {
         },
         (err) => {
           alert(err.error.detail);
-          console.log(err, "error");
         }
       );
     }

@@ -10,6 +10,8 @@ import { DesignationListComponent } from "../../admin/designation-list/designati
 import { ClientListComponent } from "../../admin/client-list/client-list.component";
 import { ListTimesheetComponent } from "../../timesheet/list-timesheet/list-timesheet.component";
 import { TaskRequestComponent } from "../../admin/task-request/task-request.component";
+import { PasswordChangeComponent } from "../../authentication/password-change/password-change.component";
+import { UserProfileComponent } from "app/authentication/profile/user-profile/user-profile.component";
 // import { EmployeeListComponent } from "app/admin/shared/employee-list-table/employee-list.component";
 export const UserRoutes: Routes = [
   // Common Routes
@@ -17,7 +19,15 @@ export const UserRoutes: Routes = [
     path: "dashboard",
     component: HomeComponent,
   },
-
+  {
+    path:"profile",
+    component:UserProfileComponent,
+  },
+  {
+    path: "change-password",
+    component: PasswordChangeComponent,
+    canActivate: [AuthGuard],
+  },
   // Admin Routes
   {
     path: "dashboard",
