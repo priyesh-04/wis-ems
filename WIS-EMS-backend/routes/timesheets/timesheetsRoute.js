@@ -19,7 +19,6 @@ router.put(
 router.get(
   '/user/:id',
   ApiAuthValidator.validateAccessToken,
-  ApiAuthValidator.authorizeRole('admin'),
   TimeSheetController.getAllTimesheetByUser
 );
 
