@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg col-md col-sm">
         <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
-        <h3 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+        <h3 class="border-bottom p-2 mt-0 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
         </h3>
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
@@ -9,7 +9,7 @@
                 <div class="field-container form-group">
                     <mat-form-field appearance="legacy">
                         <input matInput type="date" class="form-control rounded-0" formControlName="date"
-                            placeholder="Date">
+                            placeholder="Date" readonly>
                     </mat-form-field>
                 </div>
                 <div class="field-container form-group">

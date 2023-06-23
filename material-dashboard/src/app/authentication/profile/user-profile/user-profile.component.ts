@@ -73,9 +73,9 @@ export class UserProfileComponent implements OnInit {
       }
     );
   }
-  public editProfile(){
-    this.editable = true;
-  }
+  // public editProfile(){
+  //   this.editable = true;
+  // }
   public onSubmit(profileForm: FormGroup) {
     this.userProfileList = profileForm.value;
   }

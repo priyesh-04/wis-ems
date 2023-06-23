@@ -10,6 +10,8 @@ import {
 import { EmployeeService } from "../../services/employee/employee.service";
 import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
 import { ClientService } from "../../services/client/client.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 
 @Component({
   selector: "app-add-timesheet",
@@ -25,14 +27,15 @@ export class AddTimesheetComponent implements OnInit {
   public taskButton = "Save Task";
   public displayTaskform = true;
 
+  // @Input('disabled')isDisabled: boolean;
   constructor(
     private _employeeService: EmployeeService,
     private _clientService: ClientService,
     private datepipe: DatePipe,
     public fb: FormBuilder,
-
+    public dialog: MatDialog,
     public dialogRef: MatDialogRef<TimesheetListComponent>,
-    @Inject(MAT_DIALOG_DATA) public timesheetDialogData
+    @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
   ) {}
 
   ngOnInit(): void {
@@ -133,7 +136,17 @@ export class AddTimesheetComponent implements OnInit {
   }
 
   public deleteTask(index) {
-    this.taskList.splice(index, 1);
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Delete Your Task",
+        message: "Are you sure you want to delete this Task ?",
+        index:index,
+        callingFrom: "deleteTask",
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe(() => {
+      this.taskList.splice(index, 1);      
+    });
   }
 
   public closeDialog() {
