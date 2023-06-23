@@ -1,17 +1,15 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+
 import {
-  validatorIndianMobileNumber,
-  validatorEmail,
-  validatorTextOnly,
   getFormattedDate,
   getFormattedDatetime,
 } from "../../utils/custom-validators";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { DesignationService } from "app/services/designation/designation.service";
-import { EmployeeService } from "app/services/employee/employee.service";
 import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
-import { ClientService } from "app/services/client/client.service";
+import { EmployeeService } from "../../services/employee/employee.service";
+import { ClientService } from "../../services/client/client.service";
+import { DatePipe } from "@angular/common";
 
 @Component({
   selector: "app-timesheet-update",
@@ -19,6 +17,7 @@ import { ClientService } from "app/services/client/client.service";
   styleUrls: ["./timesheet-update.component.css"],
 })
 export class TimesheetUpdateComponent implements OnInit {
+  private currentDate: string;
   timesheetForm: FormGroup;
   timesheetData: any;
   clientList: any;
@@ -27,6 +26,7 @@ export class TimesheetUpdateComponent implements OnInit {
   constructor(
     private _employeeService: EmployeeService,
     private _clientService: ClientService,
+    private datepipe: DatePipe,
     public fb: FormBuilder,
 
     public dialogRef: MatDialogRef<TimesheetListComponent>,
@@ -34,8 +34,9 @@ export class TimesheetUpdateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
-      date: ["", [Validators.required]],
+      date: { disabled: true, value: this.currentDate },
       in_time: ["", [Validators.required]],
       out_time: ["", [Validators.required]],
       client: ["", [Validators.required]],
@@ -47,13 +48,11 @@ export class TimesheetUpdateComponent implements OnInit {
 
     if (this.timesheetDialogData.mode === "edit") {
       this.getClientList();
-      console.log(this.timesheetDialogData, "timesheet dialog data");
       const taskDetails =
         this.timesheetDialogData.timesheetData.task_details.find(
           (task) => task._id === this.timesheetDialogData.taskID
         );
       this.selectedClient = taskDetails.client._id;
-      console.log(taskDetails, "task details");
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -70,13 +69,11 @@ export class TimesheetUpdateComponent implements OnInit {
       });
     } else if (this.timesheetDialogData.mode === "single-edit") {
       this.getClientList();
-      console.log(this.timesheetDialogData, "timesheet dialog data");
       const taskDetails =
         this.timesheetDialogData.timesheetData.task_details.find(
           (task) => task._id === this.timesheetDialogData.taskID
         );
       this.selectedClient = taskDetails.client._id;
-      console.log(taskDetails, "task details");
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -95,13 +92,11 @@ export class TimesheetUpdateComponent implements OnInit {
       this.getClientList();
     } else if (this.timesheetDialogData.mode === "all-edit") {
       this.getClientList();
-      console.log(this.timesheetDialogData, "timesheet dialog data");
       const taskDetails =
         this.timesheetDialogData.timesheetData.task_details.find(
           (task) => task._id === this.timesheetDialogData.taskID
         );
       this.selectedClient = taskDetails.client._id;
-      console.log(taskDetails, "task details");
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -118,7 +113,6 @@ export class TimesheetUpdateComponent implements OnInit {
       });
     } else if (this.timesheetDialogData.mode === "single-Task-add") {
       this.getClientList();
-      //console.log(this.timesheetDialogData, "timesheet dialog data");
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -130,7 +124,6 @@ export class TimesheetUpdateComponent implements OnInit {
       });
     } else if (this.timesheetDialogData.mode === "Task-add") {
       this.getClientList();
-      //console.log(this.timesheetDialogData, "timesheet dialog data");
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -165,7 +158,7 @@ export class TimesheetUpdateComponent implements OnInit {
   onSubmit(timesheetForm: FormGroup) {
     this.timesheetData = timesheetForm.value;
     const myData = {
-      date: this.timesheetData.date,
+      date: this.currentDate,
       in_time: this.timesheetData.in_time,
       out_time: this.timesheetData.out_time,
       task_details: [
@@ -201,8 +194,6 @@ export class TimesheetUpdateComponent implements OnInit {
         _id : this.timesheetDialogData.taskID,
         client: this.timesheetData.client,
         project_name: this.timesheetData.project_name,
-        start_time: this.timesheetData.start_time,
-        end_time: this.timesheetData.end_time,
         description: this.timesheetData.description,
       }
       myData.task_details[0]["_id"] = this.timesheetDialogData.taskID;
@@ -226,7 +217,6 @@ export class TimesheetUpdateComponent implements OnInit {
       }
       this._employeeService.addSingleTask(myData.id, clientSingleData).subscribe(
         (res) => {
-          console.log(res, "res");
           this.dialogRef.close("success");
         },
         (err) => {
@@ -236,7 +226,6 @@ export class TimesheetUpdateComponent implements OnInit {
     } else if (this.timesheetDialogData.mode === "all-edit") {
       this._employeeService.allEditTimesheet(myData.id, myData).subscribe(
         (res) => {
-          console.log(res, "res");
           this.dialogRef.close("success");
         },
         (err) => {
@@ -246,7 +235,6 @@ export class TimesheetUpdateComponent implements OnInit {
     } else if (this.timesheetDialogData.mode === "add" || "Task-add") {
       this._employeeService.addTimesheet(myData).subscribe(
         (res) => {
-          console.log(res, "res");
           this.dialogRef.close("success");
         },
         (err) => {

@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit } from "@angular/core";
+import { DatePipe } from "@angular/common";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
@@ -16,17 +17,18 @@ import { ClientService } from "../../services/client/client.service";
   styleUrls: ["./add-timesheet.component.css"],
 })
 export class AddTimesheetComponent implements OnInit {
-  timesheetForm: FormGroup;
-  taskForm: FormGroup;
-  timesheetData: any;
-  clientList: any;
-  selectedClient: any;
-  taskList = [];
-  taskButton = "Add Task";
+  private currentDate: string;
+  public timesheetForm: FormGroup;
+  public taskForm: FormGroup;
+  public clientList: any;
+  public taskList = [];
+  public taskButton = "Save Task";
+  public displayTaskform = true;
 
   constructor(
     private _employeeService: EmployeeService,
     private _clientService: ClientService,
+    private datepipe: DatePipe,
     public fb: FormBuilder,
 
     public dialogRef: MatDialogRef<TimesheetListComponent>,
@@ -34,8 +36,11 @@ export class AddTimesheetComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
+    this.getClientList();
+
     this.timesheetForm = this.fb.group({
-      date: ["", [Validators.required]],
+      date: { disabled: true, value: this.currentDate },
       in_time: ["", [Validators.required]],
       out_time: ["", [Validators.required]],
     });
@@ -48,33 +53,10 @@ export class AddTimesheetComponent implements OnInit {
       description: ["", [Validators.required]],
     });
 
-    if (this.timesheetDialogData.mode === "edit") {
-      this.getClientList();
-      const taskDetails =
-        this.timesheetDialogData.timesheetData.task_details.find(
-          (task) => task._id === this.timesheetDialogData.taskID
-        );
-      this.selectedClient = taskDetails.client._id;
-      this.timesheetForm.patchValue({
-        date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
-        in_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.in_time
-        ),
-        out_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.out_time
-        ),
-      });
-      this.taskForm.patchValue({
-        client: taskDetails.client._id,
-        project_name: taskDetails.project_name,
-        start_time: getFormattedDatetime(taskDetails.start_time),
-        end_time: getFormattedDatetime(taskDetails.end_time),
-        description: taskDetails.description,
-      });
-    } else if (this.timesheetDialogData.mode === "all-edit") {
-
-      this.getClientList();      
+    if (this.timesheetDialogData.mode === "all-edit") {
+      this.displayTaskform = false;
       this.taskList = this.timesheetDialogData.timesheetData.task_details;
+      console.log('this.taskList: ', this.taskList);
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -86,21 +68,6 @@ export class AddTimesheetComponent implements OnInit {
         _id : this.timesheetDialogData.timesheetData._id
 
       });      
-    } else if (this.timesheetDialogData.mode === "add") {
-      this.getClientList();
-    } else if (this.timesheetDialogData.mode === "single-Task-add") {
-      this.getClientList();     
-    } else if (this.timesheetDialogData.mode === "Task-add") {
-      this.getClientList();
-      this.timesheetForm.patchValue({
-        date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
-        in_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.in_time
-        ),
-        out_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.out_time
-        ),
-      });
     }
   }
 
@@ -116,14 +83,16 @@ export class AddTimesheetComponent implements OnInit {
   }
 
   private getClientName(clientId: string) {
+    console.log('clientId: ', clientId);    
     const client = this.clientList.filter(value => { return value._id === clientId });
-    return client.length ? client[0].client_name : '-';
+    return client.length ? client[0].company_name : '-';
   }
 
   public showAddTaskForm() {
     this.taskForm.reset();
     this.taskButton = "Save Task";
-    document.getElementById("addTaskForm").classList.remove("d-none");
+    this.displayTaskform = true;
+    // document.getElementById("addTaskForm").classList.remove("d-none");
   }
 
   public addNewTask() {
@@ -136,33 +105,31 @@ export class AddTimesheetComponent implements OnInit {
       end_time: this.taskForm.value.end_time,
       description: this.taskForm.value.description,
     };
-    if (this.taskForm.value._id) {
-      taskData["_id"] = this.taskForm.value._id;
-    } else {
-      taskData["_id"] = this.taskList.length;
-    }
-    if (this.taskList.find((task) => task._id === taskData._id)) {
-      this.taskList[taskData._id] = taskData;
+
+    const index = this.taskList.findIndex(task => task._id === this.taskForm.value._id);
+    if (index >= 0) {
+      this.taskList[index] = taskData;
     } else {
       this.taskList.push(taskData);
     }
-    document.getElementById("addTaskForm").classList.add("d-none");
+    this.displayTaskform = false;
+    // document.getElementById("addTaskForm").classList.add("d-none");
     this.taskForm.reset();
   }
 
   public editTask(index) {
     const taskDetails = this.taskList[index];
-    this.selectedClient = taskDetails.client;
     this.taskForm.patchValue({
       _id: taskDetails._id,
-      client: taskDetails.client,
+      client: taskDetails.client._id ? taskDetails.client._id : taskDetails.client,
       project_name: taskDetails.project_name,
       start_time: getFormattedDatetime(taskDetails.start_time),
       end_time: getFormattedDatetime(taskDetails.end_time),
       description: taskDetails.description,
     });
     this.taskButton = "Update Task";
-    document.getElementById("addTaskForm").classList.remove("d-none");
+    this.displayTaskform = true;
+    // document.getElementById("addTaskForm").classList.remove("d-none");
   }
 
   public deleteTask(index) {
@@ -178,36 +145,27 @@ export class AddTimesheetComponent implements OnInit {
   }
 
   public onSubmit(timesheetForm: FormGroup) {
-    this.timesheetData = timesheetForm.value;
+    const timeSheetFormData = timesheetForm.value;
+    const taskList = [];
     this.taskList.forEach((task) => {
-      delete task._id;
-      delete task.clientName;
+      taskList.push({
+        client: task.client._id ? task.client._id : task.client,
+        description: task.description,
+        start_time: task.start_time,
+        end_time: task.end_time,
+        project_name: task.project_name,
+      });
     });
     const myData = {
-      date: this.timesheetData.date,
-      in_time: this.timesheetData.in_time,
-      out_time: this.timesheetData.out_time,
-      task_details: this.taskList,
+      date: this.currentDate,
+      in_time: timeSheetFormData.in_time,
+      out_time: timeSheetFormData.out_time,
+      task_details: taskList,
     };
+    console.log('myData: ', myData);    
 
-    if (this.timesheetDialogData.mode === "edit") {
-      // delete myData.date;
-      // delete myData.in_time;
-      // delete myData.out_time;
-      myData.task_details[0]["_id"] = this.timesheetDialogData.taskID;
-      this._employeeService
-        .updateTimesheet(this.timesheetDialogData.taskID, myData)
-        .subscribe(
-          (res) => {
-            // Display proper response message here
-            this.dialogRef.close("success");
-          },
-          (err) => {
-            // Display proper error message here not alert message
-            alert(err.error.detail);
-          }
-        );
-    } else if (this.timesheetDialogData.mode === "all-edit") {
+    if (this.timesheetDialogData.mode === "all-edit") {
+      delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
         (res) => {
           // Display proper response message here
@@ -220,17 +178,6 @@ export class AddTimesheetComponent implements OnInit {
       );
     } else if (this.timesheetDialogData.mode === "add" || "Task-add") {
       this._employeeService.addTimesheet(myData).subscribe(
-        (res) => {
-          // Display proper response message here
-          this.dialogRef.close("success");
-        },
-        (err) => {
-          // Display proper error message here not alert message
-          alert(err.error.detail);
-        }
-      );
-    } else if (this.timesheetDialogData.mode === "single-Task-add") {      
-      this._employeeService.addSingleTask(this.timesheetDialogData.taskID, myData).subscribe(
         (res) => {
           // Display proper response message here
           this.dialogRef.close("success");

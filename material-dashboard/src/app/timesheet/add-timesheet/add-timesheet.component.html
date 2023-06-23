@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive" *ngIf="taskList.length">
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -52,36 +52,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let task of taskList">
-                           
+                        <tr *ngFor="let task of taskList; let i = index">                           
                             <td >{{task.clientName || task.client.company_name}}</td>                           
                             <td>{{task.project_name}}</td>
                             <td>{{task.start_time}}</td>
                             <td>{{task.end_time}}</td>
                             <td>
-                                <button mat-mini-fab class="mr-2" (click)="editTask(task._id)">
+                                <button mat-mini-fab class="mr-2" (click)="editTask(i)">
                                     <mat-icon>edit</mat-icon>
                                 </button>
-                                <button mat-mini-fab (click)="deleteTask(task._id)">
+                                <button mat-mini-fab (click)="deleteTask(i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            
+            </div>            
         </div>
 
-        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" class="d-none" id="addTaskForm">
+        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" [ngClass]="{'d-none': !displayTaskform}">
             <div class="fields-main-div">
                 <input matInput type="hidden" formControlName="_id">
                 <div class="field-container form-group" id="client-wrapper">
                     <mat-form-field appearance="fill">
                         <mat-label>Client</mat-label>
-                        <mat-select formControlName="client" [(value)]="selectedClient">
+                        <mat-select formControlName="client">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
-                                {{client.client_name}}
+                                {{client.company_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -115,7 +113,10 @@
                     </mat-form-field>
                 </div>
             </div>
-            <button type="submit" mat-raised-button color="primary">{{taskButton}}</button>
+            <div class="fields-main-div">
+                <button type="submit" mat-raised-button color="primary">{{taskButton}}</button>
+                <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === 'all-edit' || (timesheetDialogData.mode === 'add' &&  taskList.length)">Cancel</button>
+            </div>
         </form>
         <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()">
             Submit

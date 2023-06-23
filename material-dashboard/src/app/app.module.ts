@@ -19,6 +19,7 @@ import { BasicModule } from "./basic/basic.module";
 import { AdminViewModule } from "./admin/admin.module";
 import { PasswordChangeComponent } from "./authentication/password-change/password-change.component";
 import { UserProfileComponent } from './authentication/profile/user-profile/user-profile.component';
+import { DatePipe } from "@angular/common";
 
 @NgModule({
   imports: [
@@ -52,6 +53,7 @@ import { UserProfileComponent } from './authentication/profile/user-profile/user
   providers: [
     AuthGuard,
     CookieService,
+    DatePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

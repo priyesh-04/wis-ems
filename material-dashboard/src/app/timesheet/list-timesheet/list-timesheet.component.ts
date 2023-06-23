@@ -1,10 +1,7 @@
 import {
   Component,
   OnInit,
-  AfterViewInit,
   ElementRef,
-  ViewChildren,
-  QueryList,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { EmployeeService } from "app/services/employee/employee.service";
@@ -35,11 +32,20 @@ export class ListTimesheetComponent implements OnInit {
     private _employeeService: EmployeeService,
     private _authService: AuthService,
     public dialog: MatDialog,
-    private elRef: ElementRef,
     private route: ActivatedRoute
   ) {}
 
-  deleteTimesheetDialog(timesheet_id:number, tasksheet_id:number) {
+  ngOnInit(): void {
+    this.isAdmin = this._authService.isAdmin();
+    if (this.isAdmin == "true") {
+      this.userID = this.route.snapshot.paramMap.get("id");
+    } else {
+      this.userID = this._authService.getUserDetail().id;
+    }
+    this.refreshTimesheetList();
+  }
+
+  deleteTimesheetDialog(timesheet_id: number, tasksheet_id: number) {
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
         title: "Delete Your Task",
@@ -116,7 +122,7 @@ export class ListTimesheetComponent implements OnInit {
     });
   }
 
-  allEditTimesheetDialog(timesheet_id:number, timesheetData) {
+  allEditTimesheetDialog(timesheet_id: number, timesheetData) {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
         matDialogTitle: "Edit Timesheet",
@@ -139,28 +145,7 @@ export class ListTimesheetComponent implements OnInit {
       }
     });
   }
-  addTasksDialog(timesheetData) {
-    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
-      data: {
-        matDialogTitle: "Add New Task to timesheet",
-        mode: "Task-add",
-        // timesheetData: timesheetData,
-      },
-      width: "90%",
-      height: "90%",
-      panelClass: "add-new-timesheet-dialog",
-    });
-    timesheetDialogRef.afterClosed().subscribe((result) => {
-      if (result === "success") {
-        this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "New Task Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      }
-    });
-  }
+
   addSingleTasks(id:number ,timesheetData) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
@@ -208,6 +193,7 @@ export class ListTimesheetComponent implements OnInit {
       }
     });
   }
+
   updateSingleTaskDialog(timesheetData, taskID) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
@@ -231,21 +217,12 @@ export class ListTimesheetComponent implements OnInit {
       }
     });
   }
-  ngOnInit(): void {
-    this.isAdmin = this._authService.isAdmin();
-    if (this.isAdmin == "true") {
-      this.userID = this.route.snapshot.paramMap.get("id");
-    } else {
-      this.userID = this._authService.getUserDetail().id;
-    }
-    this.refreshTimesheetList();
-  }
 
   onSearch() {
-    this.refreshTimesheetList(this.searchText);
+    // this.refreshTimesheetList(this.searchText);
   }
 
-  refreshTimesheetList(searchText?: string) {
+  refreshTimesheetList() {
     if (!this.isLoaded) {
       this.isLoading = true;
       this.isLoaded = true;
