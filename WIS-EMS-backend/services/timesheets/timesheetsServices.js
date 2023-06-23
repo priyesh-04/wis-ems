@@ -12,7 +12,7 @@ class TimeSheetService {
 
       const timesheetSchema = Joi.object({
         in_time: Joi.string().required(),
-        out_time: Joi.string().required(),
+        out_time: Joi.string().allow(''),
         date: Joi.string().required(),
         task_details: Joi.array().items(
           Joi.object({
@@ -51,13 +51,17 @@ class TimeSheetService {
       let selectedDate = new Date(payload.date);
       let selectedInTime = new Date(payload.in_time);
       let selectedOutTime = new Date(payload.out_time);
-      if (
-        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
-          selectedDate.getTime() ||
-        currentDate.getTime() - 3 * 24 * 60 * 60 * 1000 >=
-          selectedInTime.getTime() ||
-        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
-          selectedOutTime.getTime()
+      let oneDay = 24 * 60 * 60 * 1000;
+      if (selectedOutTime && selectedInTime > selectedOutTime) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "In time can't be grater than end time",
+        });
+      } else if (
+        currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
+        currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
+        (selectedOutTime.getTime() != NaN &&
+          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
       ) {
         return res.status(400).json({
           msgErr: true,
@@ -158,7 +162,7 @@ class TimeSheetService {
       const timesheetId = req.params.id;
       const timesheetSchema = Joi.object({
         in_time: Joi.string().required(),
-        out_time: Joi.string().required(),
+        out_time: Joi.string().allow(''),
         task_details: Joi.array().items(
           Joi.object({
             _id: Joi.string(),
@@ -175,6 +179,28 @@ class TimeSheetService {
 
       if (error) {
         return res.status(400).json({ msgErr: true, message: error.message });
+      }
+
+      let currentDate = new Date();
+      let selectedDate = new Date(payload.date);
+      let selectedInTime = new Date(payload.in_time);
+      let selectedOutTime = new Date(payload.out_time);
+      let oneDay = 24 * 60 * 60 * 1000;
+      if (selectedOutTime && selectedInTime > selectedOutTime) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "In time can't be grater than end time",
+        });
+      } else if (
+        currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
+        currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
+        (selectedOutTime.getTime() != NaN &&
+          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
+      ) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Date cannot be accepted before two days from current date.',
+        });
       }
 
       const existTimesheet = await Timesheets.findById({ _id: timesheetId });
