@@ -659,13 +659,20 @@ class AuthService {
       await User.findByIdAndUpdate(
         { _id: user._id },
         { password: hashPassword },
-        (err, details) => {
+        async (err, details) => {
           if (err) {
             return res.status(400).json({
               msgErr: true,
               message: 'Something went Wrong. Try again after some time later.',
             });
           } else {
+            await UserToken.findOneAndDelete({ user_id: user._id }, (e, _) => {
+              if (e) {
+                return res
+                  .status(400)
+                  .json({ msgErr: true, message: 'Error ' + e });
+              }
+            });
             return res
               .status(200)
               .json({ msgErr: false, message: 'Password Update Succesfully' });
