@@ -50,7 +50,7 @@ function cronFunction() {
     }
   );
 }
-cronFunction();
+// cronFunction();
 
 // end of cron jobs
 
