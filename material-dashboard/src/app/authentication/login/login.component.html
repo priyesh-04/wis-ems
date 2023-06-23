@@ -25,7 +25,6 @@
         <div class="card rounded-0 text-center">
           <div class="card-header card-header-danger">
             <h4 class="card-title">Employee Login</h4>
-            <p class="card-category">Enter your details to login</p>
           </div>
           <div class="card-body">
             <form [formGroup]="loginForm" (ngSubmit)="doLogin(loginForm)">
@@ -33,7 +32,7 @@
               <div class="field-container form-group">
                 <mat-form-field appearance="legacy">
                   <input matInput type="email" class="form-control rounded-0" formControlName="email_id"
-                    placeholder="Email Id">
+                    placeholder="Email ID">
                 </mat-form-field>
               </div>
 

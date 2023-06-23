@@ -95,7 +95,7 @@ export class TimesheetUpdateComponent implements OnInit {
       this.getClientList();
     } else if (this.timesheetDialogData.mode === "all-edit") {
       this.getClientList();
-      console.log(this.timesheetDialogData, "timesheet dialog data");
+      console.log(this.timesheetDialogData, "timesheet dialog data all edit");
       const taskDetails =
         this.timesheetDialogData.timesheetData.task_details.find(
           (task) => task._id === this.timesheetDialogData.taskID

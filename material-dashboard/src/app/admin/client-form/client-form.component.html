@@ -5,20 +5,20 @@
             {{clientDialogData.matDialogTitle}}
         </h2>
         <form [formGroup]="clientForm" (ngSubmit)="onSubmit(clientForm)">
-            <div class="fields-main-div">
-                <div class="field-container form-group">
+            <div class="fields-main-div row">
+                <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="client_name"
                             placeholder="Client Name">
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="company_name"
                             placeholder="Company Name">
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="email" class="form-control rounded-0" formControlName="company_email"
                             placeholder="Company Email Id">
@@ -29,7 +29,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="field-container form-group">
+                
+                <div class="col-sm-12 col-md-6" id="designation-wrapper">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="date" class="form-control rounded-0" formControlName="start_date"
+                            placeholder="Start Date">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-12 col-md-6" id="designation-wrapper">
+                    <mat-form-field appearance="legacy">
+                        <input matInput type="date" class="form-control rounded-0" formControlName="end_date"
+                            placeholder="End Date">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="number" class="form-control rounded-0" formControlName="mobile_number"
                             placeholder="Mobile Number">
@@ -41,26 +54,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="field-container form-group" id="designation-wrapper">
-                    <mat-form-field appearance="legacy">
-                        <input matInput type="date" class="form-control rounded-0" formControlName="start_date"
-                            placeholder="Start Date">
-                    </mat-form-field>
-                </div>
-                <div class="field-container form-group" id="designation-wrapper">
-                    <mat-form-field appearance="legacy">
-                        <input matInput type="date" class="form-control rounded-0" formControlName="end_date"
-                            placeholder="End Date">
-                    </mat-form-field>
-                </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="person_name"
                             placeholder="Person Name">
                     </mat-form-field>
                 </div>
             </div>
-            <button type="submit" class="btn btn-danger"
+            <button type="submit" class="btn btn-danger mt-3"
                 [disabled]="clientForm.invalid && (clientDialogData.mode === 'add')">Submit</button>
         </form>
     </div>

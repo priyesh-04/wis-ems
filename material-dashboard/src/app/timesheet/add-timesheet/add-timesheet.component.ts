@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, Input } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
@@ -9,6 +9,8 @@ import {
 import { EmployeeService } from "../../services/employee/employee.service";
 import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
 import { ClientService } from "../../services/client/client.service";
+import { MatDialog } from "@angular/material/dialog";
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 
 @Component({
   selector: "app-add-timesheet",
@@ -23,14 +25,18 @@ export class AddTimesheetComponent implements OnInit {
   selectedClient: any;
   taskList = [];
   taskButton = "Add Task";
+  cancelButton = '';
+  alertMessage: string = "";
+  alertType: string = "";
 
+  // @Input('disabled')isDisabled: boolean;
   constructor(
     private _employeeService: EmployeeService,
     private _clientService: ClientService,
     public fb: FormBuilder,
-
+    public dialog: MatDialog,
     public dialogRef: MatDialogRef<TimesheetListComponent>,
-    @Inject(MAT_DIALOG_DATA) public timesheetDialogData
+    @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +93,10 @@ export class AddTimesheetComponent implements OnInit {
 
       });      
     } else if (this.timesheetDialogData.mode === "add") {
-      this.getClientList();
+      this.getClientList();    
+      this.timesheetForm.patchValue({       
+        date: getFormattedDate(new Date())       
+      });
     } else if (this.timesheetDialogData.mode === "single-Task-add") {
       this.getClientList();     
     } else if (this.timesheetDialogData.mode === "Task-add") {
@@ -146,6 +155,7 @@ export class AddTimesheetComponent implements OnInit {
     } else {
       this.taskList.push(taskData);
     }
+    
     document.getElementById("addTaskForm").classList.add("d-none");
     this.taskForm.reset();
   }
@@ -162,11 +172,22 @@ export class AddTimesheetComponent implements OnInit {
       description: taskDetails.description,
     });
     this.taskButton = "Update Task";
+    this.cancelButton = "Cancel Task";
     document.getElementById("addTaskForm").classList.remove("d-none");
   }
 
   public deleteTask(index) {
-    this.taskList.splice(index, 1);
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Delete Your Task",
+        message: "Are you sure you want to delete this Task ?",
+        index:index,
+        callingFrom: "deleteTask",
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe(() => {
+      this.taskList.splice(index, 1);      
+    });
   }
 
   public closeDialog() {
@@ -187,7 +208,7 @@ export class AddTimesheetComponent implements OnInit {
       date: this.timesheetData.date,
       in_time: this.timesheetData.in_time,
       out_time: this.timesheetData.out_time,
-      task_details: this.taskList,
+      task_details:this.taskList
     };
 
     if (this.timesheetDialogData.mode === "edit") {
@@ -208,6 +229,15 @@ export class AddTimesheetComponent implements OnInit {
           }
         );
     } else if (this.timesheetDialogData.mode === "all-edit") {
+      // task_details:{
+      //   client: this.timesheetData.task_details[0].client,
+      //   description:this.timesheetData.task_details.description,
+      //   end_time: this.timesheetData.task_details.end_time,
+      //   project_name: this.timesheetData.task_details.project_name,
+      //   start_time: this.timesheetData.task_details.start_time,
+      //   time_spend: this.timesheetData.task_details.time_spend,
+      //   id:this.timesheetData.task_details._id
+      // }
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
         (res) => {
           // Display proper response message here
