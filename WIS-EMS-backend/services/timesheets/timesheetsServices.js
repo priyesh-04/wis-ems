@@ -12,7 +12,7 @@ class TimeSheetService {
 
       const timesheetSchema = Joi.object({
         in_time: Joi.string().required(),
-        out_time: Joi.string().required(),
+        out_time: Joi.string().allow(''),
         date: Joi.string().required(),
         task_details: Joi.array().items(
           Joi.object({
@@ -51,13 +51,17 @@ class TimeSheetService {
       let selectedDate = new Date(payload.date);
       let selectedInTime = new Date(payload.in_time);
       let selectedOutTime = new Date(payload.out_time);
-      if (
-        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
-          selectedDate.getTime() ||
-        currentDate.getTime() - 3 * 24 * 60 * 60 * 1000 >=
-          selectedInTime.getTime() ||
-        currentDate.getTime() - 2 * 24 * 60 * 60 * 1000 >=
-          selectedOutTime.getTime()
+      let oneDay = 24 * 60 * 60 * 1000;
+      if (selectedOutTime && selectedInTime > selectedOutTime) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "In time can't be grater than end time",
+        });
+      } else if (
+        currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
+        currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
+        (selectedOutTime.getTime() != NaN &&
+          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
       ) {
         return res.status(400).json({
           msgErr: true,
@@ -158,7 +162,7 @@ class TimeSheetService {
       const timesheetId = req.params.id;
       const timesheetSchema = Joi.object({
         in_time: Joi.string().required(),
-        out_time: Joi.string().required(),
+        out_time: Joi.string().allow(''),
         task_details: Joi.array().items(
           Joi.object({
             _id: Joi.string(),
@@ -177,17 +181,47 @@ class TimeSheetService {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
 
+      // let currentDate = new Date();
+      // let selectedDate = new Date(payload.date);
+      let selectedInTime = new Date(payload.in_time);
+      let selectedOutTime = new Date(payload.out_time);
+      // let oneDay = 24 * 60 * 60 * 1000;
+      if (selectedOutTime && selectedInTime > selectedOutTime) {
+        return res.status(400).json({
+          msgErr: true,
+          message: "In time can't be grater than end time",
+        });
+      }
+      //  else if (
+      //   currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
+      //   currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
+      //   (selectedOutTime.getTime() != NaN &&
+      //     currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
+      // ) {
+      //   return res.status(400).json({
+      //     msgErr: true,
+      //     message: 'Date cannot be accepted before two days from current date.',
+      //   });
+      // }
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
+
       const existTimesheet = await Timesheets.findById({ _id: timesheetId });
-      if (!existTimesheet.is_editable) {
+      if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
         });
+      } else if (user._id != existTimesheet.created_by) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are not authenticated user.',
+        });
       }
-
-      const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
-      const user = await TokenService.getLoggedInUser(token);
 
       const calculateSpendTime = (start, end) => {
         const s = new Date(start);
@@ -282,7 +316,6 @@ class TimeSheetService {
 
       delete payload['task_details'];
       payload.task_details = taskId;
-      // payload.is_editable = false;
       await Timesheets.findByIdAndUpdate(
         { _id: timesheetId },
         payload,
@@ -348,7 +381,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (!existTimesheet.is_editable) {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -433,7 +469,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (!existTimesheet.is_editable) {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -512,7 +551,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (!existTimesheet.is_editable) {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -721,7 +763,7 @@ class TimeSheetService {
     try {
       const payload = req.body;
       const editTsSchema = Joi.object({
-        is_editable: Joi.boolean(),
+        edit_status: Joi.string().valid('Requested', 'Accepted', 'Rejected'),
       });
 
       const { error } = editTsSchema.validate(payload);
@@ -729,11 +771,11 @@ class TimeSheetService {
       if (error) {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
-      const is_editable = payload.is_editable;
+      const edit_status = payload.edit_status;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
-        { is_editable, edit_request: false },
-        (err, result) => {
+        { edit_status },
+        (err, _) => {
           if (err) {
             return res
               .status(400)
@@ -741,11 +783,7 @@ class TimeSheetService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message:
-                'Timesheet Edit mode ' +
-                (is_editable ? 'Activated' : 'Deactivated') +
-                '. ' +
-                'After 7:30AM it will be deactivated automatically.',
+              message: `Timesheet Edit mode : ${edit_status}.`,
             });
           }
         }
@@ -761,7 +799,7 @@ class TimeSheetService {
     try {
       const payload = req.body;
       const editreqSchema = Joi.object({
-        edit_request: Joi.boolean(),
+        edit_status: Joi.string().valid('Requested'),
       });
 
       const { error } = editreqSchema.validate(payload);
@@ -785,10 +823,10 @@ class TimeSheetService {
           message: "You can't edit. This is not your timesheet.",
         });
       }
-      const edit_request = payload.edit_request;
+      const edit_status = payload.edit_status;
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
-        { edit_request },
+        { edit_status },
         (err, result) => {
           if (err) {
             return res
@@ -812,7 +850,7 @@ class TimeSheetService {
   async getAllEditRequest(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await Timesheets.find({ edit_request: true })
+      await Timesheets.find({ edit_status: 'Requested' })
         .populate('created_by', '_id name email_id emp_id')
         .sort({ createdAt: -1 })
         .exec((err, details) => {
@@ -855,7 +893,15 @@ class TimeSheetService {
   async getAllEditableTimesheet(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await Timesheets.find({ is_editable: true })
+      await Timesheets.find({
+        $or: [
+          { edit_status: 'Initial' },
+          { edit_status: 'Requested' },
+          { edit_status: 'Accepted' },
+          { edit_status: 'Rejected' },
+          { edit_status: 'Edited' },
+        ],
+      })
         // .populate({
         //   path: 'task_details',
         //   modal: 'TaskDetails',

@@ -17,15 +17,29 @@ const TimeSheetSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    is_editable: {
-      type: Boolean,
-      enum: [true, false],
-      default: true,
-    },
-    edit_request: {
-      type: Boolean,
-      enum: [true, false],
-      default: false,
+    // is_editable: {
+    //   type: Boolean,
+    //   enum: [true, false],
+    //   default: true,
+    // },
+    // edit_request: {
+    //   type: Boolean,
+    //   enum: [true, false],
+    //   default: false,
+    // },
+    edit_status: {
+      type: String,
+      enum: [
+        'New',
+        'Initial',
+        'Requested',
+        'Accepted',
+        'Pending',
+        'Edited',
+        'Rejected',
+      ],
+      trim: true,
+      default: 'New',
     },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
