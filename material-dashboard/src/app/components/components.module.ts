@@ -8,13 +8,15 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import { EmployeeTableComponent } from './employee-table/employee-table.component';
+import { MatIconModule } from "@angular/material/icon";
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
     MatMenuModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   declarations: [
     FooterComponent,

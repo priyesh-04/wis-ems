@@ -14,7 +14,7 @@ export interface DialogData {
   templateUrl: "confirm-delete.html",
 })
 export class ConfirmDeleteComponent {
-  public isApprove :boolean
+  public isApprove : string
 
   constructor(
     private _employeeService: EmployeeService,
@@ -42,9 +42,9 @@ export class ConfirmDeleteComponent {
     } else if (data.callingFrom === "editReqAdmin") {
       this.editReqAdmin(data.timesheet_id, data);     
     } else if (data.callingFrom === "reqTaskApprove") {
-      this.reqTaskApprove(data.timesheet_id, this.isApprove = true);     
+      this.reqTaskApprove(data.timesheet_id, this.isApprove = 'Accepted');     
     } else if (data.callingFrom === "reqTaskReject") {
-      this.reqTaskReject(data.timesheet_id, this.isApprove = false);     
+      this.reqTaskReject(data.timesheet_id, this.isApprove = 'Rejected');     
     } else if (data.callingFrom === "client") {
       this.deleteClient(data.id);
     }
@@ -91,7 +91,7 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  reqTaskApprove(timesheet_id: number, isApprove:boolean) {
+  reqTaskApprove(timesheet_id: number, isApprove:string) {
     this._employeeService.actionAdmin(timesheet_id, isApprove ).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");
@@ -101,7 +101,7 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  reqTaskReject(timesheet_id: number, isApprove:boolean) {
+  reqTaskReject(timesheet_id: number, isApprove:string) {
     this._employeeService.actionAdmin(timesheet_id, isApprove).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");

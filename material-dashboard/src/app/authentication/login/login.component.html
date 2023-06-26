@@ -21,7 +21,6 @@
   </div>
   <div class="row">
     <div class="col-md-6 mx-auto">
-      <div>
         <div class="card rounded-0 text-center">
           <div class="card-header card-header-danger">
             <h4 class="card-title">Employee Login</h4>
@@ -29,15 +28,15 @@
           <div class="card-body">
             <form [formGroup]="loginForm" (ngSubmit)="doLogin(loginForm)">
 
-              <div class="field-container form-group">
-                <mat-form-field appearance="legacy">
+              <div class="field-container">
+                <mat-form-field>
                   <input matInput type="email" class="form-control rounded-0" formControlName="email_id"
                     placeholder="Email ID">
                 </mat-form-field>
               </div>
 
-              <div class="field-container form-group">
-                <mat-form-field appearance="legacy">
+              <div class="field-container">
+                <mat-form-field>
                   <input matInput type="password" class="form-control rounded-0" formControlName="password"
                     placeholder="Password">
                 </mat-form-field>
@@ -45,14 +44,16 @@
                   Password field cannot be left blank.
                 </div>
               </div>
+              <div class="text-left mb-3">
+                <a [routerLink]="['/forgot-password']" class="forgot-password">Forgot Password?</a>
+              </div>
 
-              <button type="submit" class="btn btn-danger">
+              <button type="submit" mat-raised-button color="primary" class="h5 w-100">
                 Login
               </button>
             </form>
           </div>
         </div>
-      </div>
     </div>
   </div>
 </div>
