@@ -49,3 +49,14 @@ taskdetails by person date wise
 
 taskdetails edit time
 
+
+// flow
+first time => New
+after 7:30AM => Initial
+If user request => Requested
+admin approve => Accepted
+admin reject => Rejected
+
+after approved edit => Edited
+! edited => Edited
+
