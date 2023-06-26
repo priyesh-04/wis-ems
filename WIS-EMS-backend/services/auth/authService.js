@@ -538,19 +538,19 @@ class AuthService {
         start_date = new Date(start_date.setMonth(end_date.getMonth() - 1));
       }
 
-      const timeStamptoRedableTime = (tt) => {
-        let times = '';
-        let hour = 1 * 60 * 60 * 1000;
-        let minute = 1 * 60 * 1000;
+      // const timeStamptoRedableTime = (tt) => {
+      //   let times = '';
+      //   let hour = 1 * 60 * 60 * 1000;
+      //   let minute = 1 * 60 * 1000;
 
-        if (tt / hour > 0) {
-          times = Math.floor(tt / hour) + ' Hours ';
-        }
-        if (tt / minute > 0) {
-          times += Math.floor((tt % hour) / minute) + ' Minutes';
-        }
-        return times;
-      };
+      //   if (tt / hour > 0) {
+      //     times = Math.floor(tt / hour) + ' Hours ';
+      //   }
+      //   if (tt / minute > 0) {
+      //     times += Math.floor((tt % hour) / minute) + ' Minutes';
+      //   }
+      //   return times;
+      // };
 
       await User.find({
         role: { $in: ['employee', 'hr'] },
@@ -568,16 +568,16 @@ class AuthService {
             for (let i = 0; i < details.length; i++) {
               let task = await taskDetails.find({
                 created_by: details[i],
-                createdAt: { $gte: start_date, $lte: end_date },
+                date: { $gte: start_date, $lte: end_date },
               });
-              let workingTime = task.reduce((v, item) => {
-                return v + parseInt(item.time_spend);
-              }, 0);
+              // let workingTime = task.reduce((v, item) => {
+              //   return v + parseInt(item.time_spend);
+              // }, 0);
 
               result.push({
                 ...details[i]._doc,
                 day_present: task.length,
-                workingTime: timeStamptoRedableTime(workingTime),
+                // workingTime: timeStamptoRedableTime(workingTime),
               });
             }
             if (!limit || !page) {
@@ -688,15 +688,16 @@ class AuthService {
 
   async forgotPasswordEmailSend(req, res, next) {
     try {
-      let alreadyRequestedToken = await ForgotPasswordToken.findOne({
-        user_id: req.user._id,
-      });
-      const userDetails = await User.findById({ _id: req.user._id });
+      let payload = req.body;
+      const userDetails = await User.findOne({ email_id: payload.email_id });
       if (!userDetails) {
         return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
       }
+      let alreadyRequestedToken = await ForgotPasswordToken.findOne({
+        user_id: userDetails._id,
+      });
       let tokenData = {
-        user_id: req.user._id,
+        user_id: userDetails._id,
         email: userDetails.email_id,
         token: crypto.randomBytes(32).toString('hex'),
       };
