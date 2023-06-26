@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
   getFormattedDate,
@@ -10,8 +10,8 @@ import {
 import { EmployeeService } from "../../services/employee/employee.service";
 import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
 import { ClientService } from "../../services/client/client.service";
-import { MatDialog } from "@angular/material/dialog";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-add-timesheet",
@@ -19,7 +19,6 @@ import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delet
   styleUrls: ["./add-timesheet.component.css"],
 })
 export class AddTimesheetComponent implements OnInit {
-  private currentDate: string;
   public timesheetForm: FormGroup;
   public taskForm: FormGroup;
   public clientList: any;
@@ -27,10 +26,10 @@ export class AddTimesheetComponent implements OnInit {
   public taskButton = "Save Task";
   public displayTaskform = true;
 
-  // @Input('disabled')isDisabled: boolean;
   constructor(
     private _employeeService: EmployeeService,
     private _clientService: ClientService,
+    private _mesgageService: MesgageService,
     private datepipe: DatePipe,
     public fb: FormBuilder,
     public dialog: MatDialog,
@@ -39,11 +38,11 @@ export class AddTimesheetComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.getClientList();
 
+    const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
-      date: { disabled: true, value: this.currentDate },
+      date: [currentDate, [Validators.required]],
       in_time: ["", [Validators.required]],
       out_time: ["", [Validators.required]],
     });
@@ -59,7 +58,6 @@ export class AddTimesheetComponent implements OnInit {
     if (this.timesheetDialogData.mode === "all-edit") {
       this.displayTaskform = false;
       this.taskList = this.timesheetDialogData.timesheetData.task_details;
-      console.log('this.taskList: ', this.taskList);
       this.timesheetForm.patchValue({
         date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
         in_time: getFormattedDatetime(
@@ -69,7 +67,6 @@ export class AddTimesheetComponent implements OnInit {
           this.timesheetDialogData.timesheetData.out_time
         ),
         _id : this.timesheetDialogData.timesheetData._id
-
       });      
     }
   }
@@ -79,14 +76,13 @@ export class AddTimesheetComponent implements OnInit {
       (res) => {
         this.clientList = res.result;
       },
-      (err) => {
-        // Display proper error message here
+      (err) => {        
+        this._mesgageService.showError(err.error.message);
       }
     );
   }
 
   private getClientName(clientId: string) {
-    console.log('clientId: ', clientId);    
     const client = this.clientList.filter(value => { return value._id === clientId });
     return client.length ? client[0].company_name : '-';
   }
@@ -95,7 +91,6 @@ export class AddTimesheetComponent implements OnInit {
     this.taskForm.reset();
     this.taskButton = "Save Task";
     this.displayTaskform = true;
-    // document.getElementById("addTaskForm").classList.remove("d-none");
   }
 
   public addNewTask() {
@@ -116,7 +111,6 @@ export class AddTimesheetComponent implements OnInit {
       this.taskList.push(taskData);
     }
     this.displayTaskform = false;
-    // document.getElementById("addTaskForm").classList.add("d-none");
     this.taskForm.reset();
   }
 
@@ -132,7 +126,6 @@ export class AddTimesheetComponent implements OnInit {
     });
     this.taskButton = "Update Task";
     this.displayTaskform = true;
-    // document.getElementById("addTaskForm").classList.remove("d-none");
   }
 
   public deleteTask(index) {
@@ -158,6 +151,13 @@ export class AddTimesheetComponent implements OnInit {
   }
 
   public onSubmit(timesheetForm: FormGroup) {
+    if (this.displayTaskform) {
+      this._mesgageService.showInfo(this.timesheetDialogData.mode === "all-edit" ? 'Update current task' : 'Save current task');
+      return;
+    } else if (!this.taskList.length) {
+      this._mesgageService.showInfo('Complete atleast one task');
+      return;
+    }
     const timeSheetFormData = timesheetForm.value;
     const taskList = [];
     this.taskList.forEach((task) => {
@@ -170,34 +170,31 @@ export class AddTimesheetComponent implements OnInit {
       });
     });
     const myData = {
-      date: this.currentDate,
+      date: timeSheetFormData.date,
       in_time: timeSheetFormData.in_time,
       out_time: timeSheetFormData.out_time,
       task_details: taskList,
     };
-    console.log('myData: ', myData);    
 
     if (this.timesheetDialogData.mode === "all-edit") {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
         (res) => {
-          // Display proper response message here
           this.dialogRef.close("success");
+          this._mesgageService.showSuccess(res.message);
         },
         (err) => {
-          // Display proper error message here not alert message
-          alert(err.error.detail);
+          this._mesgageService.showError(err.error.message);
         }
       );
     } else if (this.timesheetDialogData.mode === "add" || "Task-add") {
       this._employeeService.addTimesheet(myData).subscribe(
         (res) => {
-          // Display proper response message here
           this.dialogRef.close("success");
+          this._mesgageService.showSuccess(res.message);
         },
         (err) => {
-          // Display proper error message here not alert message
-          alert(err.error.detail);
+          this._mesgageService.showError(err.error.message);
         }
       );
     }

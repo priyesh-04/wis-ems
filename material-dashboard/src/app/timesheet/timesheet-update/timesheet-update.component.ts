@@ -17,7 +17,6 @@ import { DatePipe } from "@angular/common";
   styleUrls: ["./timesheet-update.component.css"],
 })
 export class TimesheetUpdateComponent implements OnInit {
-  private currentDate: string;
   timesheetForm: FormGroup;
   timesheetData: any;
   clientList: any;
@@ -34,9 +33,9 @@ export class TimesheetUpdateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
+    const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
-      date: { disabled: true, value: this.currentDate },
+      date: [currentDate, [Validators.required]],
       in_time: ["", [Validators.required]],
       out_time: ["", [Validators.required]],
       client: ["", [Validators.required]],
@@ -158,7 +157,7 @@ export class TimesheetUpdateComponent implements OnInit {
   onSubmit(timesheetForm: FormGroup) {
     this.timesheetData = timesheetForm.value;
     const myData = {
-      date: this.currentDate,
+      date: this.timesheetData.date,
       in_time: this.timesheetData.in_time,
       out_time: this.timesheetData.out_time,
       task_details: [
@@ -188,13 +187,14 @@ export class TimesheetUpdateComponent implements OnInit {
             alert(err.error.detail);
           }
         );
-    } else if (this.timesheetDialogData.mode === "single-edit") {
-      
+    } else if (this.timesheetDialogData.mode === "single-edit") {      
       let singleTaskData = {
         _id : this.timesheetDialogData.taskID,
         client: this.timesheetData.client,
         project_name: this.timesheetData.project_name,
         description: this.timesheetData.description,
+        start_time: this.timesheetData.start_time,
+        end_time: this.timesheetData.end_time,
       }
       myData.task_details[0]["_id"] = this.timesheetDialogData.taskID;
       this._employeeService
