@@ -29,7 +29,6 @@ router.post(
 
 router.post(
   '/forgot-password-email-send',
-  ApiAuthValidator.validateAccessToken,
   UserController.forgotPasswordEmailSend
 );
 
