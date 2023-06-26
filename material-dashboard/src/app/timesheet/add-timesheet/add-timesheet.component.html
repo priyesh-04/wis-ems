@@ -1,24 +1,24 @@
 <div class="row">
     <div class="col-lg col-md col-sm">
         <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
-        <h3 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+        <h3 class="border-bottom p-2 mt-0 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
         </h3>
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
             <div class="fields-main-div">
-                <div class="field-container form-group">
-                    <mat-form-field appearance="legacy">
+                <div class="col-sm-12 col-md-4">
+                    <mat-form-field>
                         <input matInput type="date" class="form-control rounded-0" formControlName="date"
                             placeholder="Date">
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="in_time"
                             placeholder="In Time">
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="out_time"
                             placeholder="Out Time">
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive" *ngIf="taskList.length">
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
@@ -52,41 +52,39 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let task of taskList">
-                           
+                        <tr *ngFor="let task of taskList; let i = index">                           
                             <td >{{task.clientName || task.client.company_name}}</td>                           
                             <td>{{task.project_name}}</td>
-                            <td>{{task.start_time}}</td>
-                            <td>{{task.end_time}}</td>
+                            <td>{{task.start_time | date: 'dd-MM-yyyy hh:mm a'}}</td>
+                            <td>{{task.end_time | date: 'dd-MM-yyyy hh:mm a' }}</td>
                             <td>
-                                <button mat-mini-fab class="mr-2" (click)="editTask(task._id)">
+                                <button mat-mini-fab class="mr-2" (click)="editTask(i)">
                                     <mat-icon>edit</mat-icon>
                                 </button>
-                                <button mat-mini-fab (click)="deleteTask(task._id)">
+                                <button mat-mini-fab (click)="deleteTask(i)">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            
+            </div>            
         </div>
 
-        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" class="d-none" id="addTaskForm">
+        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" [ngClass]="{'d-none': !displayTaskform}">
             <div class="fields-main-div">
                 <input matInput type="hidden" formControlName="_id">
-                <div class="field-container form-group" id="client-wrapper">
+                <div class="col-sm-12 col-md-6" id="client-wrapper">
                     <mat-form-field appearance="fill">
                         <mat-label>Client</mat-label>
-                        <mat-select formControlName="client" [(value)]="selectedClient">
+                        <mat-select formControlName="client">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
-                                {{client.client_name}}
+                                {{client.company_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
                             placeholder="Project Name">
@@ -94,13 +92,13 @@
                 </div>                
             </div>
             <div class="fields-main-div">
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0"
                             formControlName="start_time" placeholder="Start Time">
                     </mat-form-field>
                 </div>
-                <div class="field-container form-group">
+                <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="end_time"
                             placeholder="End Time">
@@ -108,16 +106,22 @@
                 </div>               
             </div>
             <div class="fields-main-div">
-                <div class="field-container form-group">
+                <div class="col-12">
                     <mat-form-field appearance="fill">
                         <mat-label>Description</mat-label>
                         <textarea matInput formControlName="description" placeholder="Description"></textarea>
                     </mat-form-field>
                 </div>
             </div>
-            <button type="submit" mat-raised-button color="primary">{{taskButton}}</button>
+            <div class="fields-main-div">
+                <div class="col-12">
+                    <button type="submit" mat-raised-button color="primary" [disabled]="!taskForm.valid">{{taskButton}}</button>
+                    <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === 'all-edit' || (timesheetDialogData.mode === 'add' &&  taskList.length)">Cancel</button>
+                </div>
+            </div>
         </form>
-        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()">
+
+        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()" [disabled]="!timesheetForm.valid">
             Submit
         </button>
     </div>

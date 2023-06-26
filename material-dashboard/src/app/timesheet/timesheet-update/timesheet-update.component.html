@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg col-md col-sm">
         <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
-        <h3 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+        <h3 class="border-bottom p-2 mt-0 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
         </h3>
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
@@ -29,7 +29,7 @@
                         <mat-label>Client</mat-label>
                         <mat-select formControlName="client" [(value)]="selectedClient">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
-                                {{client.client_name}}
+                                {{client.company_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

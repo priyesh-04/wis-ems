@@ -12,7 +12,9 @@
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
             
             <div class="d-flex align-items-center">
-                <span class="fw-bold">Welcome to EMS </span>
+                <span class="fw-bold">Welcome! to {{userName}}
+                    <span *ngIf="isAdmin == 'admin'">(Admin)</span>
+                </span>
                 <button mat-button [matMenuTriggerFor]="menu" class="profile-icon ml-2">
                     <!-- <img src="" alt=""> -->
                     <i class="fa fa-user" aria-hidden="true"></i>
@@ -24,7 +26,8 @@
                 </a>
                 <!-- <button mat-menu-item >Profile</button> -->
                 <a class="nav-link" [routerLink]="['/change-password']" mat-menu-item>Change Password</a>
-                <a class="nav-link" [routerLink]="['/profile']" mat-menu-item (click)="_authService.performLogout()">Logout</a>
+                <a class="nav-link" mat-menu-item (click)="profileLogout()">Logout</a>
+                <!-- <a class="nav-link" [routerLink]="['/profile']" mat-menu-item (click)="_authService.performLogout()">Logout</a> -->
             </mat-menu>
         </div>
     </div>

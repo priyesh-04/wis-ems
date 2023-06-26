@@ -11,6 +11,8 @@ import {
 } from "@angular/common";
 import { Router } from "@angular/router";
 import { AuthService } from "app/services/auth/auth.service";
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "app-navbar",
@@ -24,12 +26,15 @@ export class NavbarComponent implements OnInit {
   mobile_menu_visible: any = 0;
   private toggleButton: any;
   private sidebarVisible: boolean;
+  public userName : string;
+  public isAdmin : string;
 
   constructor(
     location: Location,
     private element: ElementRef,
     private router: Router,
-    public _authService: AuthService
+    public _authService: AuthService,
+    public dialog: MatDialog
   ) {
     this.location = location;
     this.sidebarVisible = false;
@@ -38,6 +43,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.loggedInUser = this._authService.getLoggedInUser();
     const user = this._authService.getUserDetail();
+    this.userName = user.name;
+    this.isAdmin = user.role;
     if (!user) {
       this._authService.performLogout();
       this.router.navigate(["/login"]);
@@ -138,16 +145,32 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  public profileLogout(){
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        title: "Profile Logout",
+        message: "Are you sure you want to Logout?",
+        callingFrom: "logOut",
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      
+    });
+  }
   getTitle() {
     var titlee = this.location.prepareExternalUrl(this.location.path());
+     
     if (titlee.charAt(0) === "#") {
       titlee = titlee.slice(1);
     }
-
+    if (titlee == '/profile') {
+      return 'Personal Details';
+    }
     for (var item = 0; item < this.listTitles.length; item++) {
+      
       if (this.listTitles[item].path === titlee) {
         return this.listTitles[item].title;
-      }
+      }        
     }
     return "Dashboard";
   }

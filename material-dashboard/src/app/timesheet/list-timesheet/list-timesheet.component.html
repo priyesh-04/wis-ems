@@ -20,28 +20,31 @@
             <mat-icon>add</mat-icon>
         </button>
     </div>
-    <div class="timesheet-wrapper bg-white p-3 mb-3" *ngFor="let timesheet of timesheetList">
+    <div class="timesheet-wrapper bg-white p-2 mb-2" *ngFor="let timesheet of timesheetList">
         <div class="working-date-wrapper p-1 bg-dark text-white">
             <span class="working-date">
-                {{timesheet.date | date }} -
-                ( {{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
-                date:'shortTime'}} )
+                {{timesheet.date | date }} ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
+                date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">Add Task
+            <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+                Add Task
             </span>
             <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'"
-            style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">Edit All Task
+            style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
+                Edit All Task
             </span>
-            <span *ngIf="!timesheet.is_editable && !timesheet.edit_request" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> Edit Request 
+            <span *ngIf="!timesheet.is_editable && !timesheet.edit_request" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+                Request for Edit
             </span>
-            <span *ngIf="timesheet.edit_request && !timesheet.is_editable" class="ml-2 text-success"> Already Requested
+            <span *ngIf="timesheet.edit_request && !timesheet.is_editable" class="ml-2 text-success">
+                Already Requested
             </span>
         </div>
-        <div class="client-project ml-5 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
+        <div class="client-project ml-2 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
             <span class="client-name">
-                - {{task.client?.company_name}}
-                ( {{task.start_time| date:'shortTime'}} - {{task.end_time|
-                date:'shortTime'}} )
+                {{task.client?.company_name}}
+                ({{task.start_time| date:'shortTime'}} - {{task.end_time|
+                date:'shortTime'}})
             </span>
             <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'">
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
@@ -50,9 +53,9 @@
                     (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
             </span>
             <div class="project ml-5">
-                <p class="mb-0 project-name">- {{task.project_name}}</p>
+                <p class="mb-0 project-name">{{task.project_name}}</p>
                 <p class="mb-0 ml-5 task-details">
-                    - {{task.description}}
+                    {{task.description}}
                 </p>
             </div>
         </div>
