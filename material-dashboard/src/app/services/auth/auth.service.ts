@@ -98,6 +98,18 @@ export class AuthService {
     return this.http.post(endpoint, userData, httpOptions);
   }
 
+  forgotPassword(userData: any): Observable<any> {
+    const endpoint = `${this.baseUrl}/forgot-password-email-send`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, userData, httpOptions);
+  }
+
+  setNewPassword(userData: any, userId:string, token:string): Observable<any> {
+    const endpoint = `${this.baseUrl}/change-password/${userId}/${token}`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, userData, httpOptions);
+  }
+
   getUserDetail() {
     const user = {
       name: this._cookieService.get("currentUser"),

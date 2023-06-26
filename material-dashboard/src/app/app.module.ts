@@ -23,6 +23,7 @@ import { AdminViewModule } from "./admin/admin.module";
 import { PasswordChangeComponent } from "./authentication/password-change/password-change.component";
 import { UserProfileComponent } from './authentication/profile/user-profile/user-profile.component';
 import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
+import { SetNewPasswordComponent } from './authentication/set-new-password/set-new-password.component';
 
 @NgModule({
   imports: [
@@ -54,6 +55,7 @@ import { ForgotPasswordComponent } from './authentication/forgot-password/forgot
     PasswordChangeComponent,
     UserProfileComponent,
     ForgotPasswordComponent,
+    SetNewPasswordComponent,
   ],
   providers: [
     AuthGuard,

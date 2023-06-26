@@ -26,18 +26,21 @@
                 {{timesheet.date | date }} ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
                 date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+            <span *ngIf="timesheet.edit_status == 'New' && isAdmin == 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
                 Add Task
             </span>
-            <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'"
+            <span *ngIf="timesheet.edit_status == 'New' && timesheet.edit_status == 'Accepted' && isAdmin == 'false'"
             style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                 Edit All Task
             </span>
-            <span *ngIf="!timesheet.is_editable && !timesheet.edit_request" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+            <span *ngIf="timesheet.edit_status == 'Initial' " style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                 Request for Edit
             </span>
-            <span *ngIf="timesheet.edit_request && !timesheet.is_editable" class="ml-2 text-success">
+            <span *ngIf="timesheet.edit_status == 'Requested' " class="ml-2 text-success">
                 Already Requested
+            </span>
+            <span *ngIf="timesheet.edit_status == 'Rejected' " class="ml-2 text-success">
+                Rejected
             </span>
         </div>
         <div class="client-project ml-2 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
@@ -46,7 +49,7 @@
                 ({{task.start_time| date:'shortTime'}} - {{task.end_time|
                 date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.is_editable == true && isAdmin == 'false'">
+            <span *ngIf="timesheet.edit_status == 'New' && timesheet.edit_status == 'Requested' && isAdmin == 'false'">
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
                     (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
                 <span style="cursor: pointer;" class="text-danger"

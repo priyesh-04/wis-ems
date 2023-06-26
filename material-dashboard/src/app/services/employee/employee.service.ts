@@ -100,7 +100,7 @@ export class EmployeeService {
   editReqAdmin(timesheet_id, data): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/edit-req/${timesheet_id}`;
     const httpOptions = this.createHeaders();
-    return this.http.post(endpoint, {edit_request:true}, httpOptions);
+    return this.http.post(endpoint, {edit_status:'Requested'}, httpOptions);
   }
   allEditReqAdmin(): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/get-all-edit-req-sheet`;
@@ -110,6 +110,6 @@ export class EmployeeService {
   actionAdmin(timesheet_id, isApprove): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/active-deactive/${timesheet_id}`;
     const httpOptions = this.createHeaders();
-    return this.http.post(endpoint, {is_editable:`${isApprove}`}, httpOptions);
+    return this.http.post(endpoint, {edit_status:`${isApprove}`}, httpOptions);
   }  
 }
