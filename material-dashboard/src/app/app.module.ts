@@ -20,6 +20,7 @@ import { AdminViewModule } from "./admin/admin.module";
 import { PasswordChangeComponent } from "./authentication/password-change/password-change.component";
 import { UserProfileComponent } from './authentication/profile/user-profile/user-profile.component';
 import { DatePipe } from "@angular/common";
+import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
 
 @NgModule({
   imports: [
@@ -49,6 +50,7 @@ import { DatePipe } from "@angular/common";
     LoginComponent,
     PasswordChangeComponent,
     UserProfileComponent,
+    ForgotPasswordComponent,
   ],
   providers: [
     AuthGuard,

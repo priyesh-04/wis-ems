@@ -6,6 +6,7 @@ import { LoginComponent } from "./authentication/login/login.component";
 import { AdminLayoutComponent } from "./layouts/admin-layout/admin-layout.component";
 import { AuthGuard } from "./authentication/guards/auth.guard";
 import { LoginRouteGuard } from "./authentication/guards/login-route.guard";
+import { ForgotPasswordComponent } from "./authentication/forgot-password/forgot-password.component";
 const routes: Routes = [
   {
     path: "",
@@ -13,6 +14,7 @@ const routes: Routes = [
     pathMatch: "full",
   },
   { path: "login", component: LoginComponent, canActivate: [LoginRouteGuard] },
+  { path: "forgot-password", component: ForgotPasswordComponent },
   {
     path: "",
     component: AdminLayoutComponent,
