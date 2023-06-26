@@ -29,7 +29,15 @@ const TimeSheetSchema = new mongoose.Schema(
     // },
     edit_status: {
       type: String,
-      enum: ['New', 'Requested', 'Saved', 'Accepted', 'Rejected', 'Pending'],
+      enum: [
+        'New',
+        'Initial',
+        'Requested',
+        'Accepted',
+        'Pending',
+        'Edited',
+        'Rejected',
+      ],
       trim: true,
       default: 'New',
     },

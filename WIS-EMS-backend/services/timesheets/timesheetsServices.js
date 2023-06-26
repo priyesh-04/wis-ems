@@ -181,39 +181,47 @@ class TimeSheetService {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
 
-      let currentDate = new Date();
-      let selectedDate = new Date(payload.date);
+      // let currentDate = new Date();
+      // let selectedDate = new Date(payload.date);
       let selectedInTime = new Date(payload.in_time);
       let selectedOutTime = new Date(payload.out_time);
-      let oneDay = 24 * 60 * 60 * 1000;
+      // let oneDay = 24 * 60 * 60 * 1000;
       if (selectedOutTime && selectedInTime > selectedOutTime) {
         return res.status(400).json({
           msgErr: true,
           message: "In time can't be grater than end time",
         });
-      } else if (
-        currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
-        currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
-        (selectedOutTime.getTime() != NaN &&
-          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
-      ) {
-        return res.status(400).json({
-          msgErr: true,
-          message: 'Date cannot be accepted before two days from current date.',
-        });
       }
+      //  else if (
+      //   currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
+      //   currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
+      //   (selectedOutTime.getTime() != NaN &&
+      //     currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
+      // ) {
+      //   return res.status(400).json({
+      //     msgErr: true,
+      //     message: 'Date cannot be accepted before two days from current date.',
+      //   });
+      // }
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.split(' ')[1];
+      const user = await TokenService.getLoggedInUser(token);
 
       const existTimesheet = await Timesheets.findById({ _id: timesheetId });
-      if (existTimesheet.edit_status !== 'Accepted') {
+      if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
         });
+      } else if (user._id != existTimesheet.created_by) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are not authenticated user.',
+        });
       }
-
-      const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
-      const user = await TokenService.getLoggedInUser(token);
 
       const calculateSpendTime = (start, end) => {
         const s = new Date(start);
@@ -373,7 +381,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (existTimesheet.edit_status !== 'Accepted') {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -458,7 +469,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (existTimesheet.edit_status !== 'Accepted') {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -537,7 +551,10 @@ class TimeSheetService {
           msgErr: true,
           message: 'Timesheet Not Exist. Please Provide a valid timesheet id.',
         });
-      } else if (existTimesheet.edit_status !== 'Accepted') {
+      } else if (
+        existTimesheet.edit_status !== 'Accepted' &&
+        existTimesheet.edit_status !== 'New'
+      ) {
         return res.status(400).json({
           msgErr: true,
           message: "Can't Edit Timesheet. For Edit need permission from admin.",
@@ -878,10 +895,11 @@ class TimeSheetService {
       let { limit, page } = req.query;
       await Timesheets.find({
         $or: [
+          { edit_status: 'Initial' },
           { edit_status: 'Requested' },
-          { edit_status: 'Saved' },
           { edit_status: 'Accepted' },
           { edit_status: 'Rejected' },
+          { edit_status: 'Edited' },
         ],
       })
         // .populate({
