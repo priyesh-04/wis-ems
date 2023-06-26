@@ -9,7 +9,7 @@
                 <div class="col-sm-12 col-md-4">
                     <mat-form-field>
                         <input matInput type="date" class="form-control rounded-0" formControlName="date"
-                            placeholder="Date" readonly>
+                            placeholder="Date">
                     </mat-form-field>
                 </div>
                 <div class="col-sm-12 col-md-4">
@@ -55,8 +55,8 @@
                         <tr *ngFor="let task of taskList; let i = index">                           
                             <td >{{task.clientName || task.client.company_name}}</td>                           
                             <td>{{task.project_name}}</td>
-                            <td>{{task.start_time}}</td>
-                            <td>{{task.end_time}}</td>
+                            <td>{{task.start_time | date: 'dd-MM-yyyy hh:mm a'}}</td>
+                            <td>{{task.end_time | date: 'dd-MM-yyyy hh:mm a' }}</td>
                             <td>
                                 <button mat-mini-fab class="mr-2" (click)="editTask(i)">
                                     <mat-icon>edit</mat-icon>
@@ -114,11 +114,14 @@
                 </div>
             </div>
             <div class="fields-main-div">
-                <button type="submit" mat-raised-button color="primary">{{taskButton}}</button>
-                <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === 'all-edit' || (timesheetDialogData.mode === 'add' &&  taskList.length)">Cancel</button>
+                <div class="col-12">
+                    <button type="submit" mat-raised-button color="primary" [disabled]="!taskForm.valid">{{taskButton}}</button>
+                    <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === 'all-edit' || (timesheetDialogData.mode === 'add' &&  taskList.length)">Cancel</button>
+                </div>
             </div>
         </form>
-        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()">
+
+        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()" [disabled]="!timesheetForm.valid">
             Submit
         </button>
     </div>
