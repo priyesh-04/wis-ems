@@ -8,8 +8,8 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
-import { EmployeeService } from "app/services/employee/employee.service";
-
+import { EmployeeService } from "../../services/employee/employee.service";
+import { MesgageService } from "../../services/shared/message.service";
 @Component({
   selector: "app-admin-list",
   templateUrl: "./admin-list.component.html",
@@ -25,6 +25,7 @@ export class AdminListComponent implements OnInit {
   constructor(
     private _employeeService: EmployeeService,
     public dialog: MatDialog,
+    private _mesgageService: MesgageService,    
     private elRef: ElementRef
   ) {}
 
