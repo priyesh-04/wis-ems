@@ -27,5 +27,11 @@
 
 .task-details {
     color: black;
-    font-family: 'Times New Roman', Times, serif;
+    max-height: 170px;
+    overflow-y: auto;
+    padding-bottom: 0.5rem;
+    font-family: 'Roboto';
+}
+.client-project:not(:last-child){
+    border-bottom: 1px solid #dee2e6;
 }

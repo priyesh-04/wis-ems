@@ -33,7 +33,7 @@
             style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                 Edit All Task
             </span>
-            <span *ngIf="timesheet.edit_status == 'Initial' " style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+            <span *ngIf="timesheet.edit_status == 'Rejected'" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                 Request for Edit
             </span>
             <span *ngIf="timesheet.edit_status == 'Requested' " class="ml-2 text-success">
@@ -43,7 +43,7 @@
                 Rejected
             </span>
         </div>
-        <div class="client-project ml-2 mt-1 border-bottom" *ngFor="let task of timesheet.task_details">
+        <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
             <span class="client-name">
                 {{task.client?.company_name}}
                 ({{task.start_time| date:'shortTime'}} - {{task.end_time|
@@ -55,9 +55,9 @@
                 <span style="cursor: pointer;" class="text-danger"
                     (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
             </span>
-            <div class="project ml-5">
+            <div class="project ml-3">
                 <p class="mb-0 project-name">{{task.project_name}}</p>
-                <p class="mb-0 ml-5 task-details">
+                <p class="mb-0 ml-3 task-details">
                     {{task.description}}
                 </p>
             </div>
