@@ -44,7 +44,7 @@ export class AddTimesheetComponent implements OnInit {
     this.timesheetForm = this.fb.group({
       date: [currentDate, [Validators.required]],
       in_time: ["", [Validators.required]],
-      out_time: ["", [Validators.required]],
+      out_time: [""],
     });
     this.taskForm = this.fb.group({
       _id: [""],

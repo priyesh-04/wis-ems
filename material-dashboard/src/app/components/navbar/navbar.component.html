@@ -12,8 +12,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
             
             <div class="d-flex align-items-center">
-                <span class="fw-bold">Welcome! to {{userName}}
-                    <span *ngIf="isAdmin == 'admin'">(Admin)</span>
+                <span class="fw-bold">Welcome! {{isAdmin ? userName + ' (Admin)' : userName}}
                 </span>
                 <button mat-button [matMenuTriggerFor]="menu" class="profile-icon ml-2">
                     <!-- <img src="" alt=""> -->
