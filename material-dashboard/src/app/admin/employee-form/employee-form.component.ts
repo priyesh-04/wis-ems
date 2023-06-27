@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnInit, Input } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import {
   validatorIndianMobileNumber,
@@ -46,7 +46,9 @@ export class EmployeeFormComponent implements OnInit {
       role: ["", [Validators.required]],
       password: ["", [Validators.required]],
     });
-
+    // this.isAdmin = this.roleList.value
+    console.log(this.roleList, 'adddd');
+    
     if (this.employeeDialogData.mode === "edit") {
       this.getDesignationList();
       this.selectedDesignation =

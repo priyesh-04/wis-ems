@@ -43,12 +43,17 @@
                         </a>
                     </td> -->
                     <td>
-                        <button class="mr-2" mat-raised-button color="primary" (click)="approveDialog(reqList._id)">
-                            Approve
-                        </button>
-                        <button mat-raised-button color="warn" (click)="rejectDialog(reqList._id)">                           
-                            Reject
-                        </button>                        
+                        <div *ngIf="reqList.edit_status == 'Requested'">
+                            <button class="mr-2" mat-raised-button color="primary" (click)="approveDialog(reqList._id)">
+                                Approve
+                            </button>
+                            <button mat-raised-button color="warn" (click)="rejectDialog(reqList._id)">                           
+                                Reject
+                            </button>
+                        </div> 
+                        <p *ngIf="reqList.edit_status == 'Rejected'">Rejected</p>                       
+                        <p *ngIf="reqList.edit_status == 'Accepted'">Accepted</p>                       
+                        <p *ngIf="reqList.edit_status == 'Edited'">Already Edited</p>                       
                     </td>
                 </tr>
             </tbody> 

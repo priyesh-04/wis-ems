@@ -8,8 +8,8 @@ import {
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
-import { EmployeeService } from "app/services/employee/employee.service";
-
+import { EmployeeService } from "../../services/employee/employee.service";
+import { MesgageService } from "../../services/shared/message.service";
 @Component({
   selector: "app-admin-list",
   templateUrl: "./admin-list.component.html",
@@ -25,6 +25,7 @@ export class AdminListComponent implements OnInit {
   constructor(
     private _employeeService: EmployeeService,
     public dialog: MatDialog,
+    private _mesgageService: MesgageService,    
     private elRef: ElementRef
   ) {}
 
@@ -40,7 +41,7 @@ export class AdminListComponent implements OnInit {
       panelClass: "add-new-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      
       if (result === "success") {
         this.refreshadminList();
         this.alertType = "success";
@@ -64,7 +65,7 @@ export class AdminListComponent implements OnInit {
       panelClass: "update-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      
       if (result === "success") {
         this.refreshadminList();
         this.alertType = "success";
@@ -90,7 +91,7 @@ export class AdminListComponent implements OnInit {
         this.adminList = res.result;
       },
       (err) => {
-        console.log(err, "error");
+        this._mesgageService.showError(err.error.message);
       }
     );
   }
