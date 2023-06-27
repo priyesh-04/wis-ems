@@ -1,15 +1,16 @@
 import {
   Component,
   OnInit,
-  ElementRef,
 } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { EmployeeService } from "app/services/employee/employee.service";
-import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component";
-import { AuthService } from "app/services/auth/auth.service";
 import { ActivatedRoute } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
+
+import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component";
 import { TimesheetUpdateComponent } from "../timesheet-update/timesheet-update.component";
-import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.component";
+import { SubmitModes } from "../utils/TimesheetConstants";
+import { EmployeeService } from "../../services/employee/employee.service";
+import { AuthService } from "../../services/auth/auth.service";
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 
 @Component({
   selector: "app-list-timesheet",
@@ -17,16 +18,10 @@ import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.
   styleUrls: ["./list-timesheet.component.css"],
 })
 export class ListTimesheetComponent implements OnInit {
-  timesheetList: any;
-  userID: string = "";
-  searchText: string;
-  alertMessage: string = "";
-  alertType: string = "";
-  todayDate: Date = new Date();
-
-  isAdmin = "";
-  isLoading = false;
-  isLoaded = false;
+  private userID: string = "";
+  public isAdmin = "";
+  public timesheetList = [];
+  public isLoading = false;
 
   constructor(
     private _employeeService: EmployeeService,
@@ -37,7 +32,7 @@ export class ListTimesheetComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this._authService.isAdmin();
-    if (this.isAdmin == "true") {
+    if (this.isAdmin === "true") {
       this.userID = this.route.snapshot.paramMap.get("id");
     } else {
       this.userID = this._authService.getUserDetail().id;
@@ -45,11 +40,25 @@ export class ListTimesheetComponent implements OnInit {
     this.refreshTimesheetList();
   }
 
-  deleteTimesheetDialog(timesheet_id: number, tasksheet_id: number) {
+  private refreshTimesheetList() {
+    this.isLoading = !this.isLoading;
+    this._employeeService.getTimesheet(this.userID).subscribe(
+      (res) => {
+        this.timesheetList = res.result;
+        this.isLoading = !this.isLoading;
+      },
+      (err) => {
+        this.isLoading = !this.isLoading;
+        console.log(err, "error");
+      }
+    );
+  }
+
+  public deleteTimesheetDialog(timesheet_id: number, tasksheet_id: number) {
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
         title: "Delete Your Task",
-        message: "Are you sure you want to delete this Task ?",
+        message: "Are you sure you want to delete this Task?",
         timesheet_id: timesheet_id,
         tasksheet_id: tasksheet_id,
         callingFrom: "deleteSingleTask",
@@ -58,17 +67,6 @@ export class ListTimesheetComponent implements OnInit {
     deleteDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Task Deleted Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      } else if (result.error) {
-        this.alertType = "danger";
-        this.alertMessage = result.error.message;
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
@@ -85,26 +83,15 @@ export class ListTimesheetComponent implements OnInit {
     deleteDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Task Edit Request Send Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      } else if (result.error) {
-        this.alertType = "danger";
-        this.alertMessage = result.error.message;
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
   
-  addTimesheetDialog() {
+  public addTimesheetDialog() {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
         matDialogTitle: "Add New Timesheet",
-        mode: "add",
+        mode: SubmitModes.MultipleAdd,
       },
       width: "90%",
       height: "90%",
@@ -113,20 +100,15 @@ export class ListTimesheetComponent implements OnInit {
     timesheetDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Timesheet Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
 
-  allEditTimesheetDialog(timesheet_id: number, timesheetData) {
+  public allEditTimesheetDialog(timesheet_id: number, timesheetData) {
     const timesheetDialogRef = this.dialog.open(AddTimesheetComponent, {
       data: {
         matDialogTitle: "Edit Timesheet",
-        mode: "all-edit",
+        mode: SubmitModes.MultipleEdit,
         id : timesheet_id,
         timesheetData: timesheetData,
       },
@@ -137,20 +119,15 @@ export class ListTimesheetComponent implements OnInit {
     timesheetDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Timesheet Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
 
-  addSingleTasks(id:number ,timesheetData) {
+  public addSingleTasks(id:number ,timesheetData) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
         matDialogTitle: "Add New Task to timesheet",
-        mode: "single-Task-add",
+        mode: SubmitModes.SingleAdd,
         id :id,
         timesheetData: timesheetData,
       },
@@ -161,22 +138,17 @@ export class ListTimesheetComponent implements OnInit {
     timesheetDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "New Task Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
-  
-  updateTimesheetDialog(timesheetData, taskID) {
+
+  public updateSingleTaskDialog(timesheetData, taskID) {
     const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
       data: {
         matDialogTitle: "Update Timesheet",
         timesheetData: timesheetData,
         taskID: taskID,
-        mode: "edit",
+        mode: SubmitModes.SingleEdit,
       },
       width: "90%",
       height: "90%",
@@ -185,65 +157,7 @@ export class ListTimesheetComponent implements OnInit {
     timesheetDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Timesheet Details Updated Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
-  }
-
-  updateSingleTaskDialog(timesheetData, taskID) {
-    const timesheetDialogRef = this.dialog.open(TimesheetUpdateComponent, {
-      data: {
-        matDialogTitle: "Update Timesheet",
-        timesheetData: timesheetData,
-        taskID: taskID,
-        mode: "single-edit",
-      },
-      width: "90%",
-      height: "90%",
-      panelClass: "update-timesheet-dialog",
-    });
-    timesheetDialogRef.afterClosed().subscribe((result) => {
-      if (result === "success") {
-        this.refreshTimesheetList();
-        this.alertType = "success";
-        this.alertMessage = "Timesheet Details Updated Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      }
-    });
-  }
-
-  onSearch() {
-    // this.refreshTimesheetList(this.searchText);
-  }
-
-  refreshTimesheetList() {
-    if (!this.isLoaded) {
-      this.isLoading = true;
-      this.isLoaded = true;
-    }
-    console.log(this.userID, "userID");
-    this._employeeService.getTimesheet(this.userID).subscribe(
-      (res) => {
-        this.timesheetList = res.result;
-        if (this.isLoaded) {
-          this.isLoading = false;
-          this.isLoaded = false;
-        }
-        console.log(this.timesheetList, "timesheetList", res);
-      },
-      (err) => {
-        if (this.isLoaded) {
-          this.isLoading = false;
-          this.isLoaded = false;
-        }
-        console.log(err, "error");
-      }
-    );
   }
 }

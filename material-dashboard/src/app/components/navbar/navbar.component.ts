@@ -27,7 +27,7 @@ export class NavbarComponent implements OnInit {
   private toggleButton: any;
   private sidebarVisible: boolean;
   public userName : string;
-  public isAdmin : string;
+  public isAdmin: boolean;
 
   constructor(
     location: Location,
@@ -44,7 +44,7 @@ export class NavbarComponent implements OnInit {
     this.loggedInUser = this._authService.getLoggedInUser();
     const user = this._authService.getUserDetail();
     this.userName = user.name;
-    this.isAdmin = user.role;
+    this.isAdmin = user.role === 'admin';
     if (!user) {
       this._authService.performLogout();
       this.router.navigate(["/login"]);

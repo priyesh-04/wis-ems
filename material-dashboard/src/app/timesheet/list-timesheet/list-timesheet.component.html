@@ -1,24 +1,17 @@
 <div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" style="height:100%" *ngIf="isLoading">
     <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
 </div>
-<div class="container" *ngIf="!timesheetList && !isLoading">
-    <div>
-        <h1>No Timesheet Found</h1>
-    </div>
-</div>
 <div class="container" *ngIf="!isLoading">
     <div class="page-operations mb-3" *ngIf="isAdmin == 'false'">
-        <form class="form-inline m-0" #f="ngForm" (ngSubmit)="onSearch()">
-            <!-- <mat-form-field>
-                <input matInput placeholder="Search" [(ngModel)]="searchText" name="searchText">
-            </mat-form-field>
-            <button type="submit" mat-mini-fab color="primary">
-                <mat-icon>search</mat-icon>
-            </button> -->
-        </form>
+        <div class="form-inline m-0"></div>
         <button id="add-more-btn" mat-mini-fab color="primary" (click)="addTimesheetDialog()">
             <mat-icon>add</mat-icon>
         </button>
+    </div>
+    <div class="container" *ngIf="!timesheetList.length">
+        <div>
+            <h2>No timesheet available to display</h2>
+        </div>
     </div>
     <div class="timesheet-wrapper bg-white p-2 mb-2" *ngFor="let timesheet of timesheetList">
         <div class="working-date-wrapper p-1 bg-dark text-white">

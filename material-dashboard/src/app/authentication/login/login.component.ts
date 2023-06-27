@@ -1,10 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AuthService } from "../../services/auth/auth.service";
-import { NgForm, Validators } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { CookieService } from "ngx-cookie-service";
-import { FormGroup, FormBuilder } from "@angular/forms";
+
 import { validatorEmail } from "../../utils/custom-validators";
+import { AuthService } from "../../services/auth/auth.service";
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-login",
@@ -12,24 +13,16 @@ import { validatorEmail } from "../../utils/custom-validators";
   styleUrls: ["./login.component.css"],
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
-
-  hide = true;
-  loginUserData = {};
-  didLogin = false;
-
-  isLoading = false;
-  isLoaded = false;
-
-  alertMessage: string = "";
-  alertType: string = "";
+  public loginForm: FormGroup;
+  public isLoading = false;
 
   constructor(
-    public _authService: AuthService,
-    public _router: Router,
-    public _cookieService: CookieService,
-    public _route: ActivatedRoute,
-    public fb: FormBuilder
+    private _mesgageService: MesgageService,
+    private _authService: AuthService,
+    private _cookieService: CookieService,
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -39,41 +32,25 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  get lForm() {
+  public get form() {
     return this.loginForm.controls;
   }
 
-  doLogin(loginForm: FormGroup) {
-    if (!this.isLoaded) {
-      this.isLoading = true;
-      this.isLoaded = true;
-    }
-    this.loginUserData = loginForm.value;
-    this._authService.doLogin(this.loginUserData).subscribe(
+  public doLogin(loginForm: FormGroup) {
+    this.isLoading = !this.isLoading;
+    const loginUserData = loginForm.value;
+    this._authService.doLogin(loginUserData).subscribe(
       (data) => {
         const date = new Date(data.expires);
         this._authService.setCurrentUser(data, date);
-        this.didLogin = true;
         this._authService.userLoggedIn = this._cookieService.get("currentUser");
+        this.isLoading = !this.isLoading;
         const returnUrl = this._route.snapshot.queryParamMap.get("returnUrl");
-        console.log("login success", data);
         this._router.navigate([returnUrl || "/"]);
-        if (this.isLoaded) {
-          this.isLoading = false;
-          this.isLoaded = false;
-        }
       },
       (err) => {
-        if (this.isLoaded) {
-          this.isLoading = false;
-          this.isLoaded = false;
-        }
-        this.alertType = "danger";
-        this.alertMessage = err.error.message || "Login Failed";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-        console.log(err);
+        this.isLoading = !this.isLoading;    
+        this._mesgageService.showError(err.error.message || "Login failed");
       }
     );
   }
