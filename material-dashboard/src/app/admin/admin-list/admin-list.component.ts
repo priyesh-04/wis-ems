@@ -41,7 +41,7 @@ export class AdminListComponent implements OnInit {
       panelClass: "add-new-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      
       if (result === "success") {
         this.refreshadminList();
         this.alertType = "success";
@@ -65,7 +65,7 @@ export class AdminListComponent implements OnInit {
       panelClass: "update-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
+      
       if (result === "success") {
         this.refreshadminList();
         this.alertType = "success";
@@ -91,7 +91,7 @@ export class AdminListComponent implements OnInit {
         this.adminList = res.result;
       },
       (err) => {
-        console.log(err, "error");
+        this._mesgageService.showError(err.error.message);
       }
     );
   }
