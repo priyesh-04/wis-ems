@@ -12,6 +12,7 @@ import { TimesheetListComponent } from "../timesheet-list/timesheet-list.compone
 import { ClientService } from "../../services/client/client.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MesgageService } from "../../services/shared/message.service";
+import { SubmitModes } from "../utils/TimesheetConstants";
 
 @Component({
   selector: "app-add-timesheet",
@@ -21,10 +22,11 @@ import { MesgageService } from "../../services/shared/message.service";
 export class AddTimesheetComponent implements OnInit {
   public timesheetForm: FormGroup;
   public taskForm: FormGroup;
-  public clientList: any;
+  public clientList = [];
   public taskList = [];
   public taskButton = "Save Task";
   public displayTaskform = true;
+  public SubmitModes = SubmitModes;
 
   constructor(
     private _employeeService: EmployeeService,
@@ -55,7 +57,8 @@ export class AddTimesheetComponent implements OnInit {
       description: ["", [Validators.required]],
     });
 
-    if (this.timesheetDialogData.mode === "all-edit") {
+    if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
+      this.timesheetForm.get('out_time').addValidators(Validators.required);
       this.displayTaskform = false;
       this.taskList = this.timesheetDialogData.timesheetData.task_details;
       this.timesheetForm.patchValue({
@@ -63,11 +66,15 @@ export class AddTimesheetComponent implements OnInit {
         in_time: getFormattedDatetime(
           this.timesheetDialogData.timesheetData.in_time
         ),
-        out_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.out_time
-        ),
         _id : this.timesheetDialogData.timesheetData._id
-      });      
+      });
+      if (this.timesheetDialogData.timesheetData.out_time) {
+        this.timesheetForm.patchValue({
+          out_time: getFormattedDatetime(
+            this.timesheetDialogData.timesheetData.out_time
+          ),
+        });
+      }
     }
   }
 
@@ -76,8 +83,8 @@ export class AddTimesheetComponent implements OnInit {
       (res) => {
         this.clientList = res.result;
       },
-      (err) => {        
-        this._mesgageService.showError(err.error.message);
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
       }
     );
   }
@@ -152,7 +159,7 @@ export class AddTimesheetComponent implements OnInit {
 
   public onSubmit(timesheetForm: FormGroup) {
     if (this.displayTaskform) {
-      this._mesgageService.showInfo(this.timesheetDialogData.mode === "all-edit" ? 'Update current task' : 'Save current task');
+      this._mesgageService.showInfo(this.timesheetDialogData.mode === SubmitModes.MultipleEdit ? 'Update current task' : 'Save current task');
       return;
     } else if (!this.taskList.length) {
       this._mesgageService.showInfo('Complete atleast one task');
@@ -176,7 +183,7 @@ export class AddTimesheetComponent implements OnInit {
       task_details: taskList,
     };
 
-    if (this.timesheetDialogData.mode === "all-edit") {
+    if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
         (res) => {
@@ -187,7 +194,7 @@ export class AddTimesheetComponent implements OnInit {
           this._mesgageService.showError(err.error.message);
         }
       );
-    } else if (this.timesheetDialogData.mode === "add" || "Task-add") {
+    } else if (this.timesheetDialogData.mode === SubmitModes.MultipleAdd) {
       this._employeeService.addTimesheet(myData).subscribe(
         (res) => {
           this.dialogRef.close("success");

@@ -4,6 +4,7 @@
         <h3 class="border-bottom p-2 mt-0 text-center text-white bg-danger" mat-dialog-title>
             {{timesheetDialogData.matDialogTitle}}
         </h3>
+
         <form [formGroup]="timesheetForm" (ngSubmit)="onSubmit(timesheetForm)">
             <div class="fields-main-div">
                 <div class="col-sm-12 col-md-4">
@@ -116,7 +117,7 @@
             <div class="fields-main-div">
                 <div class="col-12">
                     <button type="submit" mat-raised-button color="primary" [disabled]="!taskForm.valid">{{taskButton}}</button>
-                    <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === 'all-edit' || (timesheetDialogData.mode === 'add' &&  taskList.length)">Cancel</button>
+                    <button type="button" mat-raised-button color="warning" (click)="displayTaskform = false" *ngIf="timesheetDialogData.mode === SubmitModes.MultipleEdit || (timesheetDialogData.mode === SubmitModes.MultipleAdd && taskList.length)">Cancel</button>
                 </div>
             </div>
         </form>

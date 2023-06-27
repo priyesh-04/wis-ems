@@ -1,9 +1,12 @@
 import { Component, Inject } from "@angular/core";
-import { DesignationService } from "app/services/designation/designation.service";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+
 import { ClientService } from "../../services/client/client.service";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { AuthService } from "../../services/auth/auth.service";
+import { MesgageService } from "../../services/shared/message.service";
+import { DesignationService } from "../../services/designation/designation.service";
+
 export interface DialogData {
   animal: string;
   name: string;
@@ -19,17 +22,18 @@ export class ConfirmDeleteComponent {
   constructor(
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
-    public _authService: AuthService,
+    private _authService: AuthService,
     private _clientService: ClientService,
-    public deleteDialogRef: MatDialogRef<ConfirmDeleteComponent>,
+    private _mesgageService: MesgageService,
+    private deleteDialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public deleteDialogData: DialogData
   ) {}
 
-  onNoClick(): void {
+  public onNoClick(): void {
     this.deleteDialogRef.close();
   }
 
-  onYesClick(data): void {  
+  public onYesClick(data): void {  
     if (data.callingFrom === "designation") {
       this.deleteDesignation(data.id);
     } else if (data.callingFrom === "deleteSingleTask") {
@@ -49,28 +53,34 @@ export class ConfirmDeleteComponent {
       this.deleteClient(data.id);
     }
   }
-  deleteSingleTask(data) {
+
+  private deleteSingleTask(data) {
     this._employeeService.deleteSingleTask(data.timesheet_id, data.tasksheet_id, data).subscribe(      
       (res) => {
+        this._mesgageService.showSuccess(res.message || "Task Deleted Successfully");
         this.deleteDialogRef.close("success");
       },
       (err) => {
-        this.deleteDialogRef.close(err);
-      }
-    );
-  }
-  editReqAdmin(timesheet_id:number, data) {
-    this._employeeService.editReqAdmin(timesheet_id, data).subscribe(      
-      (res) => {
-        this.deleteDialogRef.close("success");
-      },
-      (err) => {
+        this._mesgageService.showError(err.error.message);
         this.deleteDialogRef.close(err);
       }
     );
   }
   
-  deleteDesignation(id: number) {
+  private editReqAdmin(timesheet_id:number, data) {
+    this._employeeService.editReqAdmin(timesheet_id, data).subscribe(      
+      (res) => {
+        this._mesgageService.showSuccess(res.message || "Task Edit Request Send Successfully");
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+        this.deleteDialogRef.close(err);
+      }
+    );
+  }
+  
+  private deleteDesignation(id: number) {
     this._designationService.deleteDesignation(id).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");
@@ -81,7 +91,7 @@ export class ConfirmDeleteComponent {
     );
   }
 
-  deleteClient(id: number) {
+  private deleteClient(id: number) {
     this._clientService.deleteClient(id).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");
@@ -91,7 +101,8 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  reqTaskApprove(timesheet_id: number, isApprove:string) {
+
+  private reqTaskApprove(timesheet_id: number, isApprove:string) {
     this._employeeService.actionAdmin(timesheet_id, isApprove ).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");
@@ -101,7 +112,8 @@ export class ConfirmDeleteComponent {
       }
     );
   }
-  reqTaskReject(timesheet_id: number, isApprove:string) {
+
+  private reqTaskReject(timesheet_id: number, isApprove:string) {
     this._employeeService.actionAdmin(timesheet_id, isApprove).subscribe(
       (res) => {
         this.deleteDialogRef.close("success");
