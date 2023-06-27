@@ -12,6 +12,7 @@ const ForgotPasswordToken = require('../../models/auth/forgotPasswordToken');
 const crypto = require('crypto');
 const { EmailSend } = require('../../helper/email/emailSend');
 const EmailConfig = require('../../config/emailConfig');
+// const { passwordPattarn } = require('../../config/regex');
 
 class AuthService {
   async login(req, res, next) {
@@ -24,12 +25,12 @@ class AuthService {
           .json({ msgErr: true, message: 'Email ID or password is wrong!' });
       }
       // to be compleate
-      // if (user.first_login) {
-      //   return res.status(200).json({
-      //     msgErr: false,
-      //     message: 'Please Reset Your Password. Please Check Your Email.',
-      //   });
-      // }
+      if (user.first_login) {
+        return res.status(200).json({
+          msgErr: false,
+          message: 'Please Reset Your Password. Please Check Your Email.',
+        });
+      }
       // Compare password
       const match = await bcrypt.compare(req.body.password, user.password);
       if (!match) {
@@ -83,9 +84,7 @@ class AuthService {
         role: Joi.string()
           .required()
           .valid('admin', 'hr', 'employee', 'accountant'),
-        password: Joi.string()
-          .pattern(new RegExp('^[a-zA-Z0-9]{8,30}$'))
-          .required(),
+        // password: Joi.string().pattern(new RegExp(passwordPattarn)).required(),
         image: Joi.string(),
         created_by: Joi.string(),
       });
@@ -104,11 +103,13 @@ class AuthService {
           message: 'Designation Incorrect. Please Select Correct one.',
         });
       }
+      const password = crypto.randomBytes(10).toString('hex');
 
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
       payload.created_by = user._id;
+      payload.password = password;
       if (payload.role === 'admin' && user.role === 'hr') {
         return res.status(403).json({
           msgErr: true,
@@ -131,7 +132,7 @@ class AuthService {
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
-      const hashPassword = await bcrypt.hash(req.body.password, salt);
+      const hashPassword = await bcrypt.hash(password, salt);
       payload.password = hashPassword;
       const newRequest = await new User(payload);
       newRequest.save(async (err, result) => {
@@ -172,27 +173,39 @@ class AuthService {
         } else {
           // compleated part -- have to be test
 
-          // let tokenData = {
-          //   user_id: result._id,
-          //   email: payload.email_id,
-          //   token: crypto.randomBytes(32).toString('hex'),
-          // };
-          // const link = `${process.env.CLIENT_BASE_URL}/reset-password/${result._id}/${tokenData.token}`;
-          // const emailData = {
-          //   template: EmailConfig.TEMPLATES.FIRST_LOGIN,
-          //   subject: EmailConfig.SUBJECT.FIRST_LOGIN,
-          //   email: payload.email_id,
-          //   emailBody: {
-          //     name: payload.name,
-          //     url: link,
-          //   },
-          // };
-          // let emailSendStatus = EmailSend(emailData);
-          // if (!emailSendStatus) {
-          //   return res
-          //     .status(400)
-          //     .json({ msgErr: true, message: 'Something went wrong. ' + err });
-          // }
+          let tokenData = {
+            user_id: result._id,
+            email: result.email_id,
+            token: crypto.randomBytes(32).toString('hex'),
+          };
+
+          let newRequest = await new ForgotPasswordToken(tokenData);
+          newRequest.save((err, result) => {
+            if (err) {
+              return res.status(400).json({
+                msgErr: true,
+                message: 'Something went wrong. ' + err,
+              });
+            }
+          });
+
+          const link = `${process.env.CLIENT_BASE_URL}/reset-password/${result._id}/${tokenData.token}`;
+          const emailData = {
+            template: EmailConfig.TEMPLATES.FIRST_LOGIN,
+            subject: EmailConfig.SUBJECT.FIRST_LOGIN,
+            email: payload.email_id,
+            emailBody: {
+              name: payload.name,
+              url: link,
+              password: password,
+            },
+          };
+          let emailSendStatus = EmailSend(emailData);
+          if (!emailSendStatus) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          }
 
           return res.status(201).json({
             msgErr: false,
@@ -624,6 +637,16 @@ class AuthService {
       if (error) {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
+      const passwordPattarn = new RegExp(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+      );
+
+      if (!passwordPattarn.test(payload.new_password)) {
+        return res.status(400).json({
+          msgErr: true,
+          message: `Password should be follow 'Minimum eight characters, at least one letter, one number and one special character'`,
+        });
+      }
 
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
@@ -759,11 +782,22 @@ class AuthService {
       const schema = Joi.object({
         password: Joi.string().required(),
       });
+
       const { error } = schema.validate(payload);
       if (error) {
         return res
           .status(400)
           .json({ msgErr: true, message: 'Error ' + error });
+      }
+      const passwordPattarn = new RegExp(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+      );
+
+      if (!passwordPattarn.test(payload.password)) {
+        return res.status(400).json({
+          msgErr: true,
+          message: `Password should be follow 'Minimum eight characters, at least one letter, one number and one special character'`,
+        });
       }
       const user = await User.findById({ _id: req.params.userId });
       if (!user) {
@@ -785,7 +819,7 @@ class AuthService {
       const hashPassword = await bcrypt.hash(payload.password, salt);
       await User.findByIdAndUpdate(
         { _id: user._id },
-        { password: hashPassword },
+        { password: hashPassword, first_login: false },
         async (err, details) => {
           if (err) {
             return res.status(400).json({
