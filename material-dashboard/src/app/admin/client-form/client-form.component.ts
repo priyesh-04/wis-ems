@@ -9,6 +9,7 @@ import {
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { ClientService } from "app/services/client/client.service";
 import { ClientListComponent } from "../client-list/client-list.component";
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-client-form",
@@ -22,7 +23,7 @@ export class ClientFormComponent implements OnInit {
   constructor(
     private _clientService: ClientService,
     public fb: FormBuilder,
-
+    private _mesgageService: MesgageService,
     public dialogRef: MatDialogRef<ClientListComponent>,
     @Inject(MAT_DIALOG_DATA) public clientDialogData
   ) {}
@@ -69,20 +70,20 @@ export class ClientFormComponent implements OnInit {
         .subscribe(
           (res) => {
             this.dialogRef.close("success");
+            this._mesgageService.showSuccess(res.message);
           },
           (err) => {
-            alert(err.error.detail);
-            console.log(err, "error");
+            this._mesgageService.showError(err.error.message);
           }
         );
     } else if (this.clientDialogData.mode === "add") {
       this._clientService.addClient(this.clientData).subscribe(
         (res) => {
           this.dialogRef.close("success");
+        this._mesgageService.showSuccess(res.message);
         },
         (err) => {
-          alert(err.error.detail);
-          console.log(err, "error");
+          this._mesgageService.showError(err.error.message);
         }
       );
     }

@@ -93,7 +93,7 @@ export class AuthService {
   }
 
   changePassword(userData: any): Observable<any> {
-    const endpoint = `${this.baseUrl}/auth/user/password/change/`;
+    const endpoint = `${this.baseUrl}/reset-password`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, userData, httpOptions);
   }

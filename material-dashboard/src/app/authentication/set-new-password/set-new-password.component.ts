@@ -35,8 +35,6 @@ export class SetNewPasswordComponent implements OnInit {
     let params = this.activatedRoute.snapshot.params;
       this.userId = params['userId'];
       this.token = params['token'];
-    console.log(params, '000');
-    
   }
   // get lForm() {
   //   return this.resetPass.controls;

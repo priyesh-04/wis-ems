@@ -25,8 +25,7 @@ export class AdminListComponent implements OnInit {
   constructor(
     private _employeeService: EmployeeService,
     public dialog: MatDialog,
-    private _mesgageService: MesgageService,    
-    private elRef: ElementRef
+    private _mesgageService: MesgageService
   ) {}
 
   addAdminDialog() {

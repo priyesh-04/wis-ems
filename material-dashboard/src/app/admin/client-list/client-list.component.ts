@@ -103,7 +103,6 @@ export class ClientListComponent implements OnInit {
       },
       (err) => {
         this._mesgageService.showError(err.message);        
-
       }
     );
   }

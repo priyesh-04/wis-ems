@@ -3,6 +3,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: 'app-password-change',
@@ -19,12 +20,24 @@ export class PasswordChangeComponent implements OnInit {
             public _router: Router,
             public _cookieService: CookieService,
             public _route: ActivatedRoute,
+            private _mesgageService: MesgageService,
             public fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.passwordChangeForm = this.fb.group({
-      password: ['', [Validators.required]],
-      confirm_password: ['', [Validators.required]]
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required,
+        Validators.pattern(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        ),
+        Validators.minLength(8),
+      ]],
+      confirm_password: ['', [Validators.required,
+        Validators.pattern(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        ),
+        Validators.minLength(8),
+      ]]
     });
   }
 
@@ -37,16 +50,23 @@ export class PasswordChangeComponent implements OnInit {
       this.isLoading = true;
       this.isLoaded = true;
     }
-    this._authService.changePassword(this.passwordChangeForm.value)
+    console.log(this.passwordChangeForm.value, '22');
+    
+    const changePassData ={
+      old_password:this.passwordChangeForm.value.currentPassword,
+      new_password:this.passwordChangeForm.value.newPassword
+    }
+    this._authService.changePassword(changePassData)
       .subscribe( res => {
         this.isLoading = false;
         this.isLoaded = false;
-        this._router.navigate(['/home']);
+        this._router.navigate(['/login']);
+        this._authService.performLogout()
+        this._mesgageService.showSuccess(res.message);
       }, err => {
         this.isLoading = false;
         this.isLoaded = false;
-        alert(err.error.detail);
-        console.log(err, 'error');
+        this._mesgageService.showError(err.error.message);
       });
 
   }

@@ -165,6 +165,8 @@ export class NavbarComponent implements OnInit {
     }
     if (titlee == '/profile') {
       return 'Personal Details';
+    } else if (titlee == '/change-password') {
+      return 'Change Password';
     }
     for (var item = 0; item < this.listTitles.length; item++) {
       
