@@ -7,9 +7,9 @@ import {
 } from "../../utils/custom-validators";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { EmployeeListComponent } from "../employee-list/employee-list.component";
-import { DesignationService } from "app/services/designation/designation.service";
-import { EmployeeService } from "app/services/employee/employee.service";
-
+import { DesignationService } from "../../services/designation/designation.service";
+import { EmployeeService } from "../../services/employee/employee.service";
+import { MesgageService } from "../../services/shared/message.service";
 @Component({
   selector: "app-employee-form",
   templateUrl: "./employee-form.component.html",
@@ -30,7 +30,7 @@ export class EmployeeFormComponent implements OnInit {
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
     public fb: FormBuilder,
-
+    private _mesgageService: MesgageService,
     public dialogRef: MatDialogRef<EmployeeListComponent>,
     @Inject(MAT_DIALOG_DATA) public employeeDialogData
   ) {}
@@ -43,22 +43,17 @@ export class EmployeeFormComponent implements OnInit {
       phone_num: ["", [Validators.required, validatorIndianMobileNumber]],
       address: ["", [Validators.required]],
       designation: ["", [Validators.required]],
-      role: ["", [Validators.required]],
-      password: ["", [Validators.required]],
+      role: ["", [Validators.required]]
     });
-    // this.isAdmin = this.roleList.value
-    console.log(this.roleList, 'adddd');
     
     if (this.employeeDialogData.mode === "edit") {
       this.getDesignationList();
       this.selectedDesignation =
         this.employeeDialogData.employeeData.designation._id;
-      console.log(this.employeeDialogData, "employeeData");
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
       this.selectedRole = this.employeeDialogData.employeeData.role;
-      console.log(this.employeeDialogData, "employeeData", this.selectedRole);
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
         name: this.employeeDialogData.employeeData.name,
@@ -89,18 +84,14 @@ export class EmployeeFormComponent implements OnInit {
         this.designationList = res.result;
       },
       (err) => {
-        console.log(err, "error");
+        this._mesgageService.showError(err.message);
       }
     );
   }
 
   onSubmit(employeeForm: FormGroup) {
     this.employeeData = employeeForm.value;
-    console.log(this.employeeData, "submitted employeeData");
     if (this.employeeDialogData.mode === "edit") {
-      // delete this.employeeData.emp_id;
-      // delete this.employeeData.email_id;
-      console.log(this.employeeData, "edit employeeData");
       this._employeeService
         .updateEmployee(
           this.employeeDialogData.employeeData._id,
@@ -109,22 +100,20 @@ export class EmployeeFormComponent implements OnInit {
         .subscribe(
           (res) => {
             this.dialogRef.close("success");
+            this._mesgageService.showSuccess(res.message);
           },
           (err) => {
-            // this.dialogRef.close(err);
-            alert(err.error.message);
-            console.log(err, "error");
+            this._mesgageService.showError(err.error.message);
           }
         );
     } else if (this.employeeDialogData.mode === "add") {
       this._employeeService.addNewEmployee(this.employeeData).subscribe(
         (res) => {
           this.dialogRef.close("success");
+          this._mesgageService.showSuccess(res.message);
         },
         (err) => {
-          // this.dialogRef.close(err);
-          alert(err.error.message);
-          console.log(err, "error");
+          this._mesgageService.showError(err.error.message);
         }
       );
     }

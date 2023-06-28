@@ -43,7 +43,6 @@ export class TaskRequestComponent implements OnInit {
     });
 
     deleteDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.getAllEditReqAdmin();
         this.alertType = "success";
@@ -71,7 +70,6 @@ export class TaskRequestComponent implements OnInit {
     });
 
     deleteDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.getAllEditReqAdmin();
         this.alertType = "success";
