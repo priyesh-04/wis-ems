@@ -7,6 +7,7 @@ const { ApiAuthValidator } = require('../../middlewares');
 router.post(
   '/',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('hr', 'admin'),
   ClientDetailsController.addClient
 );
@@ -14,6 +15,7 @@ router.post(
 router.get(
   '/',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('hr', 'admin', 'employee', 'accountant'),
   ClientDetailsController.getAllClient
 );
@@ -21,6 +23,7 @@ router.get(
 router.put(
   '/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('hr', 'admin'),
   ClientDetailsController.updateClient
 );
@@ -28,6 +31,7 @@ router.put(
 router.delete(
   '/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),
   ClientDetailsController.deleteClient
 );
@@ -35,6 +39,7 @@ router.delete(
 router.get(
   '/all-task-by-client/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),
   ClientDetailsController.getAllTaskClientWise
 );

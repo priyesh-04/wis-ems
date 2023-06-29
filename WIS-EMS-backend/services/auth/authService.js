@@ -24,10 +24,10 @@ class AuthService {
           .status(401)
           .json({ msgErr: true, message: 'Email ID or password is wrong!' });
       }
-      // to be compleate
+
       if (user.first_login) {
-        return res.status(200).json({
-          msgErr: false,
+        return res.status(400).json({
+          msgErr: true,
           message: 'Please Reset Your Password. Please Check Your Email.',
         });
       }
@@ -87,6 +87,7 @@ class AuthService {
         // password: Joi.string().pattern(new RegExp(passwordPattarn)).required(),
         image: Joi.string(),
         created_by: Joi.string(),
+        holidays: Joi.array().min(1).items(Joi.number()).required(),
       });
 
       const { error } = registerSchema.validate(req.body);
@@ -248,6 +249,7 @@ class AuthService {
         role: Joi.string().valid('admin', 'hr', 'employee', 'accountant'),
         image: Joi.string(),
         created_by: Joi.string(),
+        holidays: Joi.array().min(1).items(Joi.number()),
       });
       const { error } = registerSchema.validate(payload);
       if (error) {

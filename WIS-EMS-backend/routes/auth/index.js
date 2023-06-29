@@ -37,11 +37,13 @@ router.post('/change-password/:userId/:token', UserController.changePassword);
 router.get(
   '/my-profile',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   LoginController.myProfile
 );
 router.put(
   '/user/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin', 'hr'),
   upload.single('image'),
   LoginController.updateUser
@@ -50,18 +52,21 @@ router.put(
 router.get(
   '/user/all-admin',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllAdmin
 );
 router.get(
   '/user/all-employee',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllEmployee
 );
 router.get(
   '/user/all-hr',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin', 'hr'),
   UserController.getAllHR
 );
@@ -69,6 +74,7 @@ router.get(
 router.post(
   '/user/active-deactive/:id',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),
   UserController.userActiveDeactive
 );
@@ -76,6 +82,7 @@ router.post(
 router.get(
   '/user/user-spend-time',
   ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),
   UserController.usetListWithSpendTime
 );
