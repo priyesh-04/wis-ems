@@ -27,7 +27,7 @@ const cronFunction = () => {
   );
 
   cron.schedule(
-    '*/30 * * * * *',
+    '1 * * * * *',
     () => {
       TimesheetCron.createHolidayTimesheet();
       console.log('Creating Holiday sheet');

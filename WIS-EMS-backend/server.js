@@ -35,7 +35,7 @@ app.use('/uploads', express.static('uploads'));
 app.use(errorHandler);
 
 // cron jobs
-// cronFunction();
+cronFunction();
 
 // end of cron jobs
 

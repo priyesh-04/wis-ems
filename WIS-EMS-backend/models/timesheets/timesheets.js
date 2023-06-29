@@ -58,6 +58,12 @@ const TimeSheetSchema = new mongoose.Schema(
       default: false,
       required: true,
     },
+    edit_reason: [
+      {
+        name: { type: String, trim: true },
+        date: { type: Date, default: new Date() },
+      },
+    ],
     task_details: [
       {
         type: mongoose.Schema.Types.ObjectId,
