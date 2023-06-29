@@ -4,6 +4,7 @@ import { validatorTextOnly } from "../../utils/custom-validators";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { DesignationService } from "app/services/designation/designation.service";
 import { DesignationListComponent } from "../designation-list/designation-list.component";
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-designation-form",
@@ -17,7 +18,7 @@ export class DesignationFormComponent implements OnInit {
   constructor(
     private _designationService: DesignationService,
     public fb: FormBuilder,
-
+    private _mesgageService: MesgageService,    
     public designationDialogRef: MatDialogRef<DesignationListComponent>,
     @Inject(MAT_DIALOG_DATA) public designationDialogData
   ) {}
@@ -52,20 +53,20 @@ export class DesignationFormComponent implements OnInit {
         .subscribe(
           (res) => {
             this.designationDialogRef.close("success");
+            this._mesgageService.showSuccess(res.message); 
           },
           (err) => {
-            alert(err.error.detail);
-            console.log(err, "error");
+            this._mesgageService.showError(err.error.message); 
           }
         );
     } else if (this.designationDialogData.mode === "add") {
       this._designationService.addDesignation(this.designationData).subscribe(
         (res) => {
           this.designationDialogRef.close("success");
+          this._mesgageService.showSuccess(res.message); 
         },
         (err) => {
-          alert(err.error.detail);
-          console.log(err, "error");
+          this._mesgageService.showError(err.error.message);
         }
       );
     }

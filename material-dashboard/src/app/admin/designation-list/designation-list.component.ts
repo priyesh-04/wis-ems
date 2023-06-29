@@ -9,7 +9,7 @@ import { DesignationService } from "app/services/designation/designation.service
 import { MatDialog } from "@angular/material/dialog";
 import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.component";
 import { DesignationFormComponent } from "../designation-form/designation-form.component";
-
+import { MesgageService } from "../../services/shared/message.service";
 export interface DialogData {
   animal: string;
   name: string;
@@ -30,7 +30,7 @@ export class DesignationListComponent implements OnInit {
   constructor(
     private _designationService: DesignationService,
     public dialog: MatDialog,
-    private elRef: ElementRef
+    private _mesgageService: MesgageService
   ) {}
 
   confirmDeleteDialog(id: number): void {
@@ -44,20 +44,11 @@ export class DesignationListComponent implements OnInit {
     });
 
     deleteDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshDesignationList();
-        this.alertType = "success";
-        this.alertMessage = "Designation Deleted Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
-      } else if (result.error) {
-        this.alertType = "danger";
-        this.alertMessage = result.error.message;
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
+        this._mesgageService.showSuccess(result.message)
+      }else{
+        this._mesgageService.showError(result.error.message);        
       }
     });
   }
@@ -73,14 +64,11 @@ export class DesignationListComponent implements OnInit {
       panelClass: "add-new-designation-dialog",
     });
     designationDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshDesignationList();
-        this.alertType = "success";
-        this.alertMessage = "Designation Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
+        this._mesgageService.showSuccess(result.message)
+      }else{
+        this._mesgageService.showError(result.error.message);        
       }
     });
   }
@@ -97,14 +85,11 @@ export class DesignationListComponent implements OnInit {
       panelClass: "update-designation-dialog",
     });
     designationDialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
       if (result === "success") {
         this.refreshDesignationList();
-        this.alertType = "success";
-        this.alertMessage = "Designation Details Updated Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
+        this._mesgageService.showSuccess(result.message)
+      }else{
+        this._mesgageService.showError(result.error.message);        
       }
     });
   }
@@ -121,10 +106,9 @@ export class DesignationListComponent implements OnInit {
     this._designationService.getDesignationList().subscribe(
       (res) => {
         this.designationList = res.result;
-        console.log(this.designationList, "designationList");
       },
       (err) => {
-        console.log(err, "error");
+        this._mesgageService.showError(err.message);
       }
     );
   }
