@@ -39,10 +39,11 @@ class ApiAuthValidator {
       if (!bearerToken) {
         return res
           .status(401)
-          .json({ status: false, message: 'Unauthorized. Please Add Token.' });
+          .json({ msgErr: true, message: 'Unauthorized. Please Add Token.' });
       }
       if (!roles.includes(req.user.role)) {
         return res.status(403).json({
+          msgErr: true,
           message: `Role: ${req.user.role} is not allowed to access this resource`,
         });
       }
@@ -67,6 +68,7 @@ class ApiAuthValidator {
         next();
       } else {
         return res.status(403).json({
+          msgErr: true,
           message: `Role: ${userRole} is not allowed to access this resource.`,
         });
       }
@@ -78,18 +80,18 @@ class ApiAuthValidator {
     if (!bearerToken) {
       return res
         .status(401)
-        .json({ status: false, message: 'Unauthorized. Please Add Token.' });
+        .json({ msgErr: true, message: 'Unauthorized. Please Add Token.' });
     }
     if (!req?.user?.role) {
-      return res.status(403).json({
-        message: `Please Logged In to view resources`,
-      });
+      return res
+        .status(403)
+        .json({ msgErr: true, message: `Please Logged In to view resources` });
     }
     let loggedinUser = await UserToken.findOne({ user_id: req.user._id });
     if (!loggedinUser) {
-      return res.status(403).json({
-        message: `Please Logged In to view resources`,
-      });
+      return res
+        .status(403)
+        .json({ msgErr: true, message: `Please Logged In to view resources` });
     }
 
     //admin
