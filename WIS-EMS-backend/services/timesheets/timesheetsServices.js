@@ -803,6 +803,7 @@ class TimeSheetService {
       const payload = req.body;
       const editreqSchema = Joi.object({
         edit_status: Joi.string().valid('Requested'),
+        reason: Joi.string().required(),
       });
 
       const { error } = editreqSchema.validate(payload);
@@ -825,12 +826,25 @@ class TimeSheetService {
           msgErr: true,
           message: "You can't edit. This is not your timesheet.",
         });
+      } else if (existTimesheet.edit_status === 'Requested') {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'You are already requested. Wait for admin approve.',
+        });
       }
       const edit_status = payload.edit_status;
+      let edit_reason = [];
+      if (existTimesheet) {
+        edit_reason = [
+          ...existTimesheet?.edit_reason,
+          { name: payload.reason },
+        ];
+      }
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
-        { edit_status },
-        (err, result) => {
+        { edit_status, edit_reason },
+        { new: true },
+        (err, _) => {
           if (err) {
             return res
               .status(400)
