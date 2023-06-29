@@ -1,4 +1,4 @@
-<h4 mat-dialog-title class="border-bottom p-2 text-center text-white bg-danger">
+<h4 mat-dialog-title class="border-bottom p-2 text-center text-white bg-danger" *ngIf="!this.logoutTitle.mode">
     {{deleteDialogData['title']}}
 </h4>
 <div mat-dialog-content>

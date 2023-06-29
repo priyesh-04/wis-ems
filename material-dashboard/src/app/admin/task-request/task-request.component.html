@@ -26,6 +26,7 @@
                     <th scope="col" class="font-weight-bold">Employee Name</th>
                     <th scope="col" class="font-weight-bold">Employee Id</th>
                     <th scope="col" class="font-weight-bold">Email Id</th>
+                    <th scope="col" class="font-weight-bold">Request Reason</th>
                     <th scope="col" class="font-weight-bold">Request Date</th>
                     <th scope="col" class="font-weight-bold">Actions</th>
                 </tr>
@@ -36,6 +37,7 @@
                     <td>{{reqList.created_by.name}}</td>
                     <td>{{reqList.created_by.emp_id}}</td>
                     <td>{{reqList.created_by.email_id}}</td>
+                    <td>test</td>
                     <td>{{reqList.date | date: 'dd/MM/YYYY'}}</td>
                     <!-- <td>
                         <a [routerLink]="['/timesheet-list', reqList._id]">

@@ -13,7 +13,7 @@ import { Router } from "@angular/router";
 import { AuthService } from "app/services/auth/auth.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MatDialog } from "@angular/material/dialog";
-
+import { CookieService } from "ngx-cookie-service";
 @Component({
   selector: "app-navbar",
   templateUrl: "./navbar.component.html",
@@ -28,12 +28,13 @@ export class NavbarComponent implements OnInit {
   private sidebarVisible: boolean;
   public userName : string;
   public isAdmin: boolean;
-
+  public userId : string;
   constructor(
     location: Location,
     private element: ElementRef,
     private router: Router,
     public _authService: AuthService,
+    private _cookieService: CookieService,
     public dialog: MatDialog
   ) {
     this.location = location;
@@ -43,10 +44,16 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.loggedInUser = this._authService.getLoggedInUser();
     const user = this._authService.getUserDetail();
+    this.userId = user.id;
     this.userName = user.name;
     this.isAdmin = user.role === 'admin';
     if (!user) {
-      this._authService.performLogout();
+      this._authService.performLogout(this.userId);
+      this._cookieService.delete("token");
+      this._cookieService.delete("refreshToken");
+      this._cookieService.delete("currentUser");
+      this._cookieService.delete("role");
+      this._cookieService.delete("id");
       this.router.navigate(["/login"]);
     } else {
       if (user.role === "admin") {
@@ -148,9 +155,10 @@ export class NavbarComponent implements OnInit {
   public profileLogout(){
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
-        title: "Profile Logout",
         message: "Are you sure you want to Logout?",
+        userId :this.userId,
         callingFrom: "logOut",
+        mode:'logout'
       },
     });
     deleteDialogRef.afterClosed().subscribe((result) => {
