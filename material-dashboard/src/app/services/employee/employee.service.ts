@@ -73,8 +73,8 @@ export class EmployeeService {
     return this.http.post(endpoint, data, httpOptions);
   }
 
-  getTimesheet(userID): Observable<any> {
-    const endpoint = `${this.baseUrl}/timesheet/user/${userID}`;
+  getTimesheet(userID: string, startDate: string, endDate: string, page = 1, limit = 10): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet/task-details/user/${userID}?start_date=${startDate}&end_date=${endDate}&limit=${limit}&page=${page}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }

@@ -10,3 +10,12 @@ export type SubmitModesType =
   | SubmitModes.MultipleEdit
   | SubmitModes.SingleAdd
   | SubmitModes.SingleEdit;
+  
+  export enum EditStatus {
+    New = 'New',
+    Edited = 'Edited',
+    Rejected = 'Rejected',
+    Requested = 'Requested',
+    Accepted = 'Accepted',
+    Initial = 'Initial'
+}
