@@ -63,6 +63,7 @@ const UserSchema = new mongoose.Schema(
       enum: [true, false],
       default: true,
     },
+    holidays: [{ type: Number }],
   },
   { timestamps: true }
 );

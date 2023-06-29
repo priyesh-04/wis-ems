@@ -48,6 +48,7 @@ class TimeSheetService {
         'T00:00:00+05:30';
 
       let currentDate = new Date(date);
+      let nextDay = currentDate.getTime() + 2 * 24 * 60 * 60 * 1000;
       let selectedDate = new Date(payload.date);
       let selectedInTime = new Date(payload.in_time);
       let selectedOutTime = new Date(payload.out_time);
@@ -61,11 +62,13 @@ class TimeSheetService {
         currentDate.getTime() - 2 * oneDay >= selectedDate.getTime() ||
         currentDate.getTime() - 3 * oneDay >= selectedInTime.getTime() ||
         (selectedOutTime.getTime() != NaN &&
-          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime())
+          currentDate.getTime() - 2 * oneDay >= selectedOutTime.getTime()) ||
+        selectedDate.getTime() >= nextDay
       ) {
         return res.status(400).json({
           msgErr: true,
-          message: 'Date cannot be accepted before two days from current date.',
+          message:
+            'Date cannot be accepted before two days from current date or next day.',
         });
       }
 
@@ -629,7 +632,7 @@ class TimeSheetService {
             select: '_id company_name client_name person_name',
           },
         })
-        .sort({ createdAt: -1 })
+        .sort({ date: -1 })
         .exec((err, details) => {
           if (err) {
             return res
@@ -715,7 +718,7 @@ class TimeSheetService {
             select: '_id company_name person_name company_email',
           },
         })
-        .sort({ createdAt: -1 })
+        .sort({ date: -1 })
         .exec((err, details) => {
           if (err) {
             return res

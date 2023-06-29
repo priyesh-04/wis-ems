@@ -25,6 +25,18 @@ const cronFunction = () => {
       timezone: 'Asia/Kolkata',
     }
   );
+
+  cron.schedule(
+    '*/30 * * * * *',
+    () => {
+      TimesheetCron.createHolidayTimesheet();
+      console.log('Creating Holiday sheet');
+    },
+    {
+      scheduled: true,
+      timezone: 'Asia/Kolkata',
+    }
+  );
 };
 
 module.exports = cronFunction;

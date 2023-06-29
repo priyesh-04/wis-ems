@@ -4,8 +4,9 @@ const TimeSheetSchema = new mongoose.Schema(
   {
     in_time: {
       type: Date,
-      required: true,
+      // required: true,
       trim: true,
+      default: null,
     },
     out_time: {
       type: Date,
@@ -46,6 +47,16 @@ const TimeSheetSchema = new mongoose.Schema(
       required: true,
       trim: true,
       ref: 'user',
+    },
+    leave: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    is_holiday: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
     task_details: [
       {
