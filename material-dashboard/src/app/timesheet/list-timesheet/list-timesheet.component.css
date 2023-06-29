@@ -9,7 +9,8 @@
 #spinner-div {
     display: flex;
     justify-content: center;
-    margin-top: 30vh;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
 }
 .working-date {
     font-weight: bold;

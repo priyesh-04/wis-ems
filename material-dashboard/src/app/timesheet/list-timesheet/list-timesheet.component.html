@@ -1,14 +1,22 @@
-<div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" style="height:100%" *ngIf="isLoading">
-    <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
-</div>
-<div class="container" *ngIf="!isLoading">
-    <div class="page-operations mb-3" *ngIf="isAdmin == 'false'">
-        <div class="form-inline m-0"></div>
+<div class="container">
+    <div class="page-operations mb-3" *ngIf="isAdmin === 'false' && (timesheetList.length || !isLoading)">
+        <div class="form-inline flex m-0">
+            <div class="col-sm-12 col-md-4">
+                <mat-form-field appearance="legacy">
+                    <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterStartDate" (change)="refreshTimesheetList()" placeholder="Start Date">
+                </mat-form-field>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <mat-form-field appearance="legacy">
+                    <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterEndDate" (change)="refreshTimesheetList()" placeholder="End Date">
+                </mat-form-field>
+            </div>
+        </div>
         <button id="add-more-btn" mat-mini-fab color="primary" (click)="addTimesheetDialog()">
             <mat-icon>add</mat-icon>
         </button>
     </div>
-    <div class="container" *ngIf="!timesheetList.length">
+    <div class="container" *ngIf="!timesheetList.length && !isLoading">
         <div>
             <h2>No timesheet available to display</h2>
         </div>
@@ -19,17 +27,17 @@
                 {{timesheet.date | date }} ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
                 date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.edit_status == 'New' && isAdmin == 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
                 Add Task
             </span>
-            <span *ngIf="timesheet.edit_status == 'New' || timesheet.edit_status == 'Accepted' && isAdmin == 'false'"
+            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'"
             style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                 Edit All Task
             </span>
-            <span *ngIf="timesheet.edit_status == 'Rejected' || timesheet.edit_status == 'Initial'" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+            <span *ngIf="timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                 Request for Edit
             </span>
-            <span *ngIf="timesheet.edit_status == 'Requested' " class="ml-2 text-success">
+            <span *ngIf="timesheet.edit_status === EditStatus.Requested " class="ml-2 text-success">
                 Already Requested
             </span>
             
@@ -40,7 +48,7 @@
                 ({{task.start_time| date:'shortTime'}} - {{task.end_time|
                 date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.edit_status == 'New' || timesheet.edit_status == 'Accepted' && isAdmin == 'false'">
+            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'">
                 <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
                     (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
                 <span style="cursor: pointer;" class="text-danger"
@@ -54,4 +62,10 @@
             </div>
         </div>
     </div>
+    <div>
+        <button class="btn btn-danger" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
+    </div>
+</div>
+<div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" *ngIf="isLoading">
+    <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
 </div>

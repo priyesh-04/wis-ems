@@ -3,14 +3,16 @@ import {
   OnInit,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { DatePipe } from "@angular/common";
 import { MatDialog } from "@angular/material/dialog";
 
 import { AddTimesheetComponent } from "../add-timesheet/add-timesheet.component";
 import { TimesheetUpdateComponent } from "../timesheet-update/timesheet-update.component";
-import { SubmitModes } from "../utils/TimesheetConstants";
+import { EditStatus, SubmitModes } from "../utils/TimesheetConstants";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { AuthService } from "../../services/auth/auth.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
+import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-list-timesheet",
@@ -22,15 +24,24 @@ export class ListTimesheetComponent implements OnInit {
   public isAdmin = "";
   public timesheetList = [];
   public isLoading = false;
+  public EditStatus = EditStatus;
+  public filterStartDate: string;
+  public filterEndDate: string;
+  public currentPage = 1;
+  public totalPage = 0;
 
   constructor(
     private _employeeService: EmployeeService,
     private _authService: AuthService,
-    public dialog: MatDialog,
+    private _mesgageService: MesgageService,
+    private datepipe: DatePipe,
+    private dialog: MatDialog,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    this.filterEndDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
+    this.filterStartDate = this.datepipe.transform((new Date).setDate((new Date).getDate() - 30), 'yyyy-MM-dd');
     this.isAdmin = this._authService.isAdmin();
     if (this.isAdmin === "true") {
       this.userID = this.route.snapshot.paramMap.get("id");
@@ -40,16 +51,17 @@ export class ListTimesheetComponent implements OnInit {
     this.refreshTimesheetList();
   }
 
-  private refreshTimesheetList() {
+  private refreshTimesheetList(isloadMore = false) {
     this.isLoading = !this.isLoading;
-    this._employeeService.getTimesheet(this.userID).subscribe(
+    this._employeeService.getTimesheet(this.userID, this.filterStartDate, this.filterEndDate, this.currentPage).subscribe(
       (res) => {
-        this.timesheetList = res.result;
+        this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
+        this.totalPage = res.pagination.total_page;
         this.isLoading = !this.isLoading;
       },
       (err) => {
         this.isLoading = !this.isLoading;
-        console.log(err, "error");
+        this._mesgageService.showError(err.error.message || 'Unable to fetch timesheet');
       }
     );
   }
@@ -159,5 +171,10 @@ export class ListTimesheetComponent implements OnInit {
         this.refreshTimesheetList();
       }
     });
+  }
+
+  public loadMore() {
+    this.currentPage++;
+    this.refreshTimesheetList(true);
   }
 }
