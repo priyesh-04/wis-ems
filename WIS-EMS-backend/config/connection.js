@@ -5,6 +5,7 @@ const connectDatabase = () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   });
 
   db.on('error', function (error) {

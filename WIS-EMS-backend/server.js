@@ -4,15 +4,11 @@ dotenv.config();
 const { errorHandler } = require('./middlewares');
 const routes = require('./routes');
 const path = require('path');
-// const DB_Connection = require('./config/connection');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 
 const cronFunction = require('./cronJob');
-
-// Database connection
-// DB_Connection();
 
 app.use(cors());
 app.use(bodyParser.json());
