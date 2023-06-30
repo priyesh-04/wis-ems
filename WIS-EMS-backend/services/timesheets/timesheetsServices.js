@@ -525,7 +525,7 @@ class TimeSheetService {
               } else {
                 return res.status(200).json({
                   msgErr: false,
-                  message: 'New Task Details Added succesfully.',
+                  message: 'New Task Details Added Successfully.',
                 });
               }
             }
@@ -602,7 +602,7 @@ class TimeSheetService {
                 } else {
                   return res.status(200).json({
                     msgErr: false,
-                    message: 'Task Deleted Succesfully',
+                    message: 'Task Deleted Successfully',
                   });
                 }
               }
@@ -852,7 +852,7 @@ class TimeSheetService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Timesheet Edit Request Sended.',
+              message: 'Timesheet Edit Request Sent.',
             });
           }
         }

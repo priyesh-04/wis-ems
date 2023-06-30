@@ -64,6 +64,12 @@ const UserSchema = new mongoose.Schema(
       default: true,
     },
     holidays: [{ type: Number }],
+    assigned_client: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ClientDetails',
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -23,7 +23,7 @@ class DesignationService {
         } else {
           return res.status(201).json({
             msgError: false,
-            message: 'Designation created succesfully',
+            message: 'Designation created Successfully',
             result,
           });
         }
@@ -130,7 +130,7 @@ class DesignationService {
           } else {
             return res.status(200).json({
               msgError: false,
-              message: 'Designation Deleted Succesfully',
+              message: 'Designation Deleted Successfully',
             });
           }
         }

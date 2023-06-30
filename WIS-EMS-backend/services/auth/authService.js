@@ -88,6 +88,7 @@ class AuthService {
         image: Joi.string(),
         created_by: Joi.string(),
         holidays: Joi.array().min(1).items(Joi.number()).required(),
+        assigned_client: Joi.array().items(Joi.string().length(24)),
       });
 
       const { error } = registerSchema.validate(req.body);
@@ -172,8 +173,6 @@ class AuthService {
             return next(CustomErrorhandler.badRequest());
           }
         } else {
-          // compleated part -- have to be test
-
           let tokenData = {
             user_id: result._id,
             email: result.email_id,
@@ -210,7 +209,7 @@ class AuthService {
 
           return res.status(201).json({
             msgErr: false,
-            message: 'Registration Succesfully',
+            message: 'Registration Successfully',
             result,
           });
         }
@@ -250,6 +249,7 @@ class AuthService {
         image: Joi.string(),
         created_by: Joi.string(),
         holidays: Joi.array().min(1).items(Joi.number()),
+        assigned_client: Joi.array().items(Joi.string().length(24).optional()),
       });
       const { error } = registerSchema.validate(payload);
       if (error) {
@@ -297,7 +297,7 @@ class AuthService {
             fs.unlinkSync('./uploads/users/' + imagename);
           }
           if (
-            err.keyValue.email_id != null &&
+            err.keyValue?.email_id != null &&
             err.name === 'MongoError' &&
             err.code === 11000
           ) {
@@ -306,7 +306,7 @@ class AuthService {
               message: 'Email must be unique.',
             });
           } else if (
-            err.keyValue.phone_num != null &&
+            err.keyValue?.phone_num != null &&
             err.name === 'MongoError' &&
             err.code === 11000
           ) {
@@ -315,7 +315,7 @@ class AuthService {
               message: 'Phone Number must be unique.',
             });
           } else if (
-            err.keyValue.emp_id != null &&
+            err.keyValue?.emp_id != null &&
             err.name === 'MongoError' &&
             err.code === 11000
           ) {
@@ -364,6 +364,7 @@ class AuthService {
       await User.findById({ _id: user._id })
         .select('-password ')
         .populate('designation', '_id name')
+        .populate('assigned_client', '_id client_name company_name')
         .lean()
         .exec((err, result) => {
           if (err) {
@@ -431,6 +432,7 @@ class AuthService {
         .select('-password ')
         .populate('designation', '_id name')
         .populate('created_by', '_id name emp_id email_id phone_num')
+        .populate('assigned_client', '_id client_name company_name')
         .lean()
         .exec((err, details) => {
           if (err) {
@@ -523,7 +525,7 @@ class AuthService {
               message:
                 'User ' +
                 (req.body.is_active ? 'Activate' : 'Deactivate') +
-                ' Succesfully.',
+                ' Successfully.',
             });
           }
         }
@@ -693,7 +695,7 @@ class AuthService {
           } else {
             return res
               .status(200)
-              .json({ msgErr: false, message: 'Password Update Succesfully' });
+              .json({ msgErr: false, message: 'Password Update Successfully' });
           }
         }
       );
@@ -847,7 +849,7 @@ class AuthService {
 
             return res
               .status(200)
-              .json({ msgErr: false, message: 'Password Update Succesfully' });
+              .json({ msgErr: false, message: 'Password Update Successfully' });
           }
         }
       );

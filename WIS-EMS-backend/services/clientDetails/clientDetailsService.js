@@ -75,7 +75,7 @@ class ClientDetailsService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Client result Update Succesfully.',
+              message: 'Client result Update Successfully.',
             });
           }
         }
@@ -150,7 +150,7 @@ class ClientDetailsService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Client result Deleted Succesfully.',
+              message: 'Client result Deleted Successfully.',
             });
           }
         }
