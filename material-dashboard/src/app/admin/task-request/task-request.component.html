@@ -7,7 +7,7 @@
                     <th scope="col" class="font-weight-bold">Name</th>
                     <th scope="col" class="font-weight-bold">Employee Id</th>
                     <th scope="col" class="font-weight-bold">Email Id</th>
-                    <th scope="col" class="font-weight-bold">Reason</th>
+                    <th scope="col" class="font-weight-bold w-25">Reason</th>
                     <th scope="col" class="font-weight-bold">Request Date</th>
                     <th scope="col" class="font-weight-bold">Actions</th>
                 </tr>
@@ -19,8 +19,10 @@
                     <td>{{reqList.created_by.emp_id}}</td>
                     <td>{{reqList.created_by.email_id}}</td>
                     <td>
-                        <div *ngFor="let reason of reqList.edit_reason; let i = index" style="font-size: 12px">
-                            {{i+1}} {{reason.name}} ({{reason.date | date: 'dd-MM-yyyy hh:mm a'}})
+                        <div class="request-details">
+                            <div *ngFor="let reason of reqList.edit_reason; let i = index" >
+                                {{i+1}}. {{reason.name}} ({{reason.date | date: 'dd-MM-yyyy hh:mm a'}})
+                            </div>
                         </div>
                     </td>
                     <td>{{reqList.date | date: 'dd/MM/YYYY'}}</td>
