@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { wisDB } = require('../../config/connection');
 
 const ClientDetailsSchema = new mongoose.Schema(
   {
@@ -49,8 +50,10 @@ const ClientDetailsSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
+const ClientDetails = wisDB.model(
   'ClientDetails',
   ClientDetailsSchema,
   'clientDetails'
 );
+
+module.exports = { ClientDetails };

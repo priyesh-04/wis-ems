@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { wisDB } = require('../../config/connection');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -64,8 +65,16 @@ const UserSchema = new mongoose.Schema(
       default: true,
     },
     holidays: [{ type: Number }],
+    assigned_client: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ClientDetails',
+      },
+    ],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('user', UserSchema, 'User');
+const User = wisDB.model('user', UserSchema, 'User');
+
+module.exports = { User };

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { wisDB } = require('../../config/connection');
 
 const DesignationSchema = new mongoose.Schema(
   {
@@ -11,8 +12,10 @@ const DesignationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
+const Designation = wisDB.model(
   'designation',
   DesignationSchema,
   'Designation'
 );
+
+module.exports = { Designation };

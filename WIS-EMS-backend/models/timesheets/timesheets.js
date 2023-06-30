@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { wisDB } = require('../../config/connection');
 
 const TimeSheetSchema = new mongoose.Schema(
   {
@@ -76,4 +77,6 @@ const TimeSheetSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Timesheets', TimeSheetSchema, 'timesheets');
+const Timesheets = wisDB.model('Timesheets', TimeSheetSchema, 'timesheets');
+
+module.exports = { Timesheets };

@@ -1,6 +1,6 @@
 const Joi = require('joi');
-const designation = require('../../models/designation/designation');
-const user = require('../../models/auth/user');
+const { Designation } = require('../../models/designation/designation');
+const { User } = require('../../models/auth/user');
 
 class DesignationService {
   async addDesignation(req, res, next) {
@@ -14,7 +14,7 @@ class DesignationService {
         return res.status(400).json({ message: error.message });
       }
 
-      const newRequest = await designation(payload);
+      const newRequest = await Designation(payload);
       newRequest.save((err, result) => {
         if (err) {
           return res
@@ -23,7 +23,7 @@ class DesignationService {
         } else {
           return res.status(201).json({
             msgError: false,
-            message: 'Designation created succesfully',
+            message: 'Designation created Successfully',
             result,
           });
         }
@@ -46,7 +46,7 @@ class DesignationService {
         return res.status(400).json({ message: error.message });
       }
 
-      await designation.findByIdAndUpdate(
+      await Designation.findByIdAndUpdate(
         { _id: req.params.id },
         payload,
         (err, result) => {
@@ -72,7 +72,7 @@ class DesignationService {
   async allDesignation(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await designation.find({}, (err, details) => {
+      await Designation.find({}, (err, details) => {
         if (err) {
           return res
             .status(400)
@@ -111,7 +111,7 @@ class DesignationService {
 
   async deleteDesignation(req, res, next) {
     try {
-      const existActiveDesignation = await user.find({
+      const existActiveDesignation = await User.find({
         designation: req.params.id,
       });
       if (existActiveDesignation.length > 0) {
@@ -120,7 +120,7 @@ class DesignationService {
           message: "Designation already used. Can't Delete.",
         });
       }
-      await designation.findByIdAndDelete(
+      await Designation.findByIdAndDelete(
         { _id: req.params.id },
         (err, done) => {
           if (err) {
@@ -130,7 +130,7 @@ class DesignationService {
           } else {
             return res.status(200).json({
               msgError: false,
-              message: 'Designation Deleted Succesfully',
+              message: 'Designation Deleted Successfully',
             });
           }
         }

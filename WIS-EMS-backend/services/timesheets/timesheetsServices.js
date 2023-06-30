@@ -1,8 +1,8 @@
 const Joi = require('joi');
-const TaskDetails = require('../../models/timesheets/taskDetails');
-const Timesheets = require('../../models/timesheets/timesheets');
-const user = require('../../models/auth/user');
-const clientDetails = require('../../models/clientDetails/clientDetails');
+const { TaskDetails } = require('../../models/timesheets/taskDetails');
+const { Timesheets } = require('../../models/timesheets/timesheets');
+const { User } = require('../../models/auth/user');
+const { ClientDetails } = require('../../models/clientDetails/clientDetails');
 const { TokenService } = require('../../utils');
 
 class TimeSheetService {
@@ -92,7 +92,7 @@ class TimeSheetService {
       };
       async function checkClient(td) {
         for (let i = 0; i < td.length; i++) {
-          const client = await clientDetails.findById({
+          const client = await ClientDetails.findById({
             _id: td[i].client,
           });
           if (!client) {
@@ -235,7 +235,7 @@ class TimeSheetService {
 
       async function checkClient(td) {
         for (let i = 0; i < td.length; i++) {
-          const client = await clientDetails.findById({
+          const client = await ClientDetails.findById({
             _id: td[i].client,
           });
           if (!client) {
@@ -360,7 +360,7 @@ class TimeSheetService {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
 
-      const client = await clientDetails.findById({ _id: payload.client });
+      const client = await ClientDetails.findById({ _id: payload.client });
       if (!client) {
         return res
           .status(400)
@@ -456,7 +456,7 @@ class TimeSheetService {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
 
-      const client = await clientDetails.findById({ _id: payload.client });
+      const client = await ClientDetails.findById({ _id: payload.client });
       if (!client) {
         return res
           .status(400)
@@ -525,7 +525,7 @@ class TimeSheetService {
               } else {
                 return res.status(200).json({
                   msgErr: false,
-                  message: 'New Task Details Added succesfully.',
+                  message: 'New Task Details Added Successfully.',
                 });
               }
             }
@@ -602,7 +602,7 @@ class TimeSheetService {
                 } else {
                   return res.status(200).json({
                     msgErr: false,
-                    message: 'Task Deleted Succesfully',
+                    message: 'Task Deleted Successfully',
                   });
                 }
               }
@@ -697,7 +697,7 @@ class TimeSheetService {
           message: 'Please Provide valid start date and end date.',
         });
       }
-      const existUser = await user.findById({ _id: userid });
+      const existUser = await User.findById({ _id: userid });
       if (!existUser) {
         return res.status(400).json({
           msgErr: true,
@@ -852,7 +852,7 @@ class TimeSheetService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Timesheet Edit Request Sended.',
+              message: 'Timesheet Edit Request Sent.',
             });
           }
         }
