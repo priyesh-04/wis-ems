@@ -2,8 +2,9 @@ const cron = require('node-cron');
 const { TimesheetCron } = require('./middlewares/cronJobs');
 
 const cronFunction = () => {
+  console.log('Cron Job Started.');
   cron.schedule(
-    '0 0 */1 * * *',
+    '0 0 12 * * *',
     () => {
       TimesheetCron.resetTimesheetEditPermission();
       console.log('All Timesheet edit permission Ended.');
@@ -15,7 +16,7 @@ const cronFunction = () => {
   );
 
   cron.schedule(
-    '0 0 */1 * * *',
+    '0 0 12 * * *',
     () => {
       TimesheetCron.changeAcceptedPermission();
       console.log('All Accepted Permission goes to Edited');
@@ -27,7 +28,7 @@ const cronFunction = () => {
   );
 
   cron.schedule(
-    '1 * * * * *',
+    '0 0 12 * * *',
     () => {
       TimesheetCron.createHolidayTimesheet();
       console.log('Creating Holiday sheet');

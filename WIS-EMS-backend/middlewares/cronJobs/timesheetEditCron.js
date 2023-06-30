@@ -44,7 +44,7 @@ class TimesheetCron {
         role: { $ne: 'admin' },
         is_active: true,
       });
-
+      console.log('Auto fillup holiday started');
       let date = new Date();
       let currentDay = date.getDay();
 
