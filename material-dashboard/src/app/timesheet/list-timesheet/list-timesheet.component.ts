@@ -2,7 +2,7 @@ import {
   Component,
   OnInit,
 } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { MatDialog } from "@angular/material/dialog";
 
@@ -20,7 +20,7 @@ import { MesgageService } from "../../services/shared/message.service";
   styleUrls: ["./list-timesheet.component.css"],
 })
 export class ListTimesheetComponent implements OnInit {
-  private userID: string = "";
+  private userID = "";
   public isAdmin: boolean;
   public timesheetList = [];
   public employeeList = [];
@@ -38,7 +38,6 @@ export class ListTimesheetComponent implements OnInit {
     private datepipe: DatePipe,
     private dialog: MatDialog,
     private route: ActivatedRoute,
-    private _router: Router
   ) {}
 
   ngOnInit(): void {
