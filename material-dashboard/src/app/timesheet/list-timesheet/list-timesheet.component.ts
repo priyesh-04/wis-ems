@@ -2,7 +2,7 @@ import {
   Component,
   OnInit,
 } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { DatePipe } from "@angular/common";
 import { MatDialog } from "@angular/material/dialog";
 
@@ -21,8 +21,9 @@ import { MesgageService } from "../../services/shared/message.service";
 })
 export class ListTimesheetComponent implements OnInit {
   private userID: string = "";
-  public isAdmin = "";
+  public isAdmin: boolean;
   public timesheetList = [];
+  public employeeList = [];
   public isLoading = false;
   public EditStatus = EditStatus;
   public filterStartDate: string;
@@ -36,15 +37,17 @@ export class ListTimesheetComponent implements OnInit {
     private _mesgageService: MesgageService,
     private datepipe: DatePipe,
     private dialog: MatDialog,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private _router: Router
   ) {}
 
   ngOnInit(): void {
     this.filterEndDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.filterStartDate = this.datepipe.transform((new Date).setDate((new Date).getDate() - 30), 'yyyy-MM-dd');
-    this.isAdmin = this._authService.isAdmin();
-    if (this.isAdmin === "true") {
+    this.isAdmin = this._authService.isAdmin()  === "true" ? true : false;
+    if (this.isAdmin) {
       this.userID = this.route.snapshot.paramMap.get("id");
+      this.employeeSpendTimeList();
     } else {
       this.userID = this._authService.getUserDetail().id;
     }
@@ -56,12 +59,23 @@ export class ListTimesheetComponent implements OnInit {
     this._employeeService.getTimesheet(this.userID, this.filterStartDate, this.filterEndDate, this.currentPage).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
-        this.totalPage = res.pagination.total_page;
+        this.totalPage = res.pagination ? res.pagination.total_page : 0;
         this.isLoading = !this.isLoading;
       },
       (err) => {
         this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch timesheet');
+      }
+    );
+  }
+
+  private employeeSpendTimeList() {
+    this._employeeService.getAllEmployeesSpendTime().subscribe(
+      (res) => {
+        this.employeeList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to employee list');
       }
     );
   }
@@ -176,5 +190,10 @@ export class ListTimesheetComponent implements OnInit {
   public loadMore() {
     this.currentPage++;
     this.refreshTimesheetList(true);
+  }
+
+  public selectEmployee(event) {
+    this.userID = event.value;
+    this.refreshTimesheetList();
   }
 }
