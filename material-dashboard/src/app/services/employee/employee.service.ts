@@ -97,10 +97,10 @@ export class EmployeeService {
     return this.http.delete(endpoint, httpOptions);
   }
 
-  editReqAdmin(timesheet_id, data): Observable<any> {
+  editReqAdmin(timesheet_id, reason): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/edit-req/${timesheet_id}`;
     const httpOptions = this.createHeaders();
-    return this.http.post(endpoint, {edit_status:'Requested'}, httpOptions);
+    return this.http.post(endpoint, {edit_status:'Requested', reason}, httpOptions);
   }
   allEditReqAdmin(): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/get-all-edit-req-sheet`;

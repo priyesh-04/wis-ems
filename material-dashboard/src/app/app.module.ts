@@ -24,6 +24,7 @@ import { PasswordChangeComponent } from "./authentication/password-change/passwo
 import { UserProfileComponent } from './authentication/profile/user-profile/user-profile.component';
 import { ForgotPasswordComponent } from './authentication/forgot-password/forgot-password.component';
 import { SetNewPasswordComponent } from './authentication/set-new-password/set-new-password.component';
+import { PageNotFoundComponent } from './authentication/page-not-found/page-not-found.component';
 
 @NgModule({
   imports: [
@@ -56,6 +57,7 @@ import { SetNewPasswordComponent } from './authentication/set-new-password/set-n
     UserProfileComponent,
     ForgotPasswordComponent,
     SetNewPasswordComponent,
+    PageNotFoundComponent,
   ],
   providers: [
     AuthGuard,

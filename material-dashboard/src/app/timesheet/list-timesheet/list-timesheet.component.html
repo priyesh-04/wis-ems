@@ -1,6 +1,16 @@
 <div class="container">
-    <div class="page-operations mb-3" *ngIf="isAdmin === 'false' && (timesheetList.length || !isLoading)">
+    <div class="page-operations mb-3" *ngIf="(timesheetList.length || !isLoading)">
         <div class="form-inline flex m-0">
+            <div class="col-sm-12 col-md-4" *ngIf="isAdmin">
+                <mat-form-field appearance="fill">
+                    <mat-label>Employee</mat-label>
+                    <mat-select [(value)]="userID" (selectionChange)="selectEmployee($event)">
+                        <mat-option *ngFor="let employee of employeeList" value="{{employee._id}}">
+                            {{employee.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             <div class="col-sm-12 col-md-4">
                 <mat-form-field appearance="legacy">
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterStartDate" (change)="refreshTimesheetList()" placeholder="Start Date">
@@ -12,7 +22,7 @@
                 </mat-form-field>
             </div>
         </div>
-        <button id="add-more-btn" mat-mini-fab color="primary" (click)="addTimesheetDialog()">
+        <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
             <mat-icon>add</mat-icon>
         </button>
     </div>
@@ -27,39 +37,46 @@
                 {{timesheet.date | date }} ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
                 date:'shortTime'}})
             </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
                 Add Task
             </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'"
+            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
             style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                 Edit All Task
             </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+            <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                 Request for Edit
             </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.Requested " class="ml-2 text-success">
+            <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-success">
                 Already Requested
-            </span>
-            
+            </span>            
         </div>
-        <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
-            <span class="client-name">
-                {{task.client?.company_name}}
-                ({{task.start_time| date:'shortTime'}} - {{task.end_time|
-                date:'shortTime'}})
-            </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted && isAdmin === 'false'">
-                <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
-                    (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
-                <span style="cursor: pointer;" class="text-danger"
-                    (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
-            </span>
-            <div class="project ml-3">
-                <p class="mb-0 project-name">{{task.project_name}}</p>
-                <p class="mb-0 ml-3 task-details">
-                    {{task.description}}
-                </p>
+        <ng-container *ngIf="!timesheet.leave">
+            <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
+                <span class="client-name">
+                    {{task.client?.company_name}}
+                    ({{task.start_time| date:'shortTime'}} - {{task.end_time|
+                    date:'shortTime'}})
+                </span>
+                <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin">
+                    <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
+                        (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
+                    <span style="cursor: pointer;" class="text-danger"
+                        (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
+                </span>
+                <div class="project ml-3">
+                    <p class="mb-0 project-name">{{task.project_name}}</p>
+                    <p class="mb-0 ml-3 task-details">
+                        {{task.description}}
+                    </p>
+                </div>
             </div>
+        </ng-container>
+        <div class="client-project ml-2 my-1" *ngIf="timesheet.leave || (!timesheet.is_holiday && !timesheet.task_details)">
+            <span class="text-danger">Leave</span>
+        </div>
+        <div class="client-project ml-2 my-1" style="color: rgb(2, 117, 18);" *ngIf="timesheet.is_holiday && !timesheet.task_details">
+            <span class="text-danger">Holiday</span>
         </div>
     </div>
     <div>
