@@ -1,0 +1,13 @@
+.display1{
+    font-size: 5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+.error-page{
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 2rem;
+}
+.min-height-not-found {
+    transform: translate(0%, 50%);
+}

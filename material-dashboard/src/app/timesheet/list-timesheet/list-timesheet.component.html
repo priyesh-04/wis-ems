@@ -79,8 +79,8 @@
             <span class="text-danger">Holiday</span>
         </div>
     </div>
-    <div>
-        <button class="btn btn-danger" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
+    <div class="text-center my-3">
+        <button mat-stroked-button class="btn btn-primary" color="primary" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
     </div>
 </div>
 <div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" *ngIf="isLoading">

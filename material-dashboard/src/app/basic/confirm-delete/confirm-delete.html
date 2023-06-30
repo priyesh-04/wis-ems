@@ -5,8 +5,7 @@
     <p><strong>{{deleteDialogData['message']}}</strong></p>
 </div>
 
-<textarea placeholder="Reason" style="width: 100%;" [(ngModel)]='editRequestReason' *ngIf="deleteDialogData['callingFrom'] === 'editReqAdmin'"></textarea>
-
+<textarea placeholder="Reason" style="min-width: 500px;" class="mb-3" [(ngModel)]='editRequestReason' *ngIf="deleteDialogData['callingFrom'] === 'editReqAdmin'" rows="5"></textarea>
 <div mat-dialog-actions class="text-center">
     <button mat-raised-button color="warn" (click)="onYesClick(deleteDialogData)" class="mr-3">Yes</button>
     <button mat-raised-button color="primary" (click)="onNoClick()">No</button>
