@@ -26,6 +26,9 @@
                   <input matInput type="email" class="form-control rounded-0" formControlName="email_id"
                     placeholder="Email ID">
                 </mat-form-field>
+                <div class="text-danger" *ngIf="form.email_id.touched && !form.password.valid">
+                  Password field cannot be left blank. 
+                </div>
               </div>
 
               <div class="field-container">
@@ -34,14 +37,14 @@
                     placeholder="Password">
                 </mat-form-field>
                 <div class="text-danger" *ngIf="form.password.touched && !form.password.valid">
-                  Password field cannot be left blank.
+                  Password field cannot be left blank. 
                 </div>
               </div>
               <div class="text-left mb-3">
                 <a [routerLink]="['/forgot-password']" class="forgot-password">Forgot Password?</a>
               </div>
 
-              <button type="submit" mat-raised-button color="primary" class="h5 w-100">
+              <button type="submit" mat-raised-button color="primary" class="h5 w-100" [disabled]="!loginForm.valid">
                 Login
               </button>
             </form>

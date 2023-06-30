@@ -25,6 +25,9 @@ export class ForgotPasswordComponent implements OnInit {
       email_id: ["", [Validators.required, validatorEmail]],
     });
   }
+  public get fpass() {
+    return this.forgotPass.controls;
+  }
 
 /**
  * forgotPass
