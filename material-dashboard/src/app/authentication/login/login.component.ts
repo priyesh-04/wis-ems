@@ -29,10 +29,11 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       email_id: ["", [Validators.required, validatorEmail]],
       password: ["", [Validators.required,
-        Validators.pattern(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
-        ),
-        Validators.minLength(8),]],
+        // Validators.pattern(
+        //   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        // ),
+        // Validators.minLength(8),
+      ]],
     });
   }
 

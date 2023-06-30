@@ -18,10 +18,12 @@ export const UserRoutes: Routes = [
   {
     path: "dashboard",
     component: HomeComponent,
+    canActivate: [AuthGuard],
   },
   {
     path:"profile",
     component:UserProfileComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: "change-password",
