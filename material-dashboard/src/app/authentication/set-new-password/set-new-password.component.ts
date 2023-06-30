@@ -29,16 +29,25 @@ export class SetNewPasswordComponent implements OnInit {
   
   ngOnInit(): void {
     this.resetPass = this.fb.group({
-      password: ["", [Validators.required]],
-      conPassword: ["", [Validators.required]],
+      password: ["", [Validators.required,
+        Validators.pattern(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        ),
+        Validators.minLength(8),
+      ]],
+      conPassword: ["", [Validators.required,
+        Validators.pattern(
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        ),
+        Validators.minLength(8),]],
     })   
     let params = this.activatedRoute.snapshot.params;
       this.userId = params['userId'];
       this.token = params['token'];
   }
-  // get lForm() {
-  //   return this.resetPass.controls;
-  // }
+  get lForm() {
+    return this.resetPass.controls;
+  }
  /**
   * resetPassword
   */

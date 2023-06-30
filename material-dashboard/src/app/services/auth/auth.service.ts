@@ -47,7 +47,7 @@ export class AuthService {
     }
   }
 
-  checkToken() {
+  checkToken() {    
     return this._cookieService.check("token");
   }
 
@@ -75,9 +75,18 @@ export class AuthService {
     return "false";
   }
 
-  performLogout() {
-    this._cookieService.delete("token", "/");
+  performLogout(userId): Observable<any> {
+    console.log(userId, 'userId 22'); 
+    const endpoint = `${this.baseUrl}/logout/${userId}`;
+    const httpOptions = this.createHeaders();
+    this._cookieService.delete("token");
+    this._cookieService.delete("refreshToken");
+    this._cookieService.delete("currentUser");
+    this._cookieService.delete("role");
+    this._cookieService.delete("id");
     this._router.navigate(["/login"]);
+    return this.http.post(endpoint, httpOptions);
+    
   }
 
   doLogin(userData): Observable<any> {

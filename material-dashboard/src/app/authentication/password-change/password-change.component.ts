@@ -61,7 +61,7 @@ export class PasswordChangeComponent implements OnInit {
         this.isLoading = false;
         this.isLoaded = false;
         this._router.navigate(['/login']);
-        this._authService.performLogout()
+        this._authService.performLogout(this._authService.getUserDetail().id)
         this._mesgageService.showSuccess(res.message);
       }, err => {
         this.isLoading = false;

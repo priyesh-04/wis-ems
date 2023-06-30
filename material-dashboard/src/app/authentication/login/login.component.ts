@@ -28,7 +28,12 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.loginForm = this.fb.group({
       email_id: ["", [Validators.required, validatorEmail]],
-      password: ["", [Validators.required]],
+      password: ["", [Validators.required,
+        // Validators.pattern(
+        //   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
+        // ),
+        // Validators.minLength(8),
+      ]],
     });
   }
 
@@ -46,7 +51,7 @@ export class LoginComponent implements OnInit {
         this._authService.userLoggedIn = this._cookieService.get("currentUser");
         this.isLoading = !this.isLoading;
         const returnUrl = this._route.snapshot.queryParamMap.get("returnUrl");
-        this._router.navigate([returnUrl || "/"]);
+        this._router.navigate(["/dashboard"]);
       },
       (err) => {
         this.isLoading = !this.isLoading;    

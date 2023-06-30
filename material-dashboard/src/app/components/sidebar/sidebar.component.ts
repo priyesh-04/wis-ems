@@ -12,14 +12,12 @@ declare interface RouteInfo {
 
 export const employeeROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
-  // { path: "/home", title: "Home", icon: "home", class: "" },
   {
     path: "/timesheet-list",
     title: "Timesheet List",
     icon: "article",
     class: "",
-  },
-  // { path: "/logout", title: "Logout", icon: "power_settings_new", class: "" },
+  }
 ];
 export const hrROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
@@ -94,7 +92,7 @@ export class SidebarComponent implements OnInit {
     const user = this._authService.getUserDetail();
     console.log(user, "user");
     if (!user) {
-      this._authService.performLogout();
+      this._authService.performLogout(user.id);
       this.router.navigate(["/login"]);
     } else {
       if (user.role === "admin") {

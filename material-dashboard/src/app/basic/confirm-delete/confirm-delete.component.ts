@@ -18,7 +18,7 @@ export interface DialogData {
 })
 export class ConfirmDeleteComponent {
   public isApprove : string
-
+  public logoutTitle : any
   constructor(
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
@@ -29,11 +29,16 @@ export class ConfirmDeleteComponent {
     @Inject(MAT_DIALOG_DATA) public deleteDialogData: DialogData
   ) {}
 
+
   public onNoClick(): void {
     this.deleteDialogRef.close();
   }
-
-  public onYesClick(data): void {  
+ 
+  ngOnInit(){
+    this.logoutTitle = this.deleteDialogRef.componentInstance.deleteDialogData
+  }
+  public onYesClick(data): void { 
+    
     if (data.callingFrom === "designation") {
       this.deleteDesignation(data.id);
     } else if (data.callingFrom === "deleteSingleTask") {
@@ -41,8 +46,7 @@ export class ConfirmDeleteComponent {
     }else if (data.callingFrom === "deleteTask") {
       this.deleteDialogRef.close("success");   
     } else if (data.callingFrom === "logOut") {
-      this._authService.performLogout();
-      this.deleteDialogRef.close("success");  
+      this.profileLogout(data.userId)  
     } else if (data.callingFrom === "editReqAdmin") {
       this.editReqAdmin(data.timesheet_id, data);     
     } else if (data.callingFrom === "reqTaskApprove") {
@@ -54,6 +58,19 @@ export class ConfirmDeleteComponent {
     }
   }
 
+  // this._authService.performLogout(data.userId);
+  private profileLogout(userId) {
+    this._authService.performLogout(userId).subscribe(      
+      (res) => {        
+        this._mesgageService.showSuccess(res.message);
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+        this.deleteDialogRef.close(err);
+      }
+    );
+  }
   private deleteSingleTask(data) {
     this._employeeService.deleteSingleTask(data.timesheet_id, data.tasksheet_id, data).subscribe(      
       (res) => {
