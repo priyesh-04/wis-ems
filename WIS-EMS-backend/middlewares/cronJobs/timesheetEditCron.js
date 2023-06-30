@@ -1,15 +1,15 @@
-const User = require('../../models/auth/user');
-const Timesheet = require('../../models/timesheets/timesheets');
+const { User } = require('../../models/auth/user');
+const { Timesheets } = require('../../models/timesheets/timesheets');
 
 class TimesheetCron {
   async resetTimesheetEditPermission(req, res, next) {
     try {
-      const result = await Timesheet.find({
+      const result = await Timesheets.find({
         $or: [{ edit_status: 'New' }],
       });
       console.log('New Change to Initial');
       for (let i = 0; i < result.length; i++) {
-        await Timesheet.findByIdAndUpdate(
+        await Timesheets.findByIdAndUpdate(
           { _id: result[i]._id },
           { edit_status: 'Initial' },
           { new: true }
@@ -22,12 +22,12 @@ class TimesheetCron {
 
   async changeAcceptedPermission(req, res, next) {
     try {
-      const result = await Timesheet.find({
+      const result = await Timesheets.find({
         $or: [{ edit_status: 'Accepted' }],
       });
       console.log('Accepted Change to Edited');
       for (let i = 0; i < result.length; i++) {
-        await Timesheet.findByIdAndUpdate(
+        await Timesheets.findByIdAndUpdate(
           { _id: result[i]._id },
           { edit_status: 'Edited' },
           { new: true }
@@ -70,7 +70,7 @@ class TimesheetCron {
       // console.log(today, dayEnd);
 
       const checkAndCreate = async (user) => {
-        let existTimesheet = await Timesheet.findOne({
+        let existTimesheet = await Timesheets.findOne({
           created_by: user._id,
           date: { $gte: today, $lte: dayEnd },
         });
@@ -84,7 +84,7 @@ class TimesheetCron {
             leave: false,
             is_holiday: true,
           };
-          let newRequest = await Timesheet(data);
+          let newRequest = await Timesheets(data);
           newRequest.save();
           //   console.log('created one');
           // } else {

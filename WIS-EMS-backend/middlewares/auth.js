@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const UserToken = require('../models/auth/userToken');
+const { UserToken } = require('../models/auth/userToken');
 
 class ApiAuthValidator {
   validateAccessToken(req, res, next) {

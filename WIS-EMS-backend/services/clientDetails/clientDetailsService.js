@@ -1,7 +1,6 @@
 const Joi = require('joi');
-const ClientDetails = require('../../models/clientDetails/clientDetails');
-const taskDetails = require('../../models/timesheets/taskDetails');
-const user = require('../../models/auth/user');
+const { ClientDetails } = require('../../models/clientDetails/clientDetails');
+const { TaskDetails } = require('../../models/timesheets/taskDetails');
 
 class ClientDetailsService {
   async addClient(req, res, next) {
@@ -128,7 +127,7 @@ class ClientDetailsService {
 
   async deleteClient(req, res, next) {
     try {
-      const usedClient = await taskDetails.find({ client: req.params.id });
+      const usedClient = await TaskDetails.find({ client: req.params.id });
       if (usedClient) {
         return res.status(400).json({
           msgErr: true,
@@ -165,8 +164,7 @@ class ClientDetailsService {
   async getAllTaskClientWise(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await taskDetails
-        .find({ client: req.params.id })
+      await TaskDetails.find({ client: req.params.id })
         .populate('client', '_id client_name')
         .populate('created_by', '_id name')
         .sort({ createdAt: -1 })

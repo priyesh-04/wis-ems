@@ -1,14 +1,16 @@
 const Joi = require('joi');
 const { CustomErrorhandler } = require('../../utils');
-const User = require('../../models/auth/user');
+const { User } = require('../../models/auth/user');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { TokenService } = require('../../utils');
-const UserToken = require('../../models/auth/userToken');
-const designation = require('../../models/designation/designation');
+const { UserToken } = require('../../models/auth/userToken');
+const { Designation } = require('../../models/designation/designation');
 const jwt = require('jsonwebtoken');
-const taskDetails = require('../../models/timesheets/taskDetails');
-const ForgotPasswordToken = require('../../models/auth/forgotPasswordToken');
+const { TaskDetails } = require('../../models/timesheets/taskDetails');
+const {
+  ForgotPasswordToken,
+} = require('../../models/auth/forgotPasswordToken');
 const crypto = require('crypto');
 const { EmailSend } = require('../../helper/email/emailSend');
 const EmailConfig = require('../../config/emailConfig');
@@ -96,7 +98,7 @@ class AuthService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
-      const existDesignation = await designation.findById({
+      const existDesignation = await Designation.findById({
         _id: payload.designation,
       });
       if (!existDesignation) {
@@ -255,7 +257,7 @@ class AuthService {
       if (error) {
         return res.status(400).json({ msgErr: true, message: error.message });
       }
-      const existDesignation = await designation.findById({
+      const existDesignation = await Designation.findById({
         _id: payload.designation,
       });
       if (!existDesignation) {
@@ -583,7 +585,7 @@ class AuthService {
           } else {
             let result = [];
             for (let i = 0; i < details.length; i++) {
-              let task = await taskDetails.find({
+              let task = await TaskDetails.find({
                 created_by: details[i],
                 date: { $gte: start_date, $lte: end_date },
               });

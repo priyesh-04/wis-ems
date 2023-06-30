@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { wisDB } = require('../../config/connection');
 
 const ForgotPasswordTokenSchema = new Schema(
   {
@@ -21,8 +22,10 @@ const ForgotPasswordTokenSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
+const ForgotPasswordToken = wisDB.model(
   'ForgotPasswordToken',
   ForgotPasswordTokenSchema,
   'forgotPasswordToken'
 );
+
+module.exports = { ForgotPasswordToken };
