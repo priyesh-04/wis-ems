@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ViewChild } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 
 import { ClientService } from "../../services/client/client.service";
@@ -6,6 +6,7 @@ import { EmployeeService } from "../../services/employee/employee.service";
 import { AuthService } from "../../services/auth/auth.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { DesignationService } from "../../services/designation/designation.service";
+import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 
 export interface DialogData {
   animal: string;
@@ -30,6 +31,7 @@ export class ConfirmDeleteComponent {
     private deleteDialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public deleteDialogData: DialogData
   ) {}
+@ViewChild('autosize') autosize: CdkTextareaAutosize;
  
   ngOnInit(){
     this.logoutTitle = this.deleteDialogRef.componentInstance.deleteDialogData

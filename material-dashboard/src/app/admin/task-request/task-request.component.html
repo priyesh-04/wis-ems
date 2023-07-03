@@ -7,7 +7,7 @@
                     <th scope="col" class="font-weight-bold">Name</th>
                     <th scope="col" class="font-weight-bold">Employee Id</th>
                     <th scope="col" class="font-weight-bold">Email Id</th>
-                    <th scope="col" class="font-weight-bold">Reason</th>
+                    <th scope="col" class="font-weight-bold w-25">Reason</th>
                     <th scope="col" class="font-weight-bold">Request Date</th>
                     <th scope="col" class="font-weight-bold">Actions</th>
                 </tr>
@@ -18,15 +18,16 @@
                     <td>{{reqList.created_by.name}}</td>
                     <td>{{reqList.created_by.emp_id}}</td>
                     <td>{{reqList.created_by.email_id}}</td>
-                    <td>test</td>
-                    <td>{{reqList.date | date: 'dd/MM/YYYY'}}</td>
-                    <!-- <td>
-                        <a [routerLink]="['/timesheet-list', reqList._id]">
-                            View
-                        </a>
-                    </td> -->
                     <td>
-                        <div *ngIf="reqList.edit_status == 'Requested'">
+                        <div class="request-details">
+                            <div *ngFor="let reason of reqList.edit_reason; let i = index" >
+                                {{i+1}}. {{reason.name}} ({{reason.date | date: 'dd-MM-yyyy hh:mm a'}})
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{reqList.date | date: 'dd/MM/YYYY'}}</td>
+                    <td>
+                        <div *ngIf="reqList.edit_status == EditStatus.Requested">
                             <button class="mr-2" mat-raised-button color="primary" (click)="approveDialog(reqList._id)">
                                 Approve
                             </button>
@@ -34,9 +35,9 @@
                                 Reject
                             </button>
                         </div> 
-                        <p *ngIf="reqList.edit_status == 'Rejected'">Rejected</p>                       
-                        <p *ngIf="reqList.edit_status == 'Accepted'">Accepted</p>                       
-                        <p *ngIf="reqList.edit_status == 'Edited'">Already Edited</p>                       
+                        <p *ngIf="reqList.edit_status == EditStatus.Rejected">{{ EditStatus.Rejected }}</p>                       
+                        <p *ngIf="reqList.edit_status == EditStatus.Accepted">{{ EditStatus.Accepted }}</p>                       
+                        <p *ngIf="reqList.edit_status == EditStatus.Edited">{{ EditStatus.Edited }}</p>                       
                     </td>
                 </tr>
             </tbody> 
