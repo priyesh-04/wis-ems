@@ -7,11 +7,10 @@ const OfficeHolidaysSchema = new mongoose.Schema(
       type: Date,
       trim: true,
     },
-    type: {
+    event: {
       type: String,
-      enum: ['normal', 'regional'],
       trim: true,
-      default: 'normal',
+      required: true,
     },
     description: {
       type: String,

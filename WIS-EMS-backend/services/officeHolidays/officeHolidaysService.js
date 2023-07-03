@@ -9,8 +9,8 @@ class OfficeHolidaysService {
       let payload = req.body;
       let holidaySchema = Joi.object({
         date: Joi.date().required(),
-        type: Joi.string(),
-        description: Joi.string().required(),
+        event: Joi.string().required(),
+        description: Joi.string().required().allow(''),
       });
 
       const { error } = holidaySchema.validate(payload);
@@ -41,8 +41,8 @@ class OfficeHolidaysService {
       let payload = req.body;
       let holidaySchema = Joi.object({
         date: Joi.date().required(),
-        type: Joi.string(),
-        description: Joi.string().required(),
+        event: Joi.string().required(),
+        description: Joi.string().required().allow(''),
       });
 
       const { error } = holidaySchema.validate(payload);
@@ -131,6 +131,5 @@ class OfficeHolidaysService {
     }
   }
 }
-// get list
 
 module.exports = new OfficeHolidaysService();
