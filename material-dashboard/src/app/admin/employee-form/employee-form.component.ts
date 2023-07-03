@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, Input } from "@angular/core";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators, FormControl } from "@angular/forms";
 import {
   validatorIndianMobileNumber,
   validatorEmail,
@@ -10,6 +10,8 @@ import { EmployeeListComponent } from "../employee-list/employee-list.component"
 import { DesignationService } from "../../services/designation/designation.service";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { MesgageService } from "../../services/shared/message.service";
+import { ClientService } from "../../services/client/client.service";
+
 @Component({
   selector: "app-employee-form",
   templateUrl: "./employee-form.component.html",
@@ -18,19 +20,23 @@ import { MesgageService } from "../../services/shared/message.service";
 export class EmployeeFormComponent implements OnInit {
   employeeForm: FormGroup;
   employeeData: any;
+  clientList:[];
   designationList: any;
   selectedDesignation: any;
   selectedRole: any;
+  selectedClients : any;
+  selectedHolidays : any;
   roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
   ];
-
+  holidayList: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   constructor(
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
     public fb: FormBuilder,
     private _mesgageService: MesgageService,
+    private _clientService: ClientService,
     public dialogRef: MatDialogRef<EmployeeListComponent>,
     @Inject(MAT_DIALOG_DATA) public employeeDialogData
   ) {}
@@ -43,16 +49,34 @@ export class EmployeeFormComponent implements OnInit {
       phone_num: ["", [Validators.required, validatorIndianMobileNumber]],
       address: ["", [Validators.required]],
       designation: ["", [Validators.required]],
-      role: ["", [Validators.required]]
+      role: ["", [Validators.required]],
+      assigned_client: ["", [Validators.required]],
+      holidays: ["", [Validators.required]]
     });
     
     if (this.employeeDialogData.mode === "edit") {
       this.getDesignationList();
+      this.getClientList();
       this.selectedDesignation =
         this.employeeDialogData.employeeData.designation._id;
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
+          
+      this.selectedClients = this.employeeDialogData.employeeData.assigned_client.filter(function (el) {
+        console.log(el, 'el');
+        
+        return el._id
+      });
+      // this.selectedClients = this.clientId;
+      this.selectedHolidays = this.employeeDialogData.employeeData.holidays.forEach(el =>{
+        el
+      }); 
+      console.log(this.selectedClients, 'this.selectedClients');
+      console.log(this.selectedHolidays, 'this.selectedHolidays');
+      
+      this.selectedHolidays = this.employeeDialogData.employeeData.holidays;
+      console.log(this.employeeDialogData.employeeData,'main data');      
       this.selectedRole = this.employeeDialogData.employeeData.role;
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
@@ -62,14 +86,33 @@ export class EmployeeFormComponent implements OnInit {
         address: this.employeeDialogData.employeeData.address,
         designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
+        assigned_client:[{
+          _id :"648183c002532e19d3ea921a"
+        }         
+        ],
+        holidays: [
+          [0, 6]
+        ],
+        
       });
+      
       document.getElementById("password-div").style.display = "none";
     } else if (this.employeeDialogData.mode === "add") {
       this.getDesignationList();
+      this.getClientList();
       document.getElementById("password-div").style.display = "block";
     }
   }
-
+  private getClientList() {
+    this._clientService.getClientList().subscribe(
+      (res) => {
+        this.clientList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+      }
+    );
+  }
   closeDialog() {
     this.dialogRef.close();
   }
@@ -91,6 +134,7 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit(employeeForm: FormGroup) {
     this.employeeData = employeeForm.value;
+    console.log(this.employeeData);
     if (this.employeeDialogData.mode === "edit") {
       this._employeeService
         .updateEmployee(
