@@ -861,6 +861,72 @@ class AuthService {
         .json({ msgErr: true, message: 'Internal Server Error ' + error });
     }
   }
+
+  async passwordResendEmail(req, res, next) {
+    try {
+      let userId = req.params.uid;
+      const userDetails = await User.findById({ _id: userId });
+      if (!userDetails) {
+        return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
+      }
+      let alreadyRequestedToken = await ForgotPasswordToken.findOne({
+        user_id: userId,
+      });
+      let tokenData = {
+        user_id: userDetails._id,
+        email: userDetails.email_id,
+        token: crypto.randomBytes(32).toString('hex'),
+      };
+      if (!alreadyRequestedToken) {
+        let newRequest = await ForgotPasswordToken(tokenData);
+        newRequest.save((err, _) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          }
+        });
+      } else {
+        await ForgotPasswordToken.findByIdAndUpdate(
+          { _id: alreadyRequestedToken._id },
+          tokenData,
+          (err, _) => {
+            if (err) {
+              return res.status(400).json({
+                msgErr: true,
+                message: 'Something went wrong. ' + err,
+              });
+            }
+          }
+        );
+      }
+
+      const link = `${process.env.CLIENT_BASE_URL}/reset-password/${userDetails._id}/${tokenData.token}`;
+      const emailData = {
+        template: EmailConfig.TEMPLATES.PASSWORD_RESET_REQ,
+        subject: EmailConfig.SUBJECT.PASSWORD_RESET_REQ,
+        email: userDetails.email_id,
+        emailBody: {
+          name: userDetails.name,
+          url: link,
+        },
+      };
+      let emailSendStatus = EmailSend(emailData);
+      if (!emailSendStatus) {
+        return res
+          .status(400)
+          .json({ msgErr: true, message: 'Something went wrong. ' + err });
+      }
+      return res.status(200).json({
+        msgErr: false,
+        message: 'Reset Password link sended to the existing email.',
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
 }
 
 module.exports = new AuthService();
