@@ -20,7 +20,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   @Output() updateDialog = new EventEmitter<messageModel>();
 
   public employeeList: any;
-
+  public useDefault :boolean;
   constructor(    
     private _employeeService: EmployeeService,
     public dialog: MatDialog,
@@ -39,7 +39,10 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       this.refreshEmployeeList();
     }
   }
-
+  // public toggleStatus(event) {
+  //   console.log('Toggle fired');
+  //   this.useDefault = event.checked;
+  // }
   refreshEmployeeList() {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {

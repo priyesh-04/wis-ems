@@ -27,6 +27,7 @@ export class EmployeeFormComponent implements OnInit {
   selectedClients : any;
   selectedHolidays : any;
   isAdmin :boolean;
+  selectedDays : string[]=[];
   roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
@@ -65,16 +66,19 @@ export class EmployeeFormComponent implements OnInit {
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
-          
-      this.selectedClients = this.employeeDialogData.employeeData.assigned_client.filter(function (el) {
-        console.log(el, 'el');
-        
-        return el._id
-      });
-      // this.selectedClients = this.clientId;
-      this.selectedHolidays = this.employeeDialogData.employeeData.holidays.forEach(el =>{
-        el
-      }); 
+      this.selectedClients = this.employeeDialogData.employeeData.assigned_client;
+       let clientId = []
+      for (let i = 0; i < this.selectedClients.length; i++) {
+        clientId.push(this.selectedClients[i]['_id'])
+      }
+      console.log(clientId, 'clientId');
+      this.selectedHolidays = this.employeeDialogData.employeeData.holidays;      
+      for (let index in this.selectedHolidays) {
+        this.selectedDays.push(this.selectedHolidays[index])          
+        console.log(this.selectedHolidays[index], '888');
+      };
+      
+      console.log(this.selectedDays, 'holidays name');
       console.log(this.selectedClients, 'this.selectedClients');
       console.log(this.selectedHolidays, 'this.selectedHolidays');
       
@@ -89,13 +93,8 @@ export class EmployeeFormComponent implements OnInit {
         address: this.employeeDialogData.employeeData.address,
         designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
-        assigned_client:[{
-          _id :"648183c002532e19d3ea921a"
-        }         
-        ],
-        holidays: [
-          [0, 6]
-        ],
+        assigned_client:clientId,
+        holidays: this.selectedDays
         
       });
       
