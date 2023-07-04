@@ -26,6 +26,7 @@ export class EmployeeFormComponent implements OnInit {
   selectedRole: any;
   selectedClients : any;
   selectedHolidays : any;
+  isAdmin :boolean;
   roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
@@ -53,7 +54,9 @@ export class EmployeeFormComponent implements OnInit {
       assigned_client: ["", [Validators.required]],
       holidays: ["", [Validators.required]]
     });
-    
+    if (this.employeeDialogData.role === 'admin') {
+      this.isAdmin = true    
+    }
     if (this.employeeDialogData.mode === "edit") {
       this.getDesignationList();
       this.getClientList();

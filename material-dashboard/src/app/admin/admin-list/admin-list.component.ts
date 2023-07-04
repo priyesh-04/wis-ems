@@ -58,6 +58,7 @@ export class AdminListComponent implements OnInit {
         matDialogTitle: "Update Admin Details",
         employeeData: adminData,
         mode: "edit",
+        role: "admin"
       },
       width: "90%",
       height: "90%",
