@@ -714,6 +714,11 @@ class AuthService {
       const userDetails = await User.findOne({ email_id: payload.email_id });
       if (!userDetails) {
         return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
+      } else if (!userDetails.is_active) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Inactive User. Please Contact with Admin of Hr',
+        });
       }
       let alreadyRequestedToken = await ForgotPasswordToken.findOne({
         user_id: userDetails._id,
@@ -818,7 +823,7 @@ class AuthService {
       const hashPassword = await bcrypt.hash(payload.password, salt);
       await User.findByIdAndUpdate(
         { _id: user._id },
-        { password: hashPassword, first_login: false },
+        { password: hashPassword, first_login: false, is_active: true },
         async (err, details) => {
           if (err) {
             return res.status(400).json({
