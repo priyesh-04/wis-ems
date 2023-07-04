@@ -57,7 +57,7 @@ const UserSchema = new mongoose.Schema(
     },
     is_active: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     first_login: {
       type: Boolean,
