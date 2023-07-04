@@ -60,3 +60,10 @@ admin reject => Rejected
 after approved edit => Edited
 ! edited => Edited
 
+
+// flow 2
+default => Present
+no submission => Not Submit
+holiday => Holiday
+leave => Leave
+

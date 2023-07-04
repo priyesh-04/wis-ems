@@ -49,16 +49,16 @@ const TimeSheetSchema = new mongoose.Schema(
       trim: true,
       ref: 'user',
     },
-    leave: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
-    is_holiday: {
-      type: Boolean,
-      default: false,
-      required: true,
-    },
+    // leave: {
+    //   type: Boolean,
+    //   default: false,
+    //   required: true,
+    // },
+    // is_holiday: {
+    //   type: Boolean,
+    //   default: false,
+    //   required: true,
+    // },
     edit_reason: [
       {
         name: { type: String, trim: true },
@@ -73,6 +73,12 @@ const TimeSheetSchema = new mongoose.Schema(
         ref: 'TaskDetails',
       },
     ],
+    status: {
+      type: String,
+      enum: ['Present', 'Not Submit', 'Holiday', 'Official Holiday', 'Leave'],
+      trim: true,
+      default: 'Present',
+    },
   },
   { timestamps: true }
 );

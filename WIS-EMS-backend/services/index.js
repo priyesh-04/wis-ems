@@ -3,6 +3,7 @@ const RefreshTokenService = require('./auth/UserTokenService');
 const ClientDetailsService = require('./clientDetails/clientDetailsService');
 const DesignationService = require('./designation/designationService');
 const TimeSheetService = require('./timesheets/timesheetsServices');
+const OfficeHolidaysService = require('./officeHolidays/officeHolidaysService');
 
 module.exports = {
   AuthService,
@@ -10,4 +11,5 @@ module.exports = {
   ClientDetailsService,
   DesignationService,
   TimeSheetService,
+  OfficeHolidaysService,
 };

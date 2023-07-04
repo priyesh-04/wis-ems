@@ -87,4 +87,12 @@ router.get(
   UserController.usetListWithSpendTime
 );
 
+router.post(
+  '/password-reset-resend-email/user/:uid',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
+  ApiAuthValidator.authorizeRole('admin'),
+  UserController.passwordResendEmail
+);
+
 module.exports = router;

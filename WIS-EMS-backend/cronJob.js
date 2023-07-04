@@ -3,8 +3,9 @@ const { TimesheetCron } = require('./middlewares/cronJobs');
 
 const cronFunction = () => {
   console.log('Cron Job Started.');
+  // reset timesheet permission
   cron.schedule(
-    '0 0 12 * * *',
+    '55 59 23 * * *',
     () => {
       TimesheetCron.resetTimesheetEditPermission();
       console.log('All Timesheet edit permission Ended.');
@@ -14,9 +15,10 @@ const cronFunction = () => {
       timezone: 'Asia/Kolkata',
     }
   );
-
+  //once edited -> edited status
+  // end of the day
   cron.schedule(
-    '0 0 12 * * *',
+    '53 59 23 * * *',
     () => {
       TimesheetCron.changeAcceptedPermission();
       console.log('All Accepted Permission goes to Edited');
@@ -26,12 +28,28 @@ const cronFunction = () => {
       timezone: 'Asia/Kolkata',
     }
   );
-
+  // holiday or not submission created
+  // run end of the day
   cron.schedule(
-    '0 0 12 * * *',
+    '50 59 23 * * *',
     () => {
       TimesheetCron.createHolidayTimesheet();
       console.log('Creating Holiday sheet');
+    },
+    {
+      scheduled: true,
+      timezone: 'Asia/Kolkata',
+    }
+  );
+
+  // create official holidays
+  // run start at start of the day
+  // run at 0 10 0 * * *
+  cron.schedule(
+    '0 10 0 * * *',
+    () => {
+      TimesheetCron.createOfficalHolidayTimesheet();
+      console.log('Creating Official Holiday sheet');
     },
     {
       scheduled: true,

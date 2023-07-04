@@ -1,5 +1,8 @@
 const { User } = require('../../models/auth/user');
 const { Timesheets } = require('../../models/timesheets/timesheets');
+const {
+  OfficeHolidays,
+} = require('../../models/officeHolidays/officeHolidays');
 
 class TimesheetCron {
   async resetTimesheetEditPermission(req, res, next) {
@@ -79,25 +82,102 @@ class TimesheetCron {
             in_time: null,
             out_time: null,
             edit_status: 'Initial',
-            date: new Date(), /// have to check
+            date: dayEnd, /// have to check
             created_by: user._id,
-            leave: false,
-            is_holiday: true,
+            status: 'Holiday',
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
-          //   console.log('created one');
-          // } else {
-          //   console.log('not created');
         }
         // console.log(existTimesheet);
 
         return true;
       };
 
+      const notSubmitCreate = async (user) => {
+        let existTimesheet = await Timesheets.findOne({
+          created_by: user._id,
+          date: { $gte: today, $lte: dayEnd },
+        });
+        if (!existTimesheet) {
+          let data = {
+            in_time: null,
+            out_time: null,
+            edit_status: 'Initial',
+            date: dayEnd,
+            created_by: user._id,
+            status: 'Not Submit',
+          };
+          let newRequest = await Timesheets(data);
+          newRequest.save();
+        }
+      };
+
       for (let i = 0; i < result.length; i++) {
         if (result[i].holidays.some((el) => el == currentDay)) {
           await checkAndCreate(result[i]);
+        } else {
+          await notSubmitCreate(result[i]);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // to be
+  async createOfficalHolidayTimesheet(req, res, next) {
+    try {
+      let date = new Date();
+      const today =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() > 8
+          ? date.getMonth() + 1
+          : '0' + (date.getMonth() + 1)) +
+        '-' +
+        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
+        'T00:00:00+05:30';
+
+      let dayEnd =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() > 8
+          ? date.getMonth() + 1
+          : '0' + (date.getMonth() + 1)) +
+        '-' +
+        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
+        'T23:59:59+05:30';
+      let isTodayHoliday = await OfficeHolidays.find({
+        date: { $gte: today, $lte: dayEnd },
+      });
+
+      const result = await User.find({
+        role: { $ne: 'admin' },
+        is_active: true,
+      });
+
+      const officialHolidayCreate = async (user) => {
+        let existTimesheet = await Timesheets.findOne({
+          created_by: user._id,
+          date: { $gte: today, $lte: dayEnd },
+        });
+        if (!existTimesheet) {
+          let data = {
+            in_time: null,
+            out_time: null,
+            edit_status: 'Initial',
+            date: dayEnd,
+            created_by: user._id,
+            status: 'Official Holiday',
+          };
+          let newRequest = await Timesheets(data);
+          newRequest.save();
+        }
+      };
+
+      if (isTodayHoliday.length > 0) {
+        for (let i = 0; i < result.length; i++) {
+          await officialHolidayCreate(result[i]);
         }
       }
     } catch (error) {
