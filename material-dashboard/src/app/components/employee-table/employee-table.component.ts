@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { EmployeeService } from '../../services/employee/employee.service';
 import { EmployeeFormComponent } from '../../admin/employee-form/employee-form.component';
+import { MesgageService } from '../../services/shared/message.service';
 
 export interface messageModel {
   alertType: string;
@@ -23,7 +24,8 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   public useDefault :boolean;
   constructor(    
     private _employeeService: EmployeeService,
-    public dialog: MatDialog,
+    private _mesgageService: MesgageService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -39,33 +41,30 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       this.refreshEmployeeList();
     }
   }
-  // public toggleStatus(event) {
-  //   console.log('Toggle fired');
-  //   this.useDefault = event.checked;
-  // }
+
   refreshEmployeeList() {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {
         this.employeeList = res.result;
       },
       (err) => {
-        // Display proper error message
+        this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
       }
     );
   }
 
-  employeeSpendTimeList() {
+  private employeeSpendTimeList() {
     this._employeeService.getAllEmployeesSpendTime().subscribe(
       (res) => {
         this.employeeList = res.result;
       },
       (err) => {
-        // Display proper error message
+        this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
       }
     );
   }
 
-  updateEmployeeDialog(employeeData) {
+  public updateEmployeeDialog(employeeData) {
     const employeeDialogRef = this.dialog.open(EmployeeFormComponent, {
       data: {
         matDialogTitle: "Update Employee",
@@ -79,10 +78,6 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
     employeeDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshEmployeeList();
-        this.updateDialog.emit({
-          alertType: "success",
-          alertMessage: "Employee Details Updated Successfully!"
-        });
       }
     });
   }

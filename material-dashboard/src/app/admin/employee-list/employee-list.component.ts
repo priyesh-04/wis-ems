@@ -7,7 +7,6 @@ import {
 import { MatDialog } from "@angular/material/dialog";
 
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
-import { messageModel } from "../../components/employee-table/employee-table.component";
 
 @Component({
   selector: "app-employee-list",
@@ -15,15 +14,11 @@ import { messageModel } from "../../components/employee-table/employee-table.com
   styleUrls: ["./employee-list.component.css"],
 })
 export class EmployeeListComponent {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
-  
-  public searchText: string;
-  public alertMessage: string;
-  public alertType: string;
+  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;  
   public refreshTable = false;
 
   constructor(
-    public dialog: MatDialog,
+    private dialog: MatDialog,
   ) {}
 
   public addEmployeeDialog() {
@@ -40,23 +35,10 @@ export class EmployeeListComponent {
     employeeDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshTable = true;
-        this.alertType = "success";
-        this.alertMessage = "Employee Added Successfully!";
         setTimeout(() => {
-          this.alertMessage = "";
           this.refreshTable = false;
         }, 3000);
       }
     });
   }
-
-  public updateDialog($event: messageModel) {
-    this.alertType = $event.alertType;
-    this.alertMessage = $event.alertMessage;
-    setTimeout(() => {
-      this.alertMessage = "";
-    }, 3000);
-  }
-
-  public onSearch() {}
 }
