@@ -74,11 +74,9 @@ public roleList = [
       for (let i = 0; i < this.selectedClients.length; i++) {
         clientId.push(this.selectedClients[i]['_id'])
       }
-      console.log(clientId, 'clientId');
       this.selectedHolidays = this.employeeDialogData.employeeData.holidays;      
       for (let index in this.selectedHolidays) {
-        this.selectedDays.push(this.selectedHolidays[index])          
-        console.log(this.selectedHolidays[index], '888');
+        this.selectedDays.push(this.selectedHolidays[index])  
       };
       this.selectedHolidays = this.employeeDialogData.employeeData.holidays;
       this.employeeForm.patchValue({

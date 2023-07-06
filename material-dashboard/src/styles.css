@@ -1,1 +1,125 @@
 /* You can add global styles to this file, and also import other style files */
+.container {
+    margin-top: 100px;
+}
+.page-operations {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#pagination-nav {
+    display: flex;
+    justify-content: center;
+}
+
+#pagination-nav .pagination li {
+    background-color: #fff;
+    border: 1px solid #3f51b5;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.page-item.active .page-link {
+    background-color: #3f51b5;
+    border: 1px solid #3f51b5;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 0;
+}
+
+.page-link {
+    font-weight: bold;
+    border-radius: 0;
+    color: #3f51b5;
+}
+.form-control:invalid {
+    background-image: none !important;
+}
+
+.form-control:focus {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.btn.btn-danger {
+    width: 100%;
+}
+
+.fields-main-div {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+form .field-container {
+    flex: 1 0 31%;
+    margin: 8px;
+    height: 100px;
+}
+
+#designation-wrapper {
+    margin-top: 11px;
+}
+
+a.close {
+    background: none;
+    opacity: 1;
+    color: #fff;
+    margin-right: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+#designation-wrapper {
+    margin-top: 11px;
+}
+
+a.close {
+    background: none;
+    opacity: 1;
+    color: #fff;
+    margin-right: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 10001;
+}
+
+::ng-deep .cdk-overlay-pane.update-employee-dialog,
+::ng-deep .cdk-overlay-pane.add-new-employee-dialog,
+::ng-deep .cdk-overlay-pane.add-new-admin-dialog,
+::ng-deep .cdk-overlay-pane.add-new-timesheet-dialog,
+::ng-deep .cdk-overlay-pane.update-timesheet-dialog,
+::ng-deep .cdk-overlay-pane.update-admin-dialog {
+    height: 520px !important;
+}
+.request-details{
+    font-size: 12px;
+    max-height: 150px;
+    overflow-y: auto;
+    scrollbar-color: #888 #f1f1f1;
+    scrollbar-width: thin;
+}
+/* width */
+.request-details::-webkit-scrollbar {
+    width: 3px;
+  }
+  
+  /* Track */
+.request-details::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  /* Handle */
+.request-details::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+.request-details::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }
+
+

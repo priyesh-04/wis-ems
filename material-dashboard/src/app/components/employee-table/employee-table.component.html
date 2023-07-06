@@ -40,10 +40,11 @@
                         Edit
                     </button>
                 </td>
-                <td>
+                <td *ngIf="!isDashboard">
                     <mat-slide-toggle></mat-slide-toggle>
                 </td>
             </tr>
         </tbody>
     </table>
+    
 </div>
