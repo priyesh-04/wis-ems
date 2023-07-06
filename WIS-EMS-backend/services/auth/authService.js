@@ -14,6 +14,7 @@ const {
 const crypto = require('crypto');
 const { EmailSend } = require('../../helper/email/emailSend');
 const EmailConfig = require('../../config/emailConfig');
+const { Timesheets } = require('../../models/timesheets/timesheets');
 // const { passwordPattarn } = require('../../config/regex');
 
 class AuthService {
@@ -554,7 +555,9 @@ class AuthService {
       ) {
         end_date = new Date();
         start_date = new Date();
-        start_date = new Date(start_date.setMonth(end_date.getMonth() - 1));
+        start_date.setMonth(start_date.getMonth() - 1);
+        start_date.setDate(15);
+        start_date.setHours(0, 0, 0, 0);
       }
 
       // const timeStamptoRedableTime = (tt) => {
@@ -576,6 +579,10 @@ class AuthService {
       })
         .select('-password -createdAt -updatedAt -image -created_by')
         .populate('designation', '_id name')
+        .populate(
+          'assigned_client',
+          '_id client_name company_name company_email'
+        )
         .sort({ createdAt: -1 })
         .exec(async (err, details) => {
           if (err) {
@@ -583,22 +590,23 @@ class AuthService {
               .status(400)
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
-            let result = [];
+            let resultArr = [];
             for (let i = 0; i < details.length; i++) {
-              let task = await TaskDetails.find({
-                created_by: details[i],
+              let task = await Timesheets.find({
+                created_by: details[i]._id,
                 date: { $gte: start_date, $lte: end_date },
               });
               // let workingTime = task.reduce((v, item) => {
               //   return v + parseInt(item.time_spend);
               // }, 0);
 
-              result.push({
+              resultArr.push({
                 ...details[i]._doc,
                 day_present: task.length,
                 // workingTime: timeStamptoRedableTime(workingTime),
               });
             }
+
             if (!limit || !page) {
               limit = 10;
               page = 1;
@@ -609,9 +617,9 @@ class AuthService {
             if (limit > 100) {
               limit = 100;
             }
-            let total_page = Math.ceil(details.length / limit);
+            let total_page = Math.ceil(resultArr.length / limit);
             let sliceArr =
-              details && details.slice(limit * (page - 1), limit * page);
+              resultArr && resultArr.slice(limit * (page - 1), limit * page);
             return res.status(200).json({
               msgErr: false,
               result: sliceArr,
