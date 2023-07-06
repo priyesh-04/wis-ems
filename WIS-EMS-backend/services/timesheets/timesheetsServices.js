@@ -11,15 +11,15 @@ class TimeSheetService {
       let payload = req.body;
 
       const timesheetSchema = Joi.object({
-        in_time: Joi.string().required(),
+        in_time: Joi.date().required(),
         out_time: Joi.string().allow(''),
-        date: Joi.string().required(),
+        date: Joi.date().required(),
         task_details: Joi.array().items(
           Joi.object({
             client: Joi.string().length(24).required(),
             project_name: Joi.string().required(),
-            start_time: Joi.string().required(),
-            end_time: Joi.string().required(),
+            start_time: Joi.date().required(),
+            end_time: Joi.date().required(),
             description: Joi.string(),
           })
         ),
@@ -37,15 +37,6 @@ class TimeSheetService {
       payload.created_by = user._id;
 
       let date = new Date();
-      const today =
-        date.getFullYear() +
-        '-' +
-        (date.getMonth() > 8
-          ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T00:00:00+05:30';
 
       let currentDate = new Date(date);
       let nextDay = currentDate.getTime() + 2 * 24 * 60 * 60 * 1000;
@@ -53,6 +44,8 @@ class TimeSheetService {
       let selectedInTime = new Date(payload.in_time);
       let selectedOutTime = new Date(payload.out_time);
       let oneDay = 24 * 60 * 60 * 1000;
+      const taskdetails = payload.task_details;
+
       if (selectedOutTime && selectedInTime > selectedOutTime) {
         return res.status(400).json({
           msgErr: true,
@@ -71,10 +64,32 @@ class TimeSheetService {
             'Date cannot be accepted before two days from current date or next day.',
         });
       }
+      const thatDay =
+        selectedDate.getFullYear() +
+        '-' +
+        (selectedDate.getMonth() > 8
+          ? selectedDate.getMonth() + 1
+          : '0' + (selectedDate.getMonth() + 1)) +
+        '-' +
+        (selectedDate.getDate() > 9
+          ? selectedDate.getDate()
+          : '0' + selectedDate.getDate()) +
+        'T00:00:00+05:30';
+      const thatDayEnd =
+        selectedDate.getFullYear() +
+        '-' +
+        (selectedDate.getMonth() > 8
+          ? selectedDate.getMonth() + 1
+          : '0' + (selectedDate.getMonth() + 1)) +
+        '-' +
+        (selectedDate.getDate() > 9
+          ? selectedDate.getDate()
+          : '0' + selectedDate.getDate()) +
+        'T23:59:59+05:30';
 
       const presentOneTime = await Timesheets.find({
         created_by: user._id,
-        date: { $gte: today },
+        date: { $gte: thatDay, $lte: thatDayEnd },
       });
       if (presentOneTime.length) {
         return res.status(400).json({
@@ -83,13 +98,26 @@ class TimeSheetService {
         });
       }
 
-      const taskdetails = payload.task_details;
       delete payload['task_details'];
       const calculateSpendTime = (start, end) => {
         const s = new Date(start);
         const e = new Date(end);
         return e - s;
       };
+      async function checkTiming(td) {
+        for (let i = 0; i < td.length; i++) {
+          let s_time = new Date(td[i].start_time).getTime();
+          let e_time = new Date(td[i].end_time).getTime();
+          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
+            return false;
+          } else if (selectedInTime.getTime() > s_time) {
+            return false;
+          } else if (selectedOutTime.getTime() < e_time) {
+            return false;
+          }
+        }
+        return true;
+      }
       async function checkClient(td) {
         for (let i = 0; i < td.length; i++) {
           const client = await ClientDetails.findById({
@@ -98,21 +126,22 @@ class TimeSheetService {
           if (!client) {
             return false;
           }
-          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
-            return false;
-          }
         }
         return true;
       }
-      const checkedClient = await checkClient(taskdetails);
-      if (checkedClient == false) {
+      let timing = await checkTiming(taskdetails);
+      let clientcheck = await checkClient(taskdetails);
+      if (!timing) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Task time overlaps with In Time or Out Time',
+        });
+      } else if (!clientcheck) {
         return res.status(403).json({
           msgErr: true,
-          message:
-            'Please Provide correct client id or start time and end time.',
+          message: 'Please Provide correct client id.',
         });
       }
-
       async function getId(task) {
         let taskId = [];
         for (let i = 0; i < task.length; i++) {
@@ -233,6 +262,20 @@ class TimeSheetService {
       };
       const taskdetails = payload.task_details;
 
+      async function checkTiming(td) {
+        for (let i = 0; i < td.length; i++) {
+          let s_time = new Date(td[i].start_time).getTime();
+          let e_time = new Date(td[i].end_time).getTime();
+          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
+            return false;
+          } else if (selectedInTime.getTime() > s_time) {
+            return false;
+          } else if (selectedOutTime.getTime() < e_time) {
+            return false;
+          }
+        }
+        return true;
+      }
       async function checkClient(td) {
         for (let i = 0; i < td.length; i++) {
           const client = await ClientDetails.findById({
@@ -241,18 +284,20 @@ class TimeSheetService {
           if (!client) {
             return false;
           }
-          if (calculateSpendTime(td[i].start_time, td[i].end_time) <= 0) {
-            return false;
-          }
         }
         return true;
       }
-      const checkedClient = await checkClient(taskdetails);
-      if (checkedClient == false) {
+      let timing = await checkTiming(taskdetails);
+      let clientcheck = await checkClient(taskdetails);
+      if (!timing) {
+        return res.status(400).json({
+          msgErr: true,
+          message: 'Task time overlaps with In Time or Out Time',
+        });
+      } else if (!clientcheck) {
         return res.status(403).json({
           msgErr: true,
-          message:
-            'Please Provide correct client id or start time and end time.',
+          message: 'Please Provide correct client id.',
         });
       }
       let taskId = [];
