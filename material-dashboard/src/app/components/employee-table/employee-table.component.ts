@@ -41,8 +41,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       this.refreshEmployeeList();
     }
   }
-
-  refreshEmployeeList() {
+  private refreshEmployeeList() {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {
         this.employeeList = res.result;
