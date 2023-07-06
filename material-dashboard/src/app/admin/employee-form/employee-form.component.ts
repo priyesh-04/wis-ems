@@ -19,13 +19,18 @@ import { ClientService } from "../../services/client/client.service";
   styleUrls: ["./employee-form.component.css"],
 })
 export class EmployeeFormComponent implements OnInit {
-  public employeeForm: FormGroup;
-  public clientList = [];
-  public designationList = [];
-  public selectedClients: any;
-  public selectedHolidays: any;
-  public isAdmin: boolean;
-  public roleList = [
+
+public employeeForm: FormGroup;
+public employeeData: any;
+public clientList = [];
+public designationList= [];
+public selectedDesignation: any;
+public selectedRole: any;
+public selectedClients : any;
+public selectedHolidays : any;
+public isAdmin :boolean;
+public selectedDays : string[]=[];
+public roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
   ];
@@ -63,12 +68,18 @@ export class EmployeeFormComponent implements OnInit {
     if (this.employeeDialogData.mode === "edit") {
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
-      }      
-      if (this.employeeDialogData.employeeData?.assigned_client) {
-        this.selectedClients = this.employeeDialogData.employeeData.assigned_client.filter(el => {
-          return el._id;
-        });
-      }      
+      }
+      this.selectedClients = this.employeeDialogData.employeeData.assigned_client;
+       let clientId = []
+      for (let i = 0; i < this.selectedClients.length; i++) {
+        clientId.push(this.selectedClients[i]['_id'])
+      }
+      console.log(clientId, 'clientId');
+      this.selectedHolidays = this.employeeDialogData.employeeData.holidays;      
+      for (let index in this.selectedHolidays) {
+        this.selectedDays.push(this.selectedHolidays[index])          
+        console.log(this.selectedHolidays[index], '888');
+      };
       this.selectedHolidays = this.employeeDialogData.employeeData.holidays;
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
@@ -78,12 +89,8 @@ export class EmployeeFormComponent implements OnInit {
         address: this.employeeDialogData.employeeData.address,
         designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
-        assigned_client: [{
-          _id :"648183c002532e19d3ea921a"
-        }],
-        holidays: [
-          [0, 6]
-        ],        
+        assigned_client:clientId,
+        holidays: this.selectedDays
       });
     }
   }
