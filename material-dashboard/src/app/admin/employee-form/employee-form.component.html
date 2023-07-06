@@ -41,20 +41,20 @@
                         </div>
                     </div>
                 </div>               
-                <div class="col-sm-12 col-md-6 mt-2 pt-1" id="role-wrapper">
+                <div class="col-sm-12 col-md-6 mt-2 pt-1" id="role-wrapper" *ngIf="!isAdmin">
                     <mat-form-field appearance="fill">
                         <mat-label>Role</mat-label>
-                        <mat-select formControlName="role" [(value)]="selectedRole">
+                        <mat-select formControlName="role">
                             <mat-option *ngFor="let role of roleList" value="{{role.value}}">
                                 {{role.viewValue}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="col-sm-12 col-md-6" id="designation-wrapper">
+                <div class="col-sm-12 col-md-6" id="designation-wrapper" *ngIf="!isAdmin">
                     <mat-form-field appearance="fill">
                         <mat-label>Designation</mat-label>
-                        <mat-select formControlName="designation" [(value)]="selectedDesignation">
+                        <mat-select formControlName="designation">
                             <mat-option *ngFor="let designation of designationList" value="{{designation._id}}">
                                 {{designation.name}}
                             </mat-option>

@@ -7,12 +7,12 @@
                 <th scope="col" class="font-weight-bold">Employee Name</th>
                 <th scope="col" class="font-weight-bold">Designation</th>
                 <th scope="col" class="font-weight-bold">Role</th>
-                <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Email Id</th>
                 <th scope="col" class="font-weight-bold">Mobile Number</th>
+                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Total Clients</th>
+                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Total Days</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Timesheet</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Actions</th>
-                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Working Time</th>
-                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Total Days</th>
+                <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Status</th>
             </tr>
         </thead>
         <tbody *ngFor="let employee of employeeList; let i = index">
@@ -26,21 +26,26 @@
                 <td>{{employee.name}}</td>
                 <td>{{employee.designation?.name}}</td>
                 <td class="text-uppercase">{{employee.role}}</td>
-                <td *ngIf="!isDashboard">{{employee.email_id}}</td>
                 <td>{{employee.phone_num}}</td>
+                <td *ngIf="isDashboard">{{employee.assigned_client.length}}</td>
+                <td *ngIf="isDashboard">{{employee.day_present}}</td>
                 <td *ngIf="!isDashboard">
                     <a [routerLink]="['/timesheet-list', employee._id]">
                         View
                     </a>
                 </td>
                 <td *ngIf="!isDashboard">
-                    <button class="mr-3" mat-raised-button color="primary" (click)="updateEmployeeDialog(employee)">
+                    <button mat-raised-button color="primary" (click)="updateEmployeeDialog(employee)">
                         <mat-icon>edit</mat-icon>
                         Edit
                     </button>
                 </td>
-                <td *ngIf="isDashboard">{{employee.workingTime}}</td>
-                <td *ngIf="isDashboard">{{employee.day_present}}</td>
+                <td *ngIf="!isDashboard">
+                    <div class="d-flex">
+                        <button class="mr-1" mat-raised-button color="accent">Active</button>
+                        <button class="" mat-raised-button color="warn">Deactive</button>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>

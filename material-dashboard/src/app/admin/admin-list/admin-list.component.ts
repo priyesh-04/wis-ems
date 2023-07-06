@@ -1,15 +1,16 @@
 import {
   Component,
   OnInit,
-  AfterViewInit,
   ElementRef,
   ViewChildren,
   QueryList,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { MesgageService } from "../../services/shared/message.service";
+
 @Component({
   selector: "app-admin-list",
   templateUrl: "./admin-list.component.html",
@@ -17,18 +18,30 @@ import { MesgageService } from "../../services/shared/message.service";
 })
 export class AdminListComponent implements OnInit {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
-  adminList: any;
-  searchText: string;
-  alertMessage: string = "";
-  alertType: string = "";
+  public adminList: any;
 
   constructor(
     private _employeeService: EmployeeService,
-    public dialog: MatDialog,
-    private _mesgageService: MesgageService
+    private _mesgageService: MesgageService,
+    private dialog: MatDialog,
   ) {}
 
-  addAdminDialog() {
+  ngOnInit() {
+    this.refreshadminList();
+  }
+
+  private refreshadminList() {
+    this._employeeService.getAllAdmins().subscribe(
+      (res) => {
+        this.adminList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+      }
+    );
+  }
+
+  public addAdminDialog() {
     const adminDialogRef = this.dialog.open(EmployeeFormComponent, {
       data: {
         matDialogTitle: "Add New Admin",
@@ -40,58 +53,28 @@ export class AdminListComponent implements OnInit {
       panelClass: "add-new-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      
       if (result === "success") {
         this.refreshadminList();
-        this.alertType = "success";
-        this.alertMessage = "Admin Added Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
   }
 
-  updateAdminDialog(adminData) {
+  public updateAdminDialog(adminData) {
     const adminDialogRef = this.dialog.open(EmployeeFormComponent, {
       data: {
         matDialogTitle: "Update Admin Details",
         employeeData: adminData,
         mode: "edit",
+        role: "admin"
       },
       width: "90%",
       height: "90%",
       panelClass: "update-admin-dialog",
     });
     adminDialogRef.afterClosed().subscribe((result) => {
-      
       if (result === "success") {
         this.refreshadminList();
-        this.alertType = "success";
-        this.alertMessage = "Admin Details Updated Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.refreshadminList();
-  }
-
-  onSearch() {
-    this.refreshadminList(this.searchText);
-  }
-
-  refreshadminList(searchText?: string) {
-    this._employeeService.getAllAdmins().subscribe(
-      (res) => {
-        this.adminList = res.result;
-      },
-      (err) => {
-        this._mesgageService.showError(err.error.message);
-      }
-    );
   }
 }
