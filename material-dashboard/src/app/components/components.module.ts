@@ -9,14 +9,15 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import { EmployeeTableComponent } from './employee-table/employee-table.component';
 import { MatIconModule } from "@angular/material/icon";
-
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
     MatMenuModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatSlideToggleModule
   ],
   declarations: [
     FooterComponent,
