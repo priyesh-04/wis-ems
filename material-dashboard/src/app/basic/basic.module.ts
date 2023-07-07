@@ -7,12 +7,25 @@ import { MatIconModule } from "@angular/material/icon";
 
 import { HomeComponent } from "./home/home.component";
 import { ConfirmDeleteComponent } from "./confirm-delete/confirm-delete.component";
-import { AlertMessageComponent } from './alert-message/alert-message.component';
 import { ComponentsModule } from "../components/components.module";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatIconModule, ComponentsModule],
-  declarations: [HomeComponent, ConfirmDeleteComponent, AlertMessageComponent],
-  exports: [HomeComponent, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule, 
+    MatButtonModule, 
+    MatIconModule, 
+    ComponentsModule
+  ],
+  declarations: [
+    HomeComponent, 
+    ConfirmDeleteComponent
+  ],
+  exports: [
+    HomeComponent, 
+    MatButtonModule, 
+    MatIconModule
+  ],
 })
 export class BasicModule {}

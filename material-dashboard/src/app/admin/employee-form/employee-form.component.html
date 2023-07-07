@@ -64,7 +64,7 @@
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field>
                         <mat-label>Client</mat-label>
-                        <mat-select formControlName="assigned_client" multiple [(value)]="selectedClients">
+                        <mat-select formControlName="assigned_client" multiple>
                           <mat-option *ngFor="let client of clientList" [value]="client._id">{{client.company_name}}</mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -72,7 +72,7 @@
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field>
                         <mat-label>Holiday</mat-label>
-                        <mat-select formControlName="holidays" multiple [(value)]="selectedHolidays">
+                        <mat-select formControlName="holidays" multiple>
                           <mat-option *ngFor="let holiday of holidayList; let i = index" [value]="i">{{holiday}}</mat-option>
                         </mat-select>
                     </mat-form-field>

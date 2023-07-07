@@ -8,8 +8,8 @@
                 <th scope="col" class="font-weight-bold">Designation</th>
                 <th scope="col" class="font-weight-bold">Role</th>
                 <th scope="col" class="font-weight-bold">Mobile Number</th>
-                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Total Clients</th>
-                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Total Days</th>
+                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Clients</th>
+                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Working Days</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Timesheet</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Actions</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Status</th>
@@ -27,7 +27,13 @@
                 <td>{{employee.designation?.name}}</td>
                 <td class="text-uppercase">{{employee.role}}</td>
                 <td>{{employee.phone_num}}</td>
-                <td *ngIf="isDashboard">{{employee.assigned_client.length}}</td>
+                <td *ngIf="isDashboard">
+                    <div class="request-details">
+                        <div *ngFor="let client of employee.assigned_client; let i = index" >
+                            {{i+1}}. {{client.company_name}}
+                        </div>
+                    </div>
+                </td>
                 <td *ngIf="isDashboard">{{employee.day_present}}</td>
                 <td *ngIf="!isDashboard">
                     <a [routerLink]="['/timesheet-list', employee._id]">

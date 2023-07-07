@@ -1,34 +1,27 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { AuthService } from 'app/services/auth/auth.service';
-import { FormGroup, FormBuilder,Validators } from "@angular/forms";
-import { environment } from "environments/environment";
+import { FormGroup, FormBuilder } from "@angular/forms";
+import { environment } from 'environments/environment';
 
-import {
-  validatorIndianMobileNumber,
-  validatorEmail,
-  validatorTextOnly,
-  getFormattedDate,
-  getFormattedDatetime,
-} from "../../../utils/custom-validators";
+import { AuthService } from '../../../services/auth/auth.service';
+import { MesgageService } from '../../../services/shared/message.service';
+
 @Component({
   selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  templateUrl: './user-profile.component.html'
 })
-// export interface userProfileList{
-//   name: string,
-      
-// }
 export class UserProfileComponent implements OnInit {
-  profileForm: FormGroup;
-  public userProfileList : any;
-  public imageUrl = environment.image_url;
+  @Input() editable: boolean = false;
+
+  private imageUrl = environment.image_url;
+  public profileForm: FormGroup;
   public userProfile : string
 
-  constructor( private _userProfile : AuthService,
-    private fb: FormBuilder) { }
-    
-  @Input() editable: boolean = false;
+  constructor(
+    private _userProfile : AuthService,
+    private _mesgageService: MesgageService,
+    private fb: FormBuilder
+  ) {}    
+
   ngOnInit(): void {
     this.getProfile();
     this.profileForm = this.fb.group({
@@ -43,41 +36,25 @@ export class UserProfileComponent implements OnInit {
       } 
     });    
   }
-  onFileSelect(event) {
-    // when file edit it will work 
-    // if (event.target.files.length > 0) {
-    //   const file = event.target.files[0];
-    //   this.profileForm.get('profile').setValue(file);
-    // }
-  }
+
   public getProfile(){
     this._userProfile.getProfile().subscribe(
       (res) => {
-        this.userProfileList = res.result;  
-        let dName = this.userProfileList.designation.name ; 
-        this.userProfile =`${this.imageUrl}`+ this.userProfileList.image;
-          this.profileForm.patchValue({ 
-            name: this.userProfileList.name,
-            email_id: this.userProfileList.email_id,
-            emp_id: this.userProfileList.emp_id,
-            address: this.userProfileList.address,
-            phone_num: this.userProfileList.phone_num,
-            designation: dName              
-          });     
-          console.log( this.userProfileList, '55555' );
-          console.log( this.userProfileList.designation.name, '55555' );
-        
+        const userProfileList = res.result;
+        this.userProfile =`${this.imageUrl}`+ userProfileList.image;
+
+        this.profileForm.patchValue({ 
+          name: userProfileList.name,
+          email_id: userProfileList.email_id,
+          emp_id: userProfileList.emp_id,
+          address: userProfileList.address,
+          phone_num: userProfileList.phone_num,
+          designation: userProfileList.designation?.name,              
+        });
       },
       (err) => {
-        console.log(err, "error");
+        this._mesgageService.showError(err.error.message || 'Unable to fetch profile details');
       }
     );
   }
-  // public editProfile(){
-  //   this.editable = true;
-  // }
-  public onSubmit(profileForm: FormGroup) {
-    this.userProfileList = profileForm.value;
-  }
-  
 }

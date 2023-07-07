@@ -1,31 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { AuthService } from "../../services/auth/auth.service";
-import { CookieService } from "ngx-cookie-service";
 
-interface editObjetPass {
-  password :string
-}
+import { AuthService } from "../../services/auth/auth.service";
+import { MesgageService } from '../../services/shared/message.service';
+
 @Component({
   selector: 'app-set-new-password',
   templateUrl: './set-new-password.component.html',
   styleUrls: ['./set-new-password.component.css']
 })
 export class SetNewPasswordComponent implements OnInit {
-  public resetPass: FormGroup;
   private userId :string;
   private token : string;
+  public resetPass: FormGroup;
   
-  constructor(public fb: FormBuilder,
-    public _authService: AuthService,
-    public _router: Router,
-    public _cookieService: CookieService,
-    public _route: ActivatedRoute,
-    private activatedRoute: ActivatedRoute) {
-      
-    }
-
+  constructor(
+    private fb: FormBuilder,
+    private _authService: AuthService,
+    private _mesgageService: MesgageService,
+    private _router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
   
   ngOnInit(): void {
     this.resetPass = this.fb.group({
@@ -45,40 +41,28 @@ export class SetNewPasswordComponent implements OnInit {
       this.userId = params['userId'];
       this.token = params['token'];
   }
-  get lForm() {
+
+  public get lForm() {
     return this.resetPass.controls;
   }
- /**
-  * resetPassword
-  */
- public resetPassword(resetPass:FormGroup) {
   
-  console.log(this.resetPass, 'resetPass');
-  if (this.resetPass.value.password != this.resetPass.value.conPassword) {
-    // alert('pass not match')
-  }else
-  {
-    // this.resetPass = resetPass.value;
-    console.log(this.resetPass, 'this.resetPass');
-    
-    const editObj ={
-      password:this.resetPass.value.password
-    }
-    
-    console.log(this.resetPass);
-    this._authService.setNewPassword(editObj, this.userId, this.token).subscribe(
-      (data) => {
-        
-        console.log("login success", data);
-        this._router.navigate(['/login']);
-      },
-      (err) => {        
-        setTimeout(() => {
-          // show error Msg 
-        }, 3000);
-        console.log(err);
+  public resetPassword() {    
+    if (this.resetPass.value.password !== this.resetPass.value.conPassword) {
+        this._mesgageService.showError('Confirm password not matched');
+    } else {
+      const editObj = {
+        password: this.resetPass.value.password
       }
-    );
+      
+      this._authService.setNewPassword(editObj, this.userId, this.token).subscribe(
+        (data) => {
+          this._mesgageService.showError(data.message || 'Password changed successfully');
+          this._router.navigate(['/login']);
+        },
+        (err) => {
+          this._mesgageService.showError(err.error.message);
+        }
+      );
+    }
   }
- }
 }

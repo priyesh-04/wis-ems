@@ -8,13 +8,18 @@ import { HttpRequest,
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service'; //
+import { CookieService } from 'ngx-cookie-service';
 
+import { MesgageService } from '../../services/shared/message.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-    constructor(private _cookieService: CookieService,
-                private _router: Router) { }
+
+    constructor(
+        private _cookieService: CookieService,
+        private _mesgageService: MesgageService,
+        private _router: Router
+    ) {}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token = this._cookieService.get('token');
@@ -37,7 +42,7 @@ export class TokenInterceptor implements HttpInterceptor {
                 if (err.status === 401 || err.status === 403) {
                     const currentUrl = this._router.url;
                     if (currentUrl != '/login') {
-                        alert('Session ended. Please login again');
+                        this._mesgageService.showError('Session ended, please login again');
                         this._cookieService.delete('token', '/');
                         this._router.navigate(['/login'], { queryParams: { next: currentUrl } });
                     }

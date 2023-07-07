@@ -6,29 +6,42 @@ import {
   QueryList,
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+
 import { ClientService } from "../../services/client/client.service";
 import { ClientFormComponent } from "../client-form/client-form.component";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MesgageService } from "../../services/shared/message.service";
+
 @Component({
   selector: "app-client-list",
-  templateUrl: "./client-list.component.html",
-  styleUrls: ["./client-list.component.css"],
+  templateUrl: "./client-list.component.html"
 })
 export class ClientListComponent implements OnInit {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
-  clientList: any;
-  searchText: string;
-  alertMessage: string = "";
-  alertType: string = "";
+  public clientList = [];
 
   constructor(
+    private dialog: MatDialog,
     private _clientService: ClientService,
-    public dialog: MatDialog,
     private _mesgageService: MesgageService,    
   ) {}
 
-  deleteClientDialog(id) {
+  ngOnInit(): void {
+    this.refreshClientList();
+  }
+
+  private refreshClientList() {
+    this._clientService.getClientList().subscribe(
+      (res) => {
+        this.clientList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');        
+      }
+    );
+  }
+
+  public deleteClientDialog(id) {
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
         title: "Delete Client",
@@ -47,7 +60,7 @@ export class ClientListComponent implements OnInit {
     });
   }
 
-  addClientDialog() {
+  public addClientDialog() {
     const clientDialogRef = this.dialog.open(ClientFormComponent, {
       data: {
         matDialogTitle: "Add New Client",
@@ -65,7 +78,7 @@ export class ClientListComponent implements OnInit {
     });
   }
 
-  updateClientDialog(clientData) {
+  public updateClientDialog(clientData) {
     const clientDialogRef = this.dialog.open(ClientFormComponent, {
       data: {
         matDialogTitle: "Update Client Details",
@@ -79,31 +92,7 @@ export class ClientListComponent implements OnInit {
     clientDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshClientList();
-        this.alertType = "success";
-        this.alertMessage = "Client Details Updated Successfully!";
-        setTimeout(() => {
-          this.alertMessage = "";
-        }, 3000);
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.refreshClientList();
-  }
-
-  onSearch() {
-    this.refreshClientList(this.searchText);
-  }
-
-  refreshClientList(searchText?: string) {
-    this._clientService.getClientList().subscribe(
-      (res) => {
-        this.clientList = res.result;
-      },
-      (err) => {
-        this._mesgageService.showError(err.message);        
-      }
-    );
   }
 }

@@ -13,8 +13,7 @@ import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
   selector: "app-admin-list",
-  templateUrl: "./admin-list.component.html",
-  styleUrls: ["./admin-list.component.css"],
+  templateUrl: "./admin-list.component.html"
 })
 export class AdminListComponent implements OnInit {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;

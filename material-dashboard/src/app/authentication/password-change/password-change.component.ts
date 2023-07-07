@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CookieService } from 'ngx-cookie-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { AuthService } from '../../services/auth/auth.service';
 import { MesgageService } from "../../services/shared/message.service";
 
 @Component({
@@ -11,17 +10,13 @@ import { MesgageService } from "../../services/shared/message.service";
   styleUrls: ['./password-change.component.css']
 })
 export class PasswordChangeComponent implements OnInit {
-  passwordChangeForm: FormGroup;
+  public passwordChangeForm: FormGroup;
 
-  isLoading = false;
-  isLoaded = false;
-
-  constructor(public _authService: AuthService,
-            public _router: Router,
-            public _cookieService: CookieService,
-            public _route: ActivatedRoute,
-            private _mesgageService: MesgageService,
-            public fb: FormBuilder) {}
+  constructor(
+    private _authService: AuthService,
+    private _mesgageService: MesgageService,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.passwordChangeForm = this.fb.group({
@@ -41,34 +36,20 @@ export class PasswordChangeComponent implements OnInit {
     });
   }
 
-  get pcForm() {
+  public get pcForm() {
     return this.passwordChangeForm.controls;
   }
 
-  onSubmit() {
-    if (!this.isLoaded) {
-      this.isLoading = true;
-      this.isLoaded = true;
-    }
-    console.log(this.passwordChangeForm.value, '22');
-    
-    const changePassData ={
+  public onSubmit() {    
+    const changePassData = {
       old_password:this.passwordChangeForm.value.currentPassword,
       new_password:this.passwordChangeForm.value.newPassword
-    }
+    };
     this._authService.changePassword(changePassData)
       .subscribe( res => {
-        this.isLoading = false;
-        this.isLoaded = false;
-        this._router.navigate(['/login']);
-        this._authService.performLogout(this._authService.getUserDetail().id)
         this._mesgageService.showSuccess(res.message);
       }, err => {
-        this.isLoading = false;
-        this.isLoaded = false;
         this._mesgageService.showError(err.error.message);
       });
-
   }
-
 }

@@ -1,19 +1,19 @@
 <nav class="navbar navbar-expand-lg navbar-transparent  navbar-absolute fixed-top border-bottom" style="height: 100px;">
     <div class="container-fluid">
       <div class="navbar-wrapper">
-        <a href="javascript:void(0)">
+        <a routerLink="/">
           <img src="../../../assets/img/wis_logo.png" style="width: 200px;" />
         </a>
       </div>
     </div>
 </nav>
-<div class="container" style="padding-top: 120px; min-height: calc(100vh - 84px);">
+<div class="container" style="padding-top: 120px; min-height: calc(100vh - 175px);">
     <div class="text-center min-height-not-found">
       <h1 class="display1">Oops!</h1>
-    <h3 class="error-page">404 Error Page Not Found</h3>
-    <div class="text-center my-3">
-      <a [routerLink]="['/login']" mat-stroked-button class="btn btn-primary" color="primary">Go To Dashboard</a>
-    </div>
+      <h3 class="error-page">404 Error Page Not Found</h3>
+      <div class="text-center my-3">
+        <a routerLink="/" mat-stroked-button class="btn btn-primary" color="primary">Go To Dashboard</a>
+      </div>
     </div>
 </div>
 <app-footer></app-footer>

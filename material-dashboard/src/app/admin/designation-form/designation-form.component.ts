@@ -1,25 +1,24 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import { validatorTextOnly } from "../../utils/custom-validators";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { DesignationService } from "app/services/designation/designation.service";
+
+import { validatorTextOnly } from "../../utils/custom-validators";
 import { DesignationListComponent } from "../designation-list/designation-list.component";
 import { MesgageService } from "../../services/shared/message.service";
+import { DesignationService } from "../../services/designation/designation.service";
 
 @Component({
   selector: "app-designation-form",
-  templateUrl: "./designation-form.component.html",
-  styleUrls: ["./designation-form.component.css"],
+  templateUrl: "./designation-form.component.html"
 })
 export class DesignationFormComponent implements OnInit {
-  designationForm: FormGroup;
-  designationData: any;
+  public designationForm: FormGroup;
 
   constructor(
+    private fb: FormBuilder,
     private _designationService: DesignationService,
-    public fb: FormBuilder,
     private _mesgageService: MesgageService,    
-    public designationDialogRef: MatDialogRef<DesignationListComponent>,
+    private designationDialogRef: MatDialogRef<DesignationListComponent>,
     @Inject(MAT_DIALOG_DATA) public designationDialogData
   ) {}
 
@@ -38,17 +37,17 @@ export class DesignationFormComponent implements OnInit {
     }
   }
 
-  closeDialog() {
+  public closeDialog() {
     this.designationDialogRef.close();
   }
 
-  addDesignation(designationForm: FormGroup) {
-    this.designationData = designationForm.value;
+  public addDesignation(designationForm: FormGroup) {
+    const designationData = designationForm.value;
     if (this.designationDialogData.mode === "edit") {
       this._designationService
         .updateDesignation(
           this.designationDialogData.designationData._id,
-          this.designationData
+          designationData
         )
         .subscribe(
           (res) => {
@@ -60,7 +59,7 @@ export class DesignationFormComponent implements OnInit {
           }
         );
     } else if (this.designationDialogData.mode === "add") {
-      this._designationService.addDesignation(this.designationData).subscribe(
+      this._designationService.addDesignation(designationData).subscribe(
         (res) => {
           this.designationDialogRef.close("success");
           this._mesgageService.showSuccess(res.message); 

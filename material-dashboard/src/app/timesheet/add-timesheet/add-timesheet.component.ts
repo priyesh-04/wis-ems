@@ -8,16 +8,15 @@ import {
   getFormattedDatetime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
-import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
 import { ClientService } from "../../services/client/client.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
+import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
 
 @Component({
   selector: "app-add-timesheet",
-  templateUrl: "./add-timesheet.component.html",
-  styleUrls: ["./add-timesheet.component.css"],
+  templateUrl: "./add-timesheet.component.html"
 })
 export class AddTimesheetComponent implements OnInit {
   public timesheetForm: FormGroup;
@@ -33,9 +32,9 @@ export class AddTimesheetComponent implements OnInit {
     private _clientService: ClientService,
     private _mesgageService: MesgageService,
     private datepipe: DatePipe,
-    public fb: FormBuilder,
-    public dialog: MatDialog,
-    public dialogRef: MatDialogRef<TimesheetListComponent>,
+    private fb: FormBuilder,
+    private dialog: MatDialog,
+    private dialogRef: MatDialogRef<ListTimesheetComponent>,
     @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
   ) {}
 
