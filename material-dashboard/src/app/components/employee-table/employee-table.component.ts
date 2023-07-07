@@ -21,7 +21,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   @Output() updateDialog = new EventEmitter<messageModel>();
 
   public employeeList: any;
-
+  public useDefault :boolean;
   constructor(    
     private _employeeService: EmployeeService,
     private _mesgageService: MesgageService,
@@ -41,7 +41,6 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       this.refreshEmployeeList();
     }
   }
-
   private refreshEmployeeList() {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {

@@ -73,7 +73,7 @@
                     <mat-form-field>
                         <mat-label>Holiday</mat-label>
                         <mat-select formControlName="holidays" multiple [(value)]="selectedHolidays">
-                          <mat-option *ngFor="let holiday of holidayList; let i = index" value="{{i}}">{{holiday}}</mat-option>
+                          <mat-option *ngFor="let holiday of holidayList; let i = index" [value]="i">{{holiday}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>

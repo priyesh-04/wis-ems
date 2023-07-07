@@ -1,11 +1,4 @@
-.container {
-    margin-top: 100px;
-}
-.page-operations {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+
 #spinner-div {
     display: flex;
     justify-content: center;
