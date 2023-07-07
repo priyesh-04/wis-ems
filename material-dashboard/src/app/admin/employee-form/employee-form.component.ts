@@ -19,30 +19,23 @@ import { ClientService } from "../../services/client/client.service";
   styleUrls: ["./employee-form.component.css"],
 })
 export class EmployeeFormComponent implements OnInit {
-
-public employeeForm: FormGroup;
-public employeeData: any;
-public clientList = [];
-public designationList= [];
-public selectedDesignation: any;
-public selectedRole: any;
-public selectedClients : any;
-public selectedHolidays : any;
-public isAdmin :boolean;
-public selectedDays : string[]=[];
-public roleList = [
+  public employeeForm: FormGroup;
+  public clientList = [];
+  public designationList = [];
+  public isAdmin :boolean;
+  public roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
   ];
   public holidayList = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   constructor(
+    private fb: FormBuilder,
     private _employeeService: EmployeeService,
     private _designationService: DesignationService,
-    public fb: FormBuilder,
     private _mesgageService: MesgageService,
     private _clientService: ClientService,
-    public dialogRef: MatDialogRef<EmployeeListComponent>,
+    private dialogRef: MatDialogRef<EmployeeListComponent>,
     @Inject(MAT_DIALOG_DATA) public employeeDialogData
   ) {}
 
@@ -69,16 +62,18 @@ public roleList = [
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
-      this.selectedClients = this.employeeDialogData.employeeData.assigned_client;
-       let clientId = []
-      for (let i = 0; i < this.selectedClients.length; i++) {
-        clientId.push(this.selectedClients[i]['_id'])
+      const clientId = []
+      if (this.employeeDialogData.employeeData.assigned_client) {
+        const selectedClients = this.employeeDialogData.employeeData.assigned_client;
+        for (let i = 0; i < selectedClients.length; i++) {
+          clientId.push(selectedClients[i]['_id']);
+        }
       }
-      this.selectedHolidays = this.employeeDialogData.employeeData.holidays;      
-      for (let index in this.selectedHolidays) {
-        this.selectedDays.push(this.selectedHolidays[index])  
+      const selectedDays = []
+      const selectedHolidays = this.employeeDialogData.employeeData.holidays;      
+      for (let index in selectedHolidays) {
+        selectedDays.push(selectedHolidays[index]);
       };
-      this.selectedHolidays = this.employeeDialogData.employeeData.holidays;
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
         name: this.employeeDialogData.employeeData.name,
@@ -88,7 +83,7 @@ public roleList = [
         designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
         assigned_client:clientId,
-        holidays: this.selectedDays
+        holidays: selectedDays
       });
     }
   }
@@ -110,7 +105,7 @@ public roleList = [
         this.designationList = res.result;
       },
       (err) => {
-        this._mesgageService.showError(err.message || 'Unable to fetch designation list');
+        this._mesgageService.showError(err.error.message || 'Unable to fetch designation list');
       }
     );
   }

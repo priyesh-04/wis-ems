@@ -1,17 +1,17 @@
 import { Injectable } from "@angular/core";
-import { environment } from "environments/environment";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { environment } from "environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ClientService {
-  baseUrl = environment.base_api_url;
+  private baseUrl = environment.base_api_url;
 
   constructor(private http: HttpClient) {}
 
-  createHeaders(token?: string) {
+  private createHeaders(token?: string) {
     const data = {
       "Content-Type": "application/json",
     };
@@ -24,25 +24,25 @@ export class ClientService {
     return httpOptions;
   }
 
-  addClient(data: any): Observable<any> {
+  public addClient(data: any): Observable<any> {
     const endpoint = `${this.baseUrl}/client`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, data, httpOptions);
   }
 
-  getClientList(): Observable<any> {
+  public getClientList(): Observable<any> {
     const endpoint = `${this.baseUrl}/client`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
-  updateClient(id, data: any): Observable<any> {
+  public updateClient(id, data: any): Observable<any> {
     const endpoint = `${this.baseUrl}/client/${id}`;
     const httpOptions = this.createHeaders();
     return this.http.put(endpoint, data, httpOptions);
   }
 
-  deleteClient(id): Observable<any> {
+  public deleteClient(id): Observable<any> {
     const endpoint = `${this.baseUrl}/client/${id}`;
     const httpOptions = this.createHeaders();
     return this.http.delete(endpoint, httpOptions);

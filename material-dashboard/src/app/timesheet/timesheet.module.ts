@@ -8,15 +8,14 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
-import { TimesheetListComponent } from "./timesheet-list/timesheet-list.component";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
 import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.component';
 
 @NgModule({
   declarations: [
-    TimesheetListComponent,
     AddTimesheetComponent,
     ListTimesheetComponent,
     TimesheetUpdateComponent,

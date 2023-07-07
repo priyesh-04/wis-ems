@@ -1,17 +1,13 @@
 <div class="container mt-5 pt-5 px-4">
-    <form class="example-form" [formGroup]="profileForm" (ngSubmit)="onSubmit(profileForm)">
+    <form class="example-form" [formGroup]="profileForm">
         <div class="row">
             <div class="field-container col-sm-12 col-md-6 form-group">
-                <input type="file" matInput name="profile" (change)="onFileSelect($event)" accept="image/png, image/jpeg">
+                <input type="file" matInput name="profile" accept="image/png, image/jpeg">
                 <img src={{this.userProfile}} alt="" width="200">
             </div> 
         </div>
-        <div class="fields-main-div row">            
-            <!-- <div class="field-container col-sm-12 col-md-6 form-group">
-                <button class="mr-3" mat-raised-button color="primary" (click)="editProfile()">
-                    <mat-icon>edit</mat-icon> Edit Profile
-                </button>
-            </div>             -->
+
+        <div class="fields-main-div row">
             <div class="field-container col-sm-12 col-md-6">
                 <mat-form-field appearance="legacy">
                     <mat-label>Name</mat-label>
@@ -39,17 +35,15 @@
                     <mat-label>Designation</mat-label>
                     <input matInput placeholder="Designation" formControlName="designation" [readonly]="!editable">
                 </mat-form-field>                
-            </div>
-            
+            </div>            
             <mat-form-field class="col-sm-12 col-md-6">
                 <mat-label>Address</mat-label>
                 <input matInput placeholder="Address" formControlName="address" [readonly]="!editable">
             </mat-form-field>
+            
             <div class="col-12" *ngIf="editable">
                 <button type="submit" mat-raised-button color="accent">Upload</button>
             </div>
-        </div>    
-      
-        
+        </div> 
       </form>
 </div>

@@ -9,8 +9,8 @@ import { environment } from "environments/environment";
   providedIn: "root",
 })
 export class AuthService {
+  private baseUrl = environment.base_api_url;
   public userLoggedIn = this._cookieService.get("currentUser");
-  baseUrl = environment.base_api_url;
 
   constructor(
     private http: HttpClient,
@@ -18,7 +18,7 @@ export class AuthService {
     private _router: Router
   ) {}
 
-  createHeaders(token?: string) {
+  private createHeaders(token?: string) {
     const data = {
       "Content-Type": "application/json",
     };
@@ -31,9 +31,7 @@ export class AuthService {
     return httpOptions;
   }
 
-  setCurrentUser(user: any, expires?: Date, msg?: string) {
-    // console.log(user,'user');
-
+  public setCurrentUser(user: any, expires?: Date, msg?: string) {
     if (user && user.accessToken) {
       let expiryDate = null;
       if (expires) {
@@ -47,19 +45,19 @@ export class AuthService {
     }
   }
 
-  checkToken() {    
+  public checkToken() {    
     return this._cookieService.check("token");
   }
 
-  getAuthorizationToken() {
+  public getAuthorizationToken() {
     return this._cookieService.get("token");
   }
 
-  getLoggedInUser() {
+  public getLoggedInUser() {
     return this._cookieService.get("currentUser");
   }
 
-  isAdmin() {
+  public isAdmin() {
     const UserRole = this._cookieService.get("role");
     if (UserRole === "admin") {
       return "true";
@@ -67,7 +65,7 @@ export class AuthService {
     return "false";
   }
 
-  isStaff() {
+  public isStaff() {
     const userRole = this._cookieService.get("role");
     if (userRole === "hr") {
       return "true";
@@ -75,8 +73,7 @@ export class AuthService {
     return "false";
   }
 
-  performLogout(userId): Observable<any> {
-    console.log(userId, 'userId 22'); 
+  public performLogout(userId): Observable<any> {
     const endpoint = `${this.baseUrl}/logout/${userId}`;
     const httpOptions = this.createHeaders();
     this._cookieService.delete("token");
@@ -85,41 +82,40 @@ export class AuthService {
     this._cookieService.delete("role");
     this._cookieService.delete("id");
     this._router.navigate(["/login"]);
-    return this.http.post(endpoint, httpOptions);
-    
+    return this.http.post(endpoint, httpOptions);    
   }
 
-  doLogin(userData): Observable<any> {
+  public doLogin(userData): Observable<any> {
     const endpoint = `${this.baseUrl}/login/`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, userData, httpOptions);
   }
 
-  getProfile(): Observable<any> {
+  public getProfile(): Observable<any> {
     const endpoint = `${this.baseUrl}/my-profile`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
-  changePassword(userData: any): Observable<any> {
+  public changePassword(userData: any): Observable<any> {
     const endpoint = `${this.baseUrl}/reset-password`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, userData, httpOptions);
   }
 
-  forgotPassword(userData: any): Observable<any> {
+  public forgotPassword(userData: any): Observable<any> {
     const endpoint = `${this.baseUrl}/forgot-password-email-send`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, userData, httpOptions);
   }
 
-  setNewPassword(userData: any, userId:string, token:string): Observable<any> {
+  public setNewPassword(userData: any, userId:string, token:string): Observable<any> {
     const endpoint = `${this.baseUrl}/change-password/${userId}/${token}`;
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, userData, httpOptions);
   }
 
-  getUserDetail() {
+  public getUserDetail() {
     const user = {
       name: this._cookieService.get("currentUser"),
       role: this._cookieService.get("role"),

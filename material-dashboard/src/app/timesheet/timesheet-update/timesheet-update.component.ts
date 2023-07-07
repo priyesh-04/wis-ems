@@ -6,11 +6,11 @@ import {
   getFormattedDate,
   getFormattedDatetime,
 } from "../../utils/custom-validators";
-import { TimesheetListComponent } from "../timesheet-list/timesheet-list.component";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { ClientService } from "../../services/client/client.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
+import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
 
 @Component({
   selector: "app-timesheet-update",
@@ -26,7 +26,7 @@ export class TimesheetUpdateComponent implements OnInit {
     private _clientService: ClientService,
     private _mesgageService: MesgageService,
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<TimesheetListComponent>,
+    private dialogRef: MatDialogRef<ListTimesheetComponent>,
     @Inject(MAT_DIALOG_DATA) public timesheetDialogData
   ) {}
 

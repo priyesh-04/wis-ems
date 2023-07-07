@@ -5,11 +5,13 @@ import {
   ViewChildren,
   QueryList,
 } from "@angular/core";
-import { DesignationService } from "app/services/designation/designation.service";
 import { MatDialog } from "@angular/material/dialog";
-import { ConfirmDeleteComponent } from "app/basic/confirm-delete/confirm-delete.component";
+
 import { DesignationFormComponent } from "../designation-form/designation-form.component";
 import { MesgageService } from "../../services/shared/message.service";
+import { DesignationService } from "../../services/designation/designation.service";
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
+
 export interface DialogData {
   animal: string;
   name: string;
@@ -22,18 +24,30 @@ export interface DialogData {
 })
 export class DesignationListComponent implements OnInit {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
-  designationList: any;
-  searchText: string;
-  alertMessage: string = "";
-  alertType: string = "";
+  public designationList: any;
 
   constructor(
     private _designationService: DesignationService,
-    public dialog: MatDialog,
-    private _mesgageService: MesgageService
+    private _mesgageService: MesgageService,
+    private dialog: MatDialog,
   ) {}
 
-  confirmDeleteDialog(id: number): void {
+  ngOnInit(): void {
+    this.refreshDesignationList();
+  }
+
+  private refreshDesignationList() {
+    this._designationService.getDesignationList().subscribe(
+      (res) => {
+        this.designationList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch designation list');
+      }
+    );
+  }
+
+  public confirmDeleteDialog(id: number): void {
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
         title: "Delete Designation",
@@ -53,7 +67,7 @@ export class DesignationListComponent implements OnInit {
     });
   }
 
-  addDesignationDialog() {
+  public addDesignationDialog() {
     const designationDialogRef = this.dialog.open(DesignationFormComponent, {
       data: {
         matDialogTitle: "Add New Designation",
@@ -66,14 +80,11 @@ export class DesignationListComponent implements OnInit {
     designationDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshDesignationList();
-        this._mesgageService.showSuccess(result.message)
-      }else{
-        this._mesgageService.showError(result.error.message);        
       }
     });
   }
 
-  updateDesignationDialog(designationData) {
+  public updateDesignationDialog(designationData) {
     const designationDialogRef = this.dialog.open(DesignationFormComponent, {
       data: {
         matDialogTitle: "Update Designation",
@@ -87,29 +98,7 @@ export class DesignationListComponent implements OnInit {
     designationDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshDesignationList();
-        this._mesgageService.showSuccess(result.message)
-      }else{
-        this._mesgageService.showError(result.error.message);        
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.refreshDesignationList();
-  }
-
-  onSearch() {
-    this.refreshDesignationList(this.searchText);
-  }
-
-  refreshDesignationList(searchText?: string) {
-    this._designationService.getDesignationList().subscribe(
-      (res) => {
-        this.designationList = res.result;
-      },
-      (err) => {
-        this._mesgageService.showError(err.message);
-      }
-    );
   }
 }

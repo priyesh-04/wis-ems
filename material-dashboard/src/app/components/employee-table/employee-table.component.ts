@@ -12,8 +12,7 @@ export interface messageModel {
 
 @Component({
   selector: 'app-employee-table',
-  templateUrl: './employee-table.component.html',
-  styleUrls: ['./employee-table.component.css']
+  templateUrl: './employee-table.component.html'
 })
 export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() isDashboard: boolean;
@@ -22,6 +21,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
 
   public employeeList: any;
   public useDefault :boolean;
+
   constructor(    
     private _employeeService: EmployeeService,
     private _mesgageService: MesgageService,
@@ -41,6 +41,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       this.refreshEmployeeList();
     }
   }
+  
   private refreshEmployeeList() {
     this._employeeService.getAllEmployees().subscribe(
       (res) => {

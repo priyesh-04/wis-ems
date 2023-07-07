@@ -10,8 +10,7 @@ import { EmployeeFormComponent } from "../employee-form/employee-form.component"
 
 @Component({
   selector: "app-employee-list",
-  templateUrl: "./employee-list.component.html",
-  styleUrls: ["./employee-list.component.css"],
+  templateUrl: "./employee-list.component.html"
 })
 export class EmployeeListComponent {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;  

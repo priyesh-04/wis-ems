@@ -8,8 +8,7 @@ import { EditStatus } from '../../timesheet/utils/TimesheetConstants';
 
 @Component({
   selector: 'app-task-request',
-  templateUrl: './task-request.component.html',
-  styleUrls: ['./task-request.component.css']
+  templateUrl: './task-request.component.html'
 })
 export class TaskRequestComponent implements OnInit {
   public allEditReqList = []; 

@@ -1,30 +1,29 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+
 import {
   validatorIndianMobileNumber,
   validatorEmail,
   validatorTextOnly,
   getFormattedDate,
 } from "../../utils/custom-validators";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { ClientService } from "app/services/client/client.service";
 import { ClientListComponent } from "../client-list/client-list.component";
 import { MesgageService } from "../../services/shared/message.service";
+import { ClientService } from "../../services/client/client.service";
 
 @Component({
   selector: "app-client-form",
-  templateUrl: "./client-form.component.html",
-  styleUrls: ["./client-form.component.css"],
+  templateUrl: "./client-form.component.html"
 })
 export class ClientFormComponent implements OnInit {
-  clientForm: FormGroup;
-  clientData: any;
+  public clientForm: FormGroup;
 
   constructor(
+    private fb: FormBuilder,
     private _clientService: ClientService,
-    public fb: FormBuilder,
     private _mesgageService: MesgageService,
-    public dialogRef: MatDialogRef<ClientListComponent>,
+    private dialogRef: MatDialogRef<ClientListComponent>,
     @Inject(MAT_DIALOG_DATA) public clientDialogData
   ) {}
 
@@ -54,19 +53,19 @@ export class ClientFormComponent implements OnInit {
     }
   }
 
-  closeDialog() {
+  public closeDialog() {
     this.dialogRef.close();
   }
 
-  get myClientForm() {
+  public get myClientForm() {
     return this.clientForm.controls;
   }
 
-  onSubmit(clientForm: FormGroup) {
-    this.clientData = clientForm.value;
+  public onSubmit(clientForm: FormGroup) {
+    const clientData = clientForm.value;
     if (this.clientDialogData.mode === "edit") {
       this._clientService
-        .updateClient(this.clientDialogData.clientData._id, this.clientData)
+        .updateClient(this.clientDialogData.clientData._id, clientData)
         .subscribe(
           (res) => {
             this.dialogRef.close("success");
@@ -77,7 +76,7 @@ export class ClientFormComponent implements OnInit {
           }
         );
     } else if (this.clientDialogData.mode === "add") {
-      this._clientService.addClient(this.clientData).subscribe(
+      this._clientService.addClient(clientData).subscribe(
         (res) => {
           this.dialogRef.close("success");
         this._mesgageService.showSuccess(res.message);

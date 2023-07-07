@@ -1,61 +1,47 @@
 import { Component, OnInit, ElementRef } from "@angular/core";
+import { Location } from "@angular/common";
+import { Router } from "@angular/router";
+import { MatDialog } from "@angular/material/dialog";
+
 import {
   adminROUTES,
   employeeROUTES,
   hrROUTES,
 } from "../sidebar/sidebar.component";
-import {
-  Location,
-  LocationStrategy,
-  PathLocationStrategy,
-} from "@angular/common";
-import { Router } from "@angular/router";
-import { AuthService } from "app/services/auth/auth.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
-import { MatDialog } from "@angular/material/dialog";
-import { CookieService } from "ngx-cookie-service";
+import { AuthService } from "../../services/auth/auth.service";
+
 @Component({
   selector: "app-navbar",
   templateUrl: "./navbar.component.html",
   styleUrls: ["./navbar.component.css"],
 })
 export class NavbarComponent implements OnInit {
-  loggedInUser: any;
-  private listTitles: any[];
-  location: Location;
-  mobile_menu_visible: any = 0;
+  private listTitles = [];
+  private currentPage: Location;
+  private mobile_menu_visible = 0;
   private toggleButton: any;
-  private sidebarVisible: boolean;
+  private sidebarVisible = false;
+  private userId : string;
   public userName : string;
   public isAdmin: boolean;
-  public userId : string;
+
   constructor(
-    location: Location,
+    private location: Location,
     private element: ElementRef,
     private router: Router,
-    public _authService: AuthService,
-    private _cookieService: CookieService,
-    public dialog: MatDialog
-  ) {
-    this.location = location;
-    this.sidebarVisible = false;
-  }
+    private _authService: AuthService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
-    this.loggedInUser = this._authService.getLoggedInUser();
+    this.currentPage = this.location;
+
     const user = this._authService.getUserDetail();
-    this.userId = user.id;
-    this.userName = user.name;
-    this.isAdmin = user.role === 'admin';
-    if (!user) {
-      this._authService.performLogout(this.userId);
-      this._cookieService.delete("token");
-      this._cookieService.delete("refreshToken");
-      this._cookieService.delete("currentUser");
-      this._cookieService.delete("role");
-      this._cookieService.delete("id");
-      this.router.navigate(["/login"]);
-    } else {
+    if (user) {
+      this.userId = user.id;
+      this.userName = user.name;
+      this.isAdmin = user.role === 'admin';
       if (user.role === "admin") {
         this.listTitles = adminROUTES.filter((listTitle) => listTitle);
       } else if (user.role === "employee") {
@@ -64,11 +50,13 @@ export class NavbarComponent implements OnInit {
         this.listTitles = hrROUTES.filter((listTitle) => listTitle);
       }
     }
+
     const navbar: HTMLElement = this.element.nativeElement;
     this.toggleButton = navbar.getElementsByClassName("navbar-toggler")[0];
-    this.router.events.subscribe((event) => {
+
+    this.router.events.subscribe(() => {
       this.sidebarClose();
-      var $layer: any = document.getElementsByClassName("close-layer")[0];
+      const $layer: any = document.getElementsByClassName("close-layer")[0];
       if ($layer) {
         $layer.remove();
         this.mobile_menu_visible = 0;
@@ -76,37 +64,32 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  sidebarOpen() {
+  private sidebarOpen() {
     const toggleButton = this.toggleButton;
     const body = document.getElementsByTagName("body")[0];
     setTimeout(function () {
       toggleButton.classList.add("toggled");
     }, 500);
-
     body.classList.add("nav-open");
-
     this.sidebarVisible = true;
   }
-  sidebarClose() {
+
+  private sidebarClose() {
     const body = document.getElementsByTagName("body")[0];
     this.toggleButton.classList.remove("toggled");
     this.sidebarVisible = false;
     body.classList.remove("nav-open");
   }
-  sidebarToggle() {
-    // const toggleButton = this.toggleButton;
-    // const body = document.getElementsByTagName('body')[0];
-    var $toggle = document.getElementsByClassName("navbar-toggler")[0];
 
+  public sidebarToggle() {
+    var $toggle = document.getElementsByClassName("navbar-toggler")[0];
     if (this.sidebarVisible === false) {
       this.sidebarOpen();
     } else {
       this.sidebarClose();
     }
-    const body = document.getElementsByTagName("body")[0];
-
+    const body = document.getElementsByTagName("body")[0];    
     if (this.mobile_menu_visible == 1) {
-      // $('html').removeClass('nav-open');
       body.classList.remove("nav-open");
       if ($layer) {
         $layer.remove();
@@ -137,7 +120,6 @@ export class NavbarComponent implements OnInit {
       }, 100);
 
       $layer.onclick = function () {
-        //asign a function
         body.classList.remove("nav-open");
         this.mobile_menu_visible = 0;
         $layer.classList.remove("visible");
@@ -161,24 +143,23 @@ export class NavbarComponent implements OnInit {
         mode:'logout'
       },
     });
-    deleteDialogRef.afterClosed().subscribe((result) => {
-      
-    });
+    deleteDialogRef.afterClosed().subscribe(() => {});
   }
-  getTitle() {
-    var titlee = this.location.prepareExternalUrl(this.location.path());
+
+  public getTitle() {
+    let title = this.currentPage.prepareExternalUrl(this.currentPage.path());
      
-    if (titlee.charAt(0) === "#") {
-      titlee = titlee.slice(1);
+    if (title.charAt(0) === "#") {
+      title = title.slice(1);
     }
-    if (titlee == '/profile') {
+    if (title === '/profile') {
       return 'Personal Details';
-    } else if (titlee == '/change-password') {
+    } else if (title === '/change-password') {
       return 'Change Password';
     }
-    for (var item = 0; item < this.listTitles.length; item++) {
-      
-      if (this.listTitles[item].path === titlee) {
+
+    for (let item = 0; item < this.listTitles.length; item++) {      
+      if (this.listTitles[item].path === title) {
         return this.listTitles[item].title;
       }        
     }
