@@ -1,6 +1,6 @@
 # Logs
 /uploads
-
+/.env
 logs
 *.log
 npm-debug.log*
