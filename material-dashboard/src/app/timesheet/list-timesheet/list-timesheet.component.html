@@ -34,8 +34,10 @@
     <div class="timesheet-wrapper bg-white p-2 mb-2" *ngFor="let timesheet of timesheetList">
         <div class="working-date-wrapper p-1 bg-dark text-white">
             <span class="working-date">
-                {{timesheet.date | date }} ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time |
-                date:'shortTime'}})
+                {{timesheet.date | date }} 
+                <ng-container *ngIf="timesheet.status === 'Present'">
+                    ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}})
+                </ng-container>
             </span>
             <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
                 Add Task
@@ -51,7 +53,7 @@
                 Already Requested
             </span>            
         </div>
-        <ng-container *ngIf="!timesheet.leave">
+        <ng-container *ngIf="timesheet.status === 'Present'">
             <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
                 <span class="client-name">
                     {{task.client?.company_name}}
@@ -72,11 +74,8 @@
                 </div>
             </div>
         </ng-container>
-        <div class="client-project ml-2 my-1" *ngIf="timesheet.leave || (!timesheet.is_holiday && !timesheet.task_details)">
-            <span class="text-danger">Leave</span>
-        </div>
-        <div class="client-project ml-2 my-1" style="color: rgb(2, 117, 18);" *ngIf="timesheet.is_holiday && !timesheet.task_details">
-            <span class="text-danger">Holiday</span>
+        <div class="client-project ml-2 my-1" *ngIf="timesheet.status !== 'Present'">
+            <span class="text-danger">{{timesheet.status}}</span>
         </div>
     </div>
     <div class="text-center my-3">

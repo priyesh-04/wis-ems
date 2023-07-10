@@ -1,0 +1,19 @@
+<div class="pagination" *ngIf="pagination">
+    <div class="limits">
+        <select [value]="limit" (change)="selectLimit($event)">
+            <option *ngFor="let limit of limits" value="{{limit}}">
+                {{limit}}
+            </option>
+        </select>
+    </div>
+    <div>
+        <a href="javascript:void(0)" (click)="onPaginationChange(pagination.current_page - 1)" *ngIf="pagination.current_page > 1">&laquo;</a>
+        <a href="javascript:void(0)" (click)="onPaginationChange(i+1)"
+            *ngFor="let item of [].constructor(pagination.total_page); let i = index"
+            [ngClass]="{'w3-red': i+1 === pagination.current_page}"
+        >
+            {{i+1}}
+        </a>
+        <a href="javascript:void(0)" (click)="onPaginationChange(pagination.current_page + 1)" *ngIf="pagination.current_page < pagination.total_page">&raquo;</a>
+    </div>
+</div>

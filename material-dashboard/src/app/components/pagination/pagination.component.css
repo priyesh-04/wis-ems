@@ -1,0 +1,24 @@
+.flex {
+    display: flex;
+}
+
+.limits {
+    padding-right: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+}
+  
+.pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+.w3-red {
+    color: #fff!important;
+    background-color: #f44336!important;
+}

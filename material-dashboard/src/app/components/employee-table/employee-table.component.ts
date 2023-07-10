@@ -17,7 +17,6 @@ export interface messageModel {
 export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() isDashboard: boolean;
   @Input() refreshTable?: boolean;
-  @Output() updateDialog = new EventEmitter<messageModel>();
 
   public employeeList: any;
   public useDefault :boolean;
