@@ -18,7 +18,7 @@ const cronFunction = () => {
   //once edited -> edited status
   // end of the day
   cron.schedule(
-    '0 30 12 * * *',
+    '53 59 23 * * *',
     () => {
       TimesheetCron.changeAcceptedPermission();
       console.log('All Accepted Permission goes to Edited');
@@ -31,7 +31,7 @@ const cronFunction = () => {
   // holiday or not submission created
   // run end of the day
   cron.schedule(
-    '1 30 12 * * *',
+    '50 59 23 * * *',
     () => {
       TimesheetCron.createHolidayTimesheet();
       console.log('Creating Holiday sheet');
@@ -46,7 +46,7 @@ const cronFunction = () => {
   // run start at start of the day
   // run at 0 10 0 * * *
   cron.schedule(
-    '2 30 12 * * *',
+    '0 10 0 * * *',
     () => {
       TimesheetCron.createOfficalHolidayTimesheet();
       console.log('Creating Official Holiday sheet');
