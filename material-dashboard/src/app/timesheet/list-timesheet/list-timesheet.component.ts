@@ -42,7 +42,9 @@ export class ListTimesheetComponent implements OnInit {
 
   ngOnInit(): void {
     this.filterEndDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
-    this.filterStartDate = this.datepipe.transform((new Date).setDate((new Date).getDate() - 30), 'yyyy-MM-dd');
+    const currentDate = new Date().getDate();
+    //NB: Get start date as the 15th of last month
+    this.filterStartDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 1 : new Date().getMonth()}-15`, 'yyyy-MM-dd');
     this.isAdmin = this._authService.isAdmin()  === "true" ? true : false;
     if (this.isAdmin) {
       this.userID = this.route.snapshot.paramMap.get("id");

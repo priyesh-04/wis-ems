@@ -11,6 +11,7 @@ import { DesignationFormComponent } from "../designation-form/designation-form.c
 import { MesgageService } from "../../services/shared/message.service";
 import { DesignationService } from "../../services/designation/designation.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
+import { pagination, params } from "../../commonModels";
 
 export interface DialogData {
   animal: string;
@@ -24,7 +25,10 @@ export interface DialogData {
 })
 export class DesignationListComponent implements OnInit {
   @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
+  private params: params;
   public designationList: any;
+  public pagination: pagination;
+  public limit = 5;
 
   constructor(
     private _designationService: DesignationService,
@@ -33,13 +37,18 @@ export class DesignationListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.params = {
+      limit: this.limit,
+      page: 1
+    };
     this.refreshDesignationList();
   }
 
   private refreshDesignationList() {
-    this._designationService.getDesignationList().subscribe(
+    this._designationService.getDesignationList(this.params).subscribe(
       (res) => {
         this.designationList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch designation list');
@@ -100,5 +109,10 @@ export class DesignationListComponent implements OnInit {
         this.refreshDesignationList();
       }
     });
+  }
+
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.refreshDesignationList();
   }
 }
