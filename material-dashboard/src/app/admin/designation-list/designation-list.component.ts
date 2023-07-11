@@ -24,11 +24,10 @@ export interface DialogData {
   styleUrls: ["./designation-list.component.css"],
 })
 export class DesignationListComponent implements OnInit {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
   private params: params;
   public designationList: any;
   public pagination: pagination;
-  public limit = 5;
+  public limit = 10;
 
   constructor(
     private _designationService: DesignationService,
@@ -113,6 +112,7 @@ export class DesignationListComponent implements OnInit {
 
   public onPaginationChange(event: params) {
     this.params = event;
+    this.limit = this.params.limit;
     this.refreshDesignationList();
   }
 }

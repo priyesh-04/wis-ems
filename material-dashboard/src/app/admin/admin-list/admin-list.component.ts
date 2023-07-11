@@ -1,23 +1,20 @@
-import {
-  Component,
-  OnInit,
-  ElementRef,
-  ViewChildren,
-  QueryList,
-} from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { MesgageService } from "../../services/shared/message.service";
+import { pagination, params } from "../../commonModels";
 
 @Component({
   selector: "app-admin-list",
   templateUrl: "./admin-list.component.html"
 })
 export class AdminListComponent implements OnInit {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
+  private params: params;
   public adminList: any;
+  public pagination: pagination;
+  public limit = 10;
 
   constructor(
     private _employeeService: EmployeeService,
@@ -26,13 +23,18 @@ export class AdminListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.params = {
+      limit: this.limit,
+      page: 1
+    };
     this.refreshadminList();
   }
 
   private refreshadminList() {
-    this._employeeService.getAllAdmins().subscribe(
+    this._employeeService.getAllAdmins(this.params).subscribe(
       (res) => {
         this.adminList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message);
@@ -75,5 +77,11 @@ export class AdminListComponent implements OnInit {
         this.refreshadminList();
       }
     });
+  }
+
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.limit = this.params.limit;
+    this.refreshadminList();
   }
 }

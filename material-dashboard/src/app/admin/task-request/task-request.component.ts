@@ -5,14 +5,18 @@ import { EmployeeService } from '../../services/employee/employee.service';
 import { ConfirmDeleteComponent } from '../../basic/confirm-delete/confirm-delete.component';
 import { MesgageService } from '../../services/shared/message.service';
 import { EditStatus } from '../../timesheet/utils/TimesheetConstants';
+import { pagination, params } from '../../commonModels';
 
 @Component({
   selector: 'app-task-request',
   templateUrl: './task-request.component.html'
 })
 export class TaskRequestComponent implements OnInit {
-  public allEditReqList = []; 
-  public EditStatus = EditStatus; 
+  private params: params;
+  public allEditReqList = [];
+  public EditStatus = EditStatus;
+  public pagination: pagination;
+  public limit = 10;
 
   constructor(
     private _allEditReqAdmin :EmployeeService,
@@ -21,13 +25,18 @@ export class TaskRequestComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.params = {
+      limit: this.limit,
+      page: 1
+    };
     this.getAllEditReqAdmin();
   }
 
   private getAllEditReqAdmin(){
-    this._allEditReqAdmin.allEditReqAdmin().subscribe(
+    this._allEditReqAdmin.allEditReqAdmin(this.params).subscribe(
       (res) => {
         this.allEditReqList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch timesheet request list');
@@ -67,5 +76,11 @@ export class TaskRequestComponent implements OnInit {
         this.getAllEditReqAdmin();
       }
     });
+  }
+
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.limit = this.params.limit;
+    this.getAllEditReqAdmin();
   }
 }

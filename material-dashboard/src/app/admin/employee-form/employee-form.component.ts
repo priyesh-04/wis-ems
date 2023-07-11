@@ -56,14 +56,21 @@ export class EmployeeFormComponent implements OnInit {
     this.getClientList();
 
     if (this.employeeDialogData.role === 'admin') {
-      this.isAdmin = true    
+      this.isAdmin = true;
+      // Set default values for admin as an admin will not filled up this fields
+      this.employeeForm.patchValue({
+        designation: '648171023294ac322071c030',
+        role: 'admin',
+        assigned_client: ['648183c002532e19d3ea921a'],
+        holidays: [0, 6]
+      });
     }
     if (this.employeeDialogData.mode === "edit") {
       if (this.employeeDialogData.employeeData.role === "admin") {
         this.roleList.push({ value: "admin", viewValue: "Admin" });
       }
       const clientId = []
-      if (this.employeeDialogData.employeeData.assigned_client) {
+      if (!this.isAdmin && this.employeeDialogData.employeeData.assigned_client) {
         const selectedClients = this.employeeDialogData.employeeData.assigned_client;
         for (let i = 0; i < selectedClients.length; i++) {
           clientId.push(selectedClients[i]['_id']);
@@ -73,7 +80,7 @@ export class EmployeeFormComponent implements OnInit {
       const selectedHolidays = this.employeeDialogData.employeeData.holidays;      
       for (let index in selectedHolidays) {
         selectedDays.push(selectedHolidays[index]);
-      };
+      };      
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
         name: this.employeeDialogData.employeeData.name,
@@ -82,7 +89,7 @@ export class EmployeeFormComponent implements OnInit {
         address: this.employeeDialogData.employeeData.address,
         designation: this.employeeDialogData.employeeData.designation._id,
         role: this.employeeDialogData.employeeData.role,
-        assigned_client:clientId,
+        assigned_client: this.isAdmin ? this.employeeDialogData.employeeData.assigned_client : clientId,
         holidays: selectedDays
       });
     }

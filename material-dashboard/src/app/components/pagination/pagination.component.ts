@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { pagination, params } from '../../commonModels';
 
@@ -7,7 +7,7 @@ import { pagination, params } from '../../commonModels';
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css']
 })
-export class PaginationComponent implements OnChanges {
+export class PaginationComponent {
   @Input() pagination: pagination;
   @Input() limit?: number;
   @Output() paramsEvent = new EventEmitter<params>();
@@ -15,13 +15,9 @@ export class PaginationComponent implements OnChanges {
 
   constructor() { }
 
-  ngOnChanges(): void {
-    console.log('pagination: ', this.pagination);    
-  }
-
   public onPaginationChange(page: number) {
     this.paramsEvent.emit({
-      limit: 5,
+      limit: this.pagination.limit,
       page
     });
   }
@@ -29,7 +25,7 @@ export class PaginationComponent implements OnChanges {
   public selectLimit(event) {
     this.paramsEvent.emit({
       limit: event.target.value,
-      page: this.pagination.current_page
+      page: 1
     });
   }
 }

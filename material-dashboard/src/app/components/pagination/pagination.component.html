@@ -1,9 +1,9 @@
 <div class="pagination" *ngIf="pagination">
     <div class="limits d-flex align-items-center">
         <p class="mb-0 mr-2">Rows per page:</p>
-        <select [value]="limit" (change)="selectLimit($event)">
-            <option *ngFor="let limit of limits" class="text-center" value="{{limit}}">
-                {{limit}}
+        <select (change)="selectLimit($event)">
+            <option *ngFor="let val of limits" class="text-center" value="{{val}}" [selected]="val === limit">
+                {{val}}
             </option>
         </select>
     </div>

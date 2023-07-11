@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "environments/environment";
 
+import { params } from "../../commonModels";
+
 @Injectable({
   providedIn: "root",
 })
@@ -30,8 +32,8 @@ export class ClientService {
     return this.http.post(endpoint, data, httpOptions);
   }
 
-  public getClientList(): Observable<any> {
-    const endpoint = `${this.baseUrl}/client`;
+  public getClientList(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/client?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
