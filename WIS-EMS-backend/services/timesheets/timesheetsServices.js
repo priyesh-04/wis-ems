@@ -4,6 +4,7 @@ const { Timesheets } = require('../../models/timesheets/timesheets');
 const { User } = require('../../models/auth/user');
 const { ClientDetails } = require('../../models/clientDetails/clientDetails');
 const { TokenService } = require('../../utils');
+const mongoose = require('mongoose');
 
 class TimeSheetService {
   async addTimeSheet(req, res, next) {
@@ -723,9 +724,12 @@ class TimeSheetService {
 
   async taskdetailsByUserDateWise(req, res, next) {
     try {
-      const start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
-      const end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
-      let { limit, page } = req.query;
+      let { limit, page, start_date, end_date, clientid } = req.query;
+
+      if (start_date && end_date) {
+        start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
+        end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      }
       const userid = req.params.id;
       if (userid.length != 24) {
         return res
@@ -737,69 +741,180 @@ class TimeSheetService {
         start_date == 'Invalid Date' ||
         end_date == 'Invalid Date'
       ) {
-        return res.status(400).json({
-          msgErr: true,
-          message: 'Please Provide valid start date and end date.',
-        });
+        end_date = new Date();
+        start_date = new Date();
+        start_date.setMonth(start_date.getMonth() - 1);
+        start_date.setDate(15);
+        start_date.setHours(0, 0, 0, 0);
       }
+      const returnAnswer = (details) => {
+        if (!limit || !page) {
+          limit = 10;
+          page = 1;
+        }
+        limit = parseInt(limit);
+        page = parseInt(page);
+        if (limit > 100) {
+          limit = 100;
+        }
+
+        let originalData = [];
+        if (clientid) {
+          for (let i = 0; i < details.length; i++) {
+            if (details[i]._id[0] == clientid) {
+              originalData = details[i].clientwise;
+            }
+          }
+        } else {
+          originalData = details;
+        }
+
+        let total_page = Math.ceil(originalData.length / limit);
+        let sliceArr =
+          originalData && originalData.slice(limit * (page - 1), limit * page);
+        return res.status(200).json({
+          msgErr: false,
+          result: sliceArr,
+          pagination: {
+            limit,
+            current_page: page,
+            total_page: total_page,
+          },
+        });
+      };
+
       const existUser = await User.findById({ _id: userid });
       if (!existUser) {
         return res.status(400).json({
           msgErr: true,
-          message: "User Does't Exist. Please Provide a valid user id.",
+          message: "User Doesn't Exist. Please Provide a valid user id.",
         });
       }
-      await Timesheets.find({
-        created_by: userid,
-        date: { $gte: start_date, $lte: end_date },
-      })
-        .populate({
-          path: 'task_details',
-          modal: 'TaskDetails',
-          select: '_id project_name start_time end_time time_spend description',
-          populate: {
-            path: 'client',
-            modal: 'ClientDetails',
-            select: '_id company_name person_name company_email',
+      if (clientid) {
+        await Timesheets.aggregate([
+          {
+            $unwind: '$task_details',
           },
-        })
-        .sort({ date: -1 })
-        .exec((err, details) => {
-          if (err) {
-            return res
-              .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
-          } else if (details.length === 0) {
-            return res.status(200).json({
-              msgErr: false,
-              result: details,
-              message: 'No Task Available !',
-            });
-          } else {
-            if (!limit || !page) {
-              limit = 10;
-              page = 1;
-            }
-            limit = parseInt(limit);
-            page = parseInt(page);
-            if (limit > 100) {
-              limit = 100;
-            }
+          {
+            $match: {
+              created_by: new mongoose.Types.ObjectId(userid),
+              date: { $gte: start_date, $lte: end_date },
+            },
+          },
+          {
+            $lookup: {
+              from: 'taskDetails',
+              let: { pr: '$task_details' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $eq: [
+                        {
+                          $toObjectId: '$_id',
+                        },
+                        '$$pr',
+                      ],
+                    },
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'clientDetails',
+                    localField: 'client',
+                    foreignField: '_id',
+                    as: 'client',
+                  },
+                },
+                {
+                  $unwind: '$client',
+                },
+              ],
+              as: 'task_details',
+            },
+          },
 
-            let total_page = Math.ceil(details.length / limit);
-            let sliceArr =
-              details && details.slice(limit * (page - 1), limit * page);
-            return res.status(200).json({
-              msgErr: false,
-              result: sliceArr,
-              pagination: {
-                limit,
-                current_page: page,
-                total_page: total_page,
+          {
+            $project: {
+              _id: 1,
+              in_time: 1,
+              out_time: 1,
+              edit_status: 1,
+              date: 1,
+              created_by: 1,
+              edit_reason: 1,
+              'task_details._id': 1,
+              'task_details.client': 1,
+              'task_details.project_name': 1,
+              'task_details.start_time': 1,
+              'task_details.end_time': 1,
+              'task_details.description': 1,
+              'task_details.time_spend': 1,
+              // 'task_details.client._id': 1,
+              // 'task_details.client.company_name': 1,
+              // 'task_details.client.company_email': 1,
+              // 'task_details.client.person_name': 1,
+            },
+          },
+          {
+            $group: {
+              _id: '$task_details.client._id',
+              clientwise: {
+                $push: '$$ROOT',
               },
-            });
-          }
-        });
+            },
+          },
+        ])
+          .sort({ date: -1 })
+          .exec((err, details) => {
+            if (err) {
+              return res
+                .status(400)
+                .json({ msgErr: true, message: 'Error ' + err });
+            } else if (details.length === 0) {
+              return res.status(200).json({
+                msgErr: false,
+                result: details,
+                message: 'No Task Available !',
+              });
+            } else {
+              // return res.send(details);
+              returnAnswer(details);
+            }
+          });
+      } else {
+        Timesheets.find({
+          created_by: userid,
+          date: { $gte: start_date, $lte: end_date },
+        })
+          .populate({
+            path: 'task_details',
+            modal: 'TaskDetails',
+            select:
+              '_id project_name start_time end_time time_spend description',
+            populate: {
+              path: 'client',
+              modal: 'ClientDetails',
+              select: '_id company_name person_name company_email',
+            },
+          })
+          .sort({ date: -1 })
+          .exec((err, details) => {
+            if (err) {
+              return res
+                .status(400)
+                .json({ msgErr: true, message: 'Error ' + err });
+            } else if (details.length === 0) {
+              return res.status(200).json({
+                msgErr: false,
+                result: details,
+                message: 'No Task Available !',
+              });
+            } else {
+              returnAnswer(details);
+            }
+          });
+      }
     } catch (error) {
       return res
         .status(500)
