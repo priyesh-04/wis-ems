@@ -5,6 +5,7 @@ import { EmployeeService } from '../../services/employee/employee.service';
 import { EmployeeFormComponent } from '../../admin/employee-form/employee-form.component';
 import { MesgageService } from '../../services/shared/message.service';
 import { pagination, params } from '../../commonModels';
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 
 export interface messageModel {
   alertType: string;
@@ -18,6 +19,7 @@ export interface messageModel {
 export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() isDashboard: boolean;
   @Input() refreshTable?: boolean;
+  @Input() isEmployeeStatus: boolean;
 
   private params: params;
   public employeeList: any;
@@ -91,7 +93,21 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       }
     });
   }
-
+  public employeeToggle(userId){
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        message: "Are you sure you want to Inactive Employee?",
+        userId :userId,
+        callingFrom:'employeeStatus'
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      if (result === "success") {
+        this.refreshEmployeeList();
+      }
+      
+    });
+  }
   public onPaginationChange(event: params) {
     this.params = event;
     this.limit = this.params.limit;

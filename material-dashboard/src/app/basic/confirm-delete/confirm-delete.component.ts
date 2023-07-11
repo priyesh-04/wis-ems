@@ -52,13 +52,30 @@ export class ConfirmDeleteComponent {
       this.reqTaskApprove(data.timesheet_id, this.isApprove = 'Accepted');     
     } else if (data.callingFrom === "reqTaskReject") {
       this.reqTaskReject(data.timesheet_id, this.isApprove = 'Rejected');     
+    } else if (data.callingFrom === "employeeStatus") {
+      console.log(data.userId);
+      
+      this.employeeInactive(data.userId);
     } else if (data.callingFrom === "client") {
-      this.deleteClient(data.id);
+      this.employeeInactive(data.id);
     }
   }
 
   public onNoClick(): void {
     this.deleteDialogRef.close();
+  }
+
+  private employeeInactive(id) {
+    this._employeeService.employeeStatus(id).subscribe(      
+      (res) => {
+        this._mesgageService.showSuccess(res.message);
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+        this.deleteDialogRef.close(err);
+      }
+    );
   }
 
   private profileLogout(userId) {
