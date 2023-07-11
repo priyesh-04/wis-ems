@@ -1,7 +1,8 @@
 <div class="pagination" *ngIf="pagination">
-    <div class="limits">
+    <div class="limits d-flex align-items-center">
+        <p class="mb-0 mr-2">Rows per page:</p>
         <select [value]="limit" (change)="selectLimit($event)">
-            <option *ngFor="let limit of limits" value="{{limit}}">
+            <option *ngFor="let limit of limits" class="text-center" value="{{limit}}">
                 {{limit}}
             </option>
         </select>
@@ -10,7 +11,7 @@
         <a href="javascript:void(0)" (click)="onPaginationChange(pagination.current_page - 1)" *ngIf="pagination.current_page > 1">&laquo;</a>
         <a href="javascript:void(0)" (click)="onPaginationChange(i+1)"
             *ngFor="let item of [].constructor(pagination.total_page); let i = index"
-            [ngClass]="{'w3-red': i+1 === pagination.current_page}"
+            [ngClass]="{'w3-red active-page': i+1 === pagination.current_page}"
         >
             {{i+1}}
         </a>
