@@ -1,24 +1,21 @@
-import {
-  Component,
-  OnInit,
-  ElementRef,
-  ViewChildren,
-  QueryList,
-} from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 
 import { ClientService } from "../../services/client/client.service";
 import { ClientFormComponent } from "../client-form/client-form.component";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MesgageService } from "../../services/shared/message.service";
+import { pagination, params } from "../../commonModels";
 
 @Component({
   selector: "app-client-list",
   templateUrl: "./client-list.component.html"
 })
 export class ClientListComponent implements OnInit {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;
+  private params: params;
   public clientList = [];
+  public pagination: pagination;
+  public limit = 10;
 
   constructor(
     private dialog: MatDialog,
@@ -27,13 +24,18 @@ export class ClientListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.params = {
+      limit: this.limit,
+      page: 1
+    };
     this.refreshClientList();
   }
 
   private refreshClientList() {
-    this._clientService.getClientList().subscribe(
+    this._clientService.getClientList(this.params).subscribe(
       (res) => {
         this.clientList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch client list');        
@@ -94,5 +96,11 @@ export class ClientListComponent implements OnInit {
         this.refreshClientList();
       }
     });
+  }
+
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.limit = this.params.limit;
+    this.refreshClientList();
   }
 }

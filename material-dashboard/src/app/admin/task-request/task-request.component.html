@@ -14,7 +14,7 @@
             </thead>
             <tbody *ngFor="let reqList of allEditReqList; let i = index">
                 <tr>
-                    <th scope="row">{{i+1}}</th>                    
+                    <th scope="row">{{pagination.current_page ? (pagination.current_page - 1) * limit + i + 1 : i + 1}}</th>
                     <td>{{reqList.created_by.name}}</td>
                     <td>{{reqList.created_by.emp_id}}</td>
                     <td>{{reqList.created_by.email_id}}</td>
@@ -43,4 +43,5 @@
             </tbody> 
         </table>
     </div>
+    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
 </div>

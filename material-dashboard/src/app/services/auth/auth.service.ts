@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { CookieService } from "ngx-cookie-service";
 import { environment } from "environments/environment";
@@ -14,8 +13,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private _cookieService: CookieService,
-    private _router: Router
+    private _cookieService: CookieService
   ) {}
 
   private createHeaders(token?: string) {
@@ -81,7 +79,6 @@ export class AuthService {
     this._cookieService.delete("currentUser");
     this._cookieService.delete("role");
     this._cookieService.delete("id");
-    this._router.navigate(["/login"]);
     return this.http.post(endpoint, httpOptions);    
   }
 
