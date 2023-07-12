@@ -67,3 +67,8 @@ no submission => Not Submit
 holiday => Holiday
 leave => Leave
 
+Cron Time *********
+Official Holiday -> on that day 00:10:00 
+Not Submit / Holiday -> On that day 23:59:50
+Edit Permission for that day task -> Next Day 7:30:00
+Accepted Edit Permission End Time -> Next Day 7:30:05 

@@ -829,6 +829,20 @@ class TimeSheetService {
                 {
                   $unwind: '$client',
                 },
+                {
+                  $project: {
+                    _id: 1,
+                    project_name: 1,
+                    start_time: 1,
+                    end_time: 1,
+                    description: 1,
+                    time_spend: 1,
+                    'client._id': 1,
+                    'client.company_name': 1,
+                    'client.person_name': 1,
+                    'client.company_email': 1,
+                  },
+                },
               ],
               as: 'task_details',
             },
@@ -850,10 +864,6 @@ class TimeSheetService {
               'task_details.end_time': 1,
               'task_details.description': 1,
               'task_details.time_spend': 1,
-              // 'task_details.client._id': 1,
-              // 'task_details.client.company_name': 1,
-              // 'task_details.client.company_email': 1,
-              // 'task_details.client.person_name': 1,
             },
           },
           {
@@ -878,7 +888,6 @@ class TimeSheetService {
                 message: 'No Task Available !',
               });
             } else {
-              // return res.send(details);
               returnAnswer(details);
             }
           });

@@ -5,7 +5,7 @@ const cronFunction = () => {
   console.log('Cron Job Started.');
   // reset timesheet permission
   cron.schedule(
-    '55 59 23 * * *',
+    '0 30 7 * * *',
     () => {
       TimesheetCron.resetTimesheetEditPermission();
       console.log('All Timesheet edit permission Ended.');
@@ -18,7 +18,7 @@ const cronFunction = () => {
   //once edited -> edited status
   // end of the day
   cron.schedule(
-    '53 59 23 * * *',
+    '5 30 7 * * *',
     () => {
       TimesheetCron.changeAcceptedPermission();
       console.log('All Accepted Permission goes to Edited');
