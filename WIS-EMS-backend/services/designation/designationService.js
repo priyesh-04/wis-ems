@@ -72,36 +72,38 @@ class DesignationService {
   async allDesignation(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await Designation.find({}, (err, details) => {
-        if (err) {
-          return res
-            .status(400)
-            .json({ msgError: true, message: 'Error ' + err });
-        } else {
-          if (!limit || !page) {
-            limit = 10;
-            page = 1;
-          }
-          limit = parseInt(limit);
-          page = parseInt(page);
-          if (limit > 100) {
-            limit = 100;
-          }
+      Designation.find({})
+        .sort({ createdAt: -1 })
+        .exec((err, details) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgError: true, message: 'Error ' + err });
+          } else {
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
 
-          let total_page = Math.ceil(details.length / limit);
-          let sliceArr =
-            details && details.slice(limit * (page - 1), limit * page);
-          return res.status(200).json({
-            msgErr: false,
-            result: sliceArr,
-            pagination: {
-              limit,
-              current_page: page,
-              total_page: total_page,
-            },
-          });
-        }
-      });
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
+          }
+        });
     } catch (error) {
       return res
         .status(500)
