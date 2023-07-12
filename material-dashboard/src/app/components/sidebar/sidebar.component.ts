@@ -71,6 +71,12 @@ export const adminROUTES: RouteInfo[] = [
     icon: "work",
     class: "",
   },
+  {
+    path: "/admin/office-holidays",
+    title: "Office Holidays",
+    icon: "holiday_village",
+    class: "",
+  },
 ];
 
 @Component({
