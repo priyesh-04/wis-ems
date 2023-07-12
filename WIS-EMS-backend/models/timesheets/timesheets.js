@@ -75,7 +75,7 @@ const TimeSheetSchema = new mongoose.Schema(
     ],
     status: {
       type: String,
-      enum: ['Present', 'Not Submit', 'Holiday', 'Official Holiday', 'Leave'],
+      enum: ['Present', 'Not Submited', 'Holiday', 'Official Holiday', 'Leave'],
       trim: true,
       default: 'Present',
     },

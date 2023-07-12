@@ -106,7 +106,7 @@ class TimesheetCron {
             edit_status: 'Initial',
             date: dayEnd,
             created_by: user._id,
-            status: 'Not Submit',
+            status: 'Not Submited',
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
