@@ -53,11 +53,9 @@ export class ConfirmDeleteComponent {
     } else if (data.callingFrom === "reqTaskReject") {
       this.reqTaskReject(data.timesheet_id, this.isApprove = 'Rejected');     
     } else if (data.callingFrom === "employeeStatus") {
-      console.log(data.userId);
-      
-      this.employeeInactive(data.userId);
+      this.employeeInactive(data.userId, data.is_active);
     } else if (data.callingFrom === "client") {
-      this.employeeInactive(data.id);
+      this.deleteClient(data.id);
     }
   }
 
@@ -65,8 +63,8 @@ export class ConfirmDeleteComponent {
     this.deleteDialogRef.close();
   }
 
-  private employeeInactive(id) {
-    this._employeeService.employeeStatus(id).subscribe(      
+  private employeeInactive(id, is_active) {
+    this._employeeService.employeeStatus(id, is_active).subscribe(      
       (res) => {
         this._mesgageService.showSuccess(res.message);
         this.deleteDialogRef.close("success");

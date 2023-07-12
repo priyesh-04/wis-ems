@@ -43,10 +43,10 @@ export class EmployeeService {
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
-  public employeeStatus(id,): Observable<any> {
+  public employeeStatus(id, is_active): Observable<any> {
     const endpoint = `${this.baseUrl}/user/active-deactive/${id}`;
     const httpOptions = this.createHeaders();
-    return this.http.post(endpoint, {is_active:true}, httpOptions);
+    return this.http.post(endpoint, {is_active: !is_active}, httpOptions);
   }
 
   public getAllEmployeesSpendTime(params?: params): Observable<any> {

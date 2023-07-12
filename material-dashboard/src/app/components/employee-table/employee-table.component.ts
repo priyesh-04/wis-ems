@@ -19,7 +19,6 @@ export interface messageModel {
 export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() isDashboard: boolean;
   @Input() refreshTable?: boolean;
-  @Input() isEmployeeStatus: boolean;
 
   private params: params;
   public employeeList: any;
@@ -93,12 +92,14 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       }
     });
   }
-  public employeeToggle(userId){
+  public employeeToggle(userId, is_active){
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
-        message: "Are you sure you want to Inactive Employee?",
+        message: `Are you sure you want to ${is_active ? 'Deactive' : 'Active'} Employee?`,
         userId :userId,
-        callingFrom:'employeeStatus'
+        callingFrom:'employeeStatus',
+        is_active,
+        mode:'employeeStatus'
       },
     });
     deleteDialogRef.afterClosed().subscribe((result) => {

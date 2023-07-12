@@ -121,4 +121,7 @@ a.close {
     background: #555; 
   }
 
-
+.employee-status .mat-slide-toggle.mat-disabled {
+    opacity: 1;
+    cursor: pointer;
+}

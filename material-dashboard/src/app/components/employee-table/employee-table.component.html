@@ -47,7 +47,9 @@
                     </button>
                 </td>
                 <td *ngIf="!isDashboard">
-                    <mat-slide-toggle [checked]="employee.is_active" (click)="employeeToggle(employee._id)"></mat-slide-toggle>
+                    <div class="d-inline employee-status" (click)="employeeToggle(employee._id, employee.is_active)">
+                        <mat-slide-toggle [checked]="employee.is_active" [disabled]='true'></mat-slide-toggle>
+                    </div>
                 </td>
             </tr>
         </tbody>
