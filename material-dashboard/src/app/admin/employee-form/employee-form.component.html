@@ -61,7 +61,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div> 
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-6" *ngIf="!isAdmin">
                     <mat-form-field>
                         <mat-label>Client</mat-label>
                         <mat-select formControlName="assigned_client" multiple>
@@ -69,7 +69,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="col-sm-12 col-md-6">
+                <div class="col-sm-12 col-md-6" *ngIf="!isAdmin">
                     <mat-form-field>
                         <mat-label>Holiday</mat-label>
                         <mat-select formControlName="holidays" multiple>

@@ -19,7 +19,7 @@
             </thead>
             <tbody *ngFor="let admin of adminList; let i = index">
                 <tr>
-                    <th scope="row">{{i+1}}</th>
+                    <th scope="row">{{pagination.current_page ? (pagination.current_page - 1) * limit + i + 1 : i + 1}}</th>
                     <td>
                         <a>
                             {{admin.emp_id}}
@@ -37,5 +37,6 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div>   
+    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
 </div>

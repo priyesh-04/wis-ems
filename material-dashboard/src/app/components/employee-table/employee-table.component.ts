@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
 import { EmployeeService } from '../../services/employee/employee.service';
 import { EmployeeFormComponent } from '../../admin/employee-form/employee-form.component';
 import { MesgageService } from '../../services/shared/message.service';
+import { pagination, params } from '../../commonModels';
+import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 
 export interface messageModel {
   alertType: string;
@@ -17,10 +19,12 @@ export interface messageModel {
 export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() isDashboard: boolean;
   @Input() refreshTable?: boolean;
-  @Output() updateDialog = new EventEmitter<messageModel>();
 
+  private params: params;
   public employeeList: any;
   public useDefault :boolean;
+  public pagination: pagination;
+  public limit = 10;
 
   constructor(    
     private _employeeService: EmployeeService,
@@ -35,6 +39,11 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
 
   ngOnInit(): void {
+    this.params = {
+      limit: this.limit,
+      page: 1
+    };
+
     if (this.isDashboard) {
       this.employeeSpendTimeList();
     } else {
@@ -43,9 +52,10 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
   
   private refreshEmployeeList() {
-    this._employeeService.getAllEmployees().subscribe(
+    this._employeeService.getAllEmployees(this.params).subscribe(
       (res) => {
         this.employeeList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
@@ -54,9 +64,10 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
 
   private employeeSpendTimeList() {
-    this._employeeService.getAllEmployeesSpendTime().subscribe(
+    this._employeeService.getAllEmployeesSpendTime(this.params).subscribe(
       (res) => {
         this.employeeList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
@@ -80,6 +91,32 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
         this.refreshEmployeeList();
       }
     });
+  }
+  public employeeToggle(userId, is_active){
+    const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        message: `Are you sure you want to ${is_active ? 'Deactive' : 'Active'} Employee?`,
+        userId :userId,
+        callingFrom:'employeeStatus',
+        is_active,
+        mode:'employeeStatus'
+      },
+    });
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      if (result === "success") {
+        this.refreshEmployeeList();
+      }
+      
+    });
+  }
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.limit = this.params.limit;
+    if (this.isDashboard) {
+      this.employeeSpendTimeList();
+    } else {
+      this.refreshEmployeeList();
+    }
   }
 
 }

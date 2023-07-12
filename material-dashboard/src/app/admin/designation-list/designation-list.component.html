@@ -16,7 +16,7 @@
             </thead>
             <tbody *ngFor="let designation of designationList; let i = index">
                 <tr>
-                    <th scope="row">{{i+1}}</th>
+                    <th scope="row">{{pagination.current_page ? (pagination.current_page - 1) * limit + i + 1 : i + 1}}</th>
                     <td>
                         <a>
                             {{designation.name}}
@@ -37,4 +37,5 @@
             </tbody>
         </table>
     </div>
+    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
 </div>

@@ -1,9 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  ViewChildren,
-  QueryList,
-} from "@angular/core";
+import { Component } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 
 import { EmployeeFormComponent } from "../employee-form/employee-form.component";
@@ -13,7 +8,6 @@ import { EmployeeFormComponent } from "../employee-form/employee-form.component"
   templateUrl: "./employee-list.component.html"
 })
 export class EmployeeListComponent {
-  @ViewChildren("pageList") pages: QueryList<ElementRef<HTMLLIElement>>;  
   public refreshTable = false;
 
   constructor(

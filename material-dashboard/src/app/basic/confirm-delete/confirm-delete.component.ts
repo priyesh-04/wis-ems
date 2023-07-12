@@ -1,4 +1,5 @@
-import { Component, Inject, ViewChild } from "@angular/core";
+import { Component, Inject } from "@angular/core";
+import { Router } from "@angular/router";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 
 import { ClientService } from "../../services/client/client.service";
@@ -6,7 +7,6 @@ import { EmployeeService } from "../../services/employee/employee.service";
 import { AuthService } from "../../services/auth/auth.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { DesignationService } from "../../services/designation/designation.service";
-import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 
 export interface DialogData {
   animal: string;
@@ -28,10 +28,10 @@ export class ConfirmDeleteComponent {
     private _authService: AuthService,
     private _clientService: ClientService,
     private _mesgageService: MesgageService,
+    private _router: Router,
     private deleteDialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public deleteDialogData: DialogData
   ) {}
-@ViewChild('autosize') autosize: CdkTextareaAutosize;
  
   ngOnInit(){
     this.logoutTitle = this.deleteDialogRef.componentInstance.deleteDialogData
@@ -52,6 +52,8 @@ export class ConfirmDeleteComponent {
       this.reqTaskApprove(data.timesheet_id, this.isApprove = 'Accepted');     
     } else if (data.callingFrom === "reqTaskReject") {
       this.reqTaskReject(data.timesheet_id, this.isApprove = 'Rejected');     
+    } else if (data.callingFrom === "employeeStatus") {
+      this.employeeInactive(data.userId, data.is_active);
     } else if (data.callingFrom === "client") {
       this.deleteClient(data.id);
     }
@@ -61,9 +63,23 @@ export class ConfirmDeleteComponent {
     this.deleteDialogRef.close();
   }
 
+  private employeeInactive(id, is_active) {
+    this._employeeService.employeeStatus(id, is_active).subscribe(      
+      (res) => {
+        this._mesgageService.showSuccess(res.message);
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+        this.deleteDialogRef.close(err);
+      }
+    );
+  }
+
   private profileLogout(userId) {
     this._authService.performLogout(userId).subscribe(      
-      (res) => {        
+      (res) => {
+        this._router.navigate(["/login"]);
         this._mesgageService.showSuccess(res.message || "Logout Successfully");
         this.deleteDialogRef.close("success");
       },

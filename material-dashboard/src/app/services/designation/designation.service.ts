@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "environments/environment";
 
+import { params } from "../../commonModels";
+
 @Injectable({
   providedIn: "root",
 })
@@ -24,8 +26,8 @@ export class DesignationService {
     return httpOptions;
   }
 
-  public getDesignationList(): Observable<any> {
-    const endpoint = `${this.baseUrl}/designation`;
+  public getDesignationList(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/designation?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }

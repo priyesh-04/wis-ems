@@ -13,7 +13,7 @@ export const employeeROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
   {
     path: "/timesheet-list",
-    title: "Timesheet List",
+    title: "Timesheet",
     icon: "article",
     class: "",
   }

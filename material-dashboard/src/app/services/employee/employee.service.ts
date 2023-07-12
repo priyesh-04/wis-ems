@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { environment } from "environments/environment";
 
+import { params } from "../../commonModels";
+
 @Injectable({
   providedIn: "root",
 })
@@ -36,20 +38,25 @@ export class EmployeeService {
     return this.http.put(endpoint, userData, httpOptions);
   }
 
-  public getAllEmployees(): Observable<any> {
-    const endpoint = `${this.baseUrl}/user/all-employee`;
+  public getAllEmployees(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/all-employee?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+  public employeeStatus(id, is_active): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/active-deactive/${id}`;
+    const httpOptions = this.createHeaders();
+    return this.http.post(endpoint, {is_active: !is_active}, httpOptions);
+  }
+
+  public getAllEmployeesSpendTime(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/user-spend-time?start_date=&end_date=&limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
-  public getAllEmployeesSpendTime(): Observable<any> {
-    const endpoint = `${this.baseUrl}/user/user-spend-time?start_date=&end_date=`;
-    const httpOptions = this.createHeaders();
-    return this.http.get(endpoint, httpOptions);
-  }
-
-  public getAllAdmins(): Observable<any> {
-    const endpoint = `${this.baseUrl}/user/all-admin`;
+  public getAllAdmins(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/all-admin?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
@@ -102,8 +109,8 @@ export class EmployeeService {
     return this.http.post(endpoint, {edit_status:'Requested', reason}, httpOptions);
   }
 
-  public allEditReqAdmin(): Observable<any> {
-    const endpoint = `${this.baseUrl}/timesheet/get-all-edit-req-sheet`;
+  public allEditReqAdmin(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/timesheet/get-all-edit-req-sheet?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
