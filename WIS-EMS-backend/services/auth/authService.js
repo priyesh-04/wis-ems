@@ -394,6 +394,7 @@ class AuthService {
         .select('-password ')
         .populate('designation', '_id name')
         .lean()
+        .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res
@@ -437,6 +438,7 @@ class AuthService {
         .populate('created_by', '_id name emp_id email_id phone_num')
         .populate('assigned_client', '_id client_name company_name')
         .lean()
+        .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res
@@ -478,6 +480,7 @@ class AuthService {
       await User.find({ role: 'hr' })
         .select('-password ')
         .lean()
+        .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res
