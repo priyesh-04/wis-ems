@@ -112,9 +112,11 @@ class OfficeHolidaysService {
       const currentDate = new Date();
       let start_date = currentDate.getFullYear() + '-01-01' + 'T00:00:00+05:30';
       let end_date = currentDate.getFullYear() + '-12-31' + 'T23:59:59+05:30';
-      await OfficeHolidays.find(
-        { date: { $gte: start_date, $lte: end_date } },
-        (err, details) => {
+      OfficeHolidays.find({
+        date: { $gte: start_date, $lte: end_date },
+      })
+        .sort({ date: -1 })
+        .exec((err, details) => {
           if (err) {
             return res
               .status(400)
@@ -122,8 +124,7 @@ class OfficeHolidaysService {
           } else {
             return res.status(200).json({ msgErr: false, result: details });
           }
-        }
-      );
+        });
     } catch (error) {
       return res
         .status(500)
