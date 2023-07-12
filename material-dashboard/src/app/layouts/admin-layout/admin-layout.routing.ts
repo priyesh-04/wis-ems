@@ -12,6 +12,7 @@ import { ListTimesheetComponent } from "../../timesheet/list-timesheet/list-time
 import { TaskRequestComponent } from "../../admin/task-request/task-request.component";
 import { PasswordChangeComponent } from "../../authentication/password-change/password-change.component";
 import { UserProfileComponent } from "../../authentication/profile/user-profile/user-profile.component";
+import { PublicHolidaysComponent } from "../../admin/public-holidays/public-holidays.component";
 
 export const UserRoutes: Routes = [
   // Common Routes
@@ -59,6 +60,11 @@ export const UserRoutes: Routes = [
   {
     path: "admin/task-request",
     component: TaskRequestComponent,
+    canActivate: [AuthGuard, AdminGuard],
+  },
+  {
+    path: "admin/office-holidays",
+    component: PublicHolidaysComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
   // HR Routes
