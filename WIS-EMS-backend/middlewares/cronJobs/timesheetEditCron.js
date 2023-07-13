@@ -8,7 +8,7 @@ class TimesheetCron {
   async resetTimesheetEditPermission(req, res, next) {
     try {
       const result = await Timesheets.find({
-        $or: [{ edit_status: 'New' }],
+        edit_status: 'New',
       });
       console.log('New Change to Initial');
       for (let i = 0; i < result.length; i++) {
@@ -26,7 +26,7 @@ class TimesheetCron {
   async changeAcceptedPermission(req, res, next) {
     try {
       const result = await Timesheets.find({
-        $or: [{ edit_status: 'Accepted' }],
+        edit_status: 'Accepted',
       });
       console.log('Accepted Change to Edited');
       for (let i = 0; i < result.length; i++) {
