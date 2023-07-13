@@ -31,4 +31,19 @@ export class HolidaysService {
       const httpOptions = this.createHeaders();
       return this.http.get(endpoint, httpOptions);
     }
+    public deleteHoliday(id): Observable<any> {
+      const endpoint = `${this.baseUrl}/holiday/${id}`;
+      const httpOptions = this.createHeaders();
+      return this.http.delete(endpoint, httpOptions);
+    }
+    public addHoliday(data): Observable<any> {
+      const endpoint = `${this.baseUrl}/holiday`;
+      const httpOptions = this.createHeaders();
+      return this.http.post(endpoint, data, httpOptions);
+    }
+    public updateHoliday(id, data): Observable<any> {
+      const endpoint = `${this.baseUrl}/holiday/${id}`;
+      const httpOptions = this.createHeaders();
+      return this.http.put(endpoint, data, httpOptions);
+    }
 }

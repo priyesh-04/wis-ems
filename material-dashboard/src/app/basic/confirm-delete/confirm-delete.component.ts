@@ -7,7 +7,7 @@ import { EmployeeService } from "../../services/employee/employee.service";
 import { AuthService } from "../../services/auth/auth.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { DesignationService } from "../../services/designation/designation.service";
-
+import { HolidaysService } from "../../services/holidays/holidays.service";
 export interface DialogData {
   animal: string;
   name: string;
@@ -28,6 +28,7 @@ export class ConfirmDeleteComponent {
     private _authService: AuthService,
     private _clientService: ClientService,
     private _mesgageService: MesgageService,
+    private _holidaysService: HolidaysService,
     private _router: Router,
     private deleteDialogRef: MatDialogRef<ConfirmDeleteComponent>,
     @Inject(MAT_DIALOG_DATA) public deleteDialogData: DialogData
@@ -54,6 +55,8 @@ export class ConfirmDeleteComponent {
       this.reqTaskReject(data.timesheet_id, this.isApprove = 'Rejected');     
     } else if (data.callingFrom === "employeeStatus") {
       this.employeeInactive(data.userId, data.is_active);
+    } else if (data.callingFrom === "holiday") {
+      this.deleteHoliday(data.id);
     } else if (data.callingFrom === "client") {
       this.deleteClient(data.id);
     }
@@ -62,7 +65,18 @@ export class ConfirmDeleteComponent {
   public onNoClick(): void {
     this.deleteDialogRef.close();
   }
-
+  private deleteHoliday(id){    
+    this._holidaysService.deleteHoliday(id).subscribe(      
+      (res) => {
+        this._mesgageService.showSuccess(res.message);
+        this.deleteDialogRef.close("success");
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message);
+        this.deleteDialogRef.close(err);
+      }
+    );
+  }
   private employeeInactive(id, is_active) {
     this._employeeService.employeeStatus(id, is_active).subscribe(      
       (res) => {
