@@ -23,6 +23,8 @@ import { ClientListComponent } from "./client-list/client-list.component";
 import { ClientFormComponent } from "./client-form/client-form.component";
 import { TaskRequestComponent } from './task-request/task-request.component';
 import { ComponentsModule } from "../components/components.module";
+import { PublicHolidaysComponent } from './public-holidays/public-holidays.component';
+import { PublicHolidaysFormComponent } from './public-holidays-form/public-holidays-form.component';
 
 @NgModule({
   imports: [
@@ -52,6 +54,8 @@ import { ComponentsModule } from "../components/components.module";
     ClientListComponent,
     ClientFormComponent,
     TaskRequestComponent,
+    PublicHolidaysComponent,
+    PublicHolidaysFormComponent,
   ],
   exports: [
     MatButtonModule,

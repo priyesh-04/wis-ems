@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="page-operations mb-2">
+        <div class="form-inline m-0"></div>
+        <button id="add-more-btn" mat-mini-fab color="primary" (click)="addHolidayDialog()">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered bg-white">
+            <thead>
+                <tr>
+                    <th scope="col" class="font-weight-bold">#</th>
+                    <th scope="col" class="font-weight-bold w-25">Date</th>
+                    <th scope="col" class="font-weight-bold w-25">Event Name</th>
+                    <th scope="col" class="font-weight-bold w-25">Description</th>
+                    <th scope="col" class="font-weight-bold">Actions</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let holiday of holidayList; let i = index">
+                <tr>
+                    <th scope="row">{{i + 1}}</th>
+                    <td>{{holiday.date | date}}</td>
+                    <td>{{holiday.event}}</td>
+                    <td>{{holiday.description}}</td>
+                    <td>
+                        <button class="mr-2" mat-raised-button color="primary" (click)="updateHolidayDialog(holiday)">
+                            <mat-icon>edit</mat-icon>
+                            Edit
+                        </button>
+                        <button mat-raised-button color="warn" (click)="deleteHolidayDialog(holiday._id)">
+                            <mat-icon>delete</mat-icon>
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

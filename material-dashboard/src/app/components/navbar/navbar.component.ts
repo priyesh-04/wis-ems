@@ -143,7 +143,9 @@ export class NavbarComponent implements OnInit {
         mode:'logout'
       },
     });
-    deleteDialogRef.afterClosed().subscribe(() => {});
+    deleteDialogRef.afterClosed().subscribe(() => {
+      this.router.navigate(["/login"]);
+    });
   }
 
   public getTitle() {
