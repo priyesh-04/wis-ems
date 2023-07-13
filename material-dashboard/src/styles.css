@@ -125,3 +125,6 @@ a.close {
     opacity: 1;
     cursor: pointer;
 }
+.main-panel{
+z-index: 1;
+}

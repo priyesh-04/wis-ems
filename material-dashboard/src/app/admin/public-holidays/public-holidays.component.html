@@ -10,8 +10,9 @@
             <thead>
                 <tr>
                     <th scope="col" class="font-weight-bold">#</th>
-                    <th scope="col" class="font-weight-bold">Date</th>
-                    <th scope="col" class="font-weight-bold">Event Name</th>
+                    <th scope="col" class="font-weight-bold w-25">Date</th>
+                    <th scope="col" class="font-weight-bold w-25">Event Name</th>
+                    <th scope="col" class="font-weight-bold w-25">Description</th>
                     <th scope="col" class="font-weight-bold">Actions</th>
                 </tr>
             </thead>
@@ -20,6 +21,7 @@
                     <th scope="row">{{i + 1}}</th>
                     <td>{{holiday.date | date}}</td>
                     <td>{{holiday.event}}</td>
+                    <td>{{holiday.description}}</td>
                     <td>
                         <button class="mr-2" mat-raised-button color="primary" (click)="updateHolidayDialog(holiday)">
                             <mat-icon>edit</mat-icon>

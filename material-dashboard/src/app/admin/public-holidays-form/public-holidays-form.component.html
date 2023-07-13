@@ -1,0 +1,42 @@
+<div class="row">
+    <div class="col-lg col-md col-sm">
+        <a class="close" mat-dialog-title (click)="closeDialog()">X</a>
+        <h2 class="border-bottom p-2 text-center text-white bg-danger" mat-dialog-title>
+            {{publicHolidaysDialogData?.matDialogTitle}}
+        </h2>
+        <form [formGroup]="publicHolidaysForm" (ngSubmit)="addHolidays(publicHolidaysForm)">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                        <mat-form-field>
+                            <input matInput type="date" class="form-control rounded-0" formControlName="date"
+                                placeholder="Date">
+                        </mat-form-field>
+                        <div class="text-danger" *ngIf="holidayForm.date.touched && !holidayForm.date.valid">
+                            Date field cannot be left blank.
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <mat-form-field appearance="legacy">
+                            <input matInput type="text" class="form-control rounded-0" formControlName="event"
+                                placeholder="Event Name">
+                        </mat-form-field>
+                        <div class="text-danger" *ngIf="holidayForm.event.touched && !holidayForm.event.valid">
+                            Event field cannot be left blank.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <mat-form-field>
+                            <mat-label>Description</mat-label>
+                            <textarea matInput formControlName="description" placeholder="Description"></textarea>
+                        </mat-form-field>
+                        <div class="text-danger" *ngIf="holidayForm.description.touched && !holidayForm.description.valid">
+                            Description field cannot be left blank.
+                        </div>
+                    </div>
+                    <div class="col-12 mt-3 mt-md-4">
+                        <button type="submit" color="accent" class="btn btn-danger" [disabled]="!publicHolidaysForm.valid">Submit</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
