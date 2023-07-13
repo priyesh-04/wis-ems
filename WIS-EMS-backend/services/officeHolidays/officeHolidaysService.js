@@ -112,17 +112,39 @@ class OfficeHolidaysService {
       const currentDate = new Date();
       let start_date = currentDate.getFullYear() + '-01-01' + 'T00:00:00+05:30';
       let end_date = currentDate.getFullYear() + '-12-31' + 'T23:59:59+05:30';
+      let { limit, page } = req.query;
       OfficeHolidays.find({
         date: { $gte: start_date, $lte: end_date },
       })
-        .sort({ date: -1 })
+        .sort({ date: 1 })
         .exec((err, details) => {
           if (err) {
             return res
               .status(400)
               .json({ msgErr: true, message: 'Something went wrong. ' + err });
           } else {
-            return res.status(200).json({ msgErr: false, result: details });
+            if (!limit || !page) {
+              limit = 10;
+              page = 1;
+            }
+            limit = parseInt(limit);
+            page = parseInt(page);
+            if (limit > 100) {
+              limit = 100;
+            }
+
+            let total_page = Math.ceil(details.length / limit);
+            let sliceArr =
+              details && details.slice(limit * (page - 1), limit * page);
+            return res.status(200).json({
+              msgErr: false,
+              result: sliceArr,
+              pagination: {
+                limit,
+                current_page: page,
+                total_page: total_page,
+              },
+            });
           }
         });
     } catch (error) {
