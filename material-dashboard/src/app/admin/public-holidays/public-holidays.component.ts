@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from "@angular/material/dialog";
 
 import { pagination, params } from '../../commonModels';
 import { MesgageService } from '../../services/shared/message.service';
 import { HolidaysService } from '../../services/holidays/holidays.service';
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
-import { MatDialog } from "@angular/material/dialog";
 import { PublicHolidaysFormComponent } from '../public-holidays-form/public-holidays-form.component';
+
 @Component({
   selector: 'app-public-holidays',
-  templateUrl: './public-holidays.component.html',
-  styleUrls: ['./public-holidays.component.css']
+  templateUrl: './public-holidays.component.html'
 })
 export class PublicHolidaysComponent implements OnInit {
   private params: params;
   public holidayList = [];
+  public pagination: pagination;
   public limit = 10;
 
   constructor(
@@ -34,9 +35,10 @@ export class PublicHolidaysComponent implements OnInit {
     this._holidaysService.getHolidaysList(this.params).subscribe(
       (res) => {
         this.holidayList = res.result;
+        this.pagination = res.pagination;
       },
       (err) => {
-        this._mesgageService.showError(err.error.message || 'Unable to fetch holidays list');        
+        this._mesgageService.showError(err.error.message || 'Unable to fetch holiday list');        
       }
     );
   }
@@ -89,8 +91,13 @@ export class PublicHolidaysComponent implements OnInit {
     deleteDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
         this.refreshHolidaysList();
-        // this._mesgageService.showSuccess(result.message)
       }
     });
+  }
+
+  public onPaginationChange(event: params) {
+    this.params = event;
+    this.limit = this.params.limit;
+    this.refreshHolidaysList();
   }
 }
