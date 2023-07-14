@@ -598,6 +598,7 @@ class AuthService {
               let task = await Timesheets.find({
                 created_by: details[i]._id,
                 date: { $gte: start_date, $lte: end_date },
+                status: 'Present',
               });
               // let workingTime = task.reduce((v, item) => {
               //   return v + parseInt(item.time_spend);
