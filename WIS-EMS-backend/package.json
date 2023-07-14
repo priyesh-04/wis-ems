@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+    "dev": "nodemon --max-old-space-size=5120 server.js",
+    "start": "node --max-old-space-size=512 server.js"
   },
   "keywords": [],
   "author": "",
