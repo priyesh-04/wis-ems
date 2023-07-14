@@ -62,7 +62,7 @@ export const adminROUTES: RouteInfo[] = [
   {
     path: "/admin/designation-list",
     title: "Designation List",
-    icon: "article",
+    icon: "group_work",
     class: "",
   },
   {
@@ -74,7 +74,7 @@ export const adminROUTES: RouteInfo[] = [
   {
     path: "/admin/office-holidays",
     title: "Office Holidays",
-    icon: "holiday_village",
+    icon: "date_range",
     class: "",
   },
 ];

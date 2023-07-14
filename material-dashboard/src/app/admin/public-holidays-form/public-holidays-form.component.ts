@@ -1,25 +1,26 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+
 import { MesgageService } from '../../services/shared/message.service';
 import { HolidaysService } from '../../services/holidays/holidays.service';
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { PublicHolidaysComponent } from '../public-holidays/public-holidays.component';
 import { getFormattedDate } from "../../utils/custom-validators";
 
 @Component({
   selector: 'app-public-holidays-form',
-  templateUrl: './public-holidays-form.component.html',
-  styleUrls: ['./public-holidays-form.component.css']
+  templateUrl: './public-holidays-form.component.html'
 })
 export class PublicHolidaysFormComponent implements OnInit {
   public publicHolidaysForm :FormGroup;
-    constructor(
-      private _mesgageService: MesgageService,
-      private _holidaysService: HolidaysService,
-      private fb: FormBuilder,
-      private publicHolidaysRef: MatDialogRef<PublicHolidaysComponent>,
-      @Inject(MAT_DIALOG_DATA) public publicHolidaysDialogData
-      ) { }
+
+  constructor(
+    private _mesgageService: MesgageService,
+    private _holidaysService: HolidaysService,
+    private fb: FormBuilder,
+    private publicHolidaysRef: MatDialogRef<PublicHolidaysComponent>,
+    @Inject(MAT_DIALOG_DATA) public publicHolidaysDialogData
+  ) { }
 
   ngOnInit(): void {
     this.publicHolidaysForm = this.fb.group({
@@ -35,23 +36,22 @@ export class PublicHolidaysFormComponent implements OnInit {
         });
       }
   }
+
   public get holidayForm() {
     return this.publicHolidaysForm.controls;
   }
+
   public closeDialog() {
     this.publicHolidaysRef.close();
   }
- /**
-  * addHolidays
-  */
-  public addHolidays(publicHolidaysForm:FormGroup) {
-    
+
+  public addHolidays(publicHolidaysForm:FormGroup) {    
     const publicHolidaysFormData = publicHolidaysForm.value;
     if (this.publicHolidaysDialogData.mode === "edit") {
       this._holidaysService.updateHoliday(this.publicHolidaysDialogData.holidayData._id, publicHolidaysFormData).subscribe(
         (res) => {
           this.publicHolidaysRef.close("success");
-          this._mesgageService.showSuccess(res.message || 'Holiday Updated successfully'); 
+          this._mesgageService.showSuccess(res.message || 'Holiday updated successfully'); 
         },
         (err) => {
           this._mesgageService.showError(err.error.message);
@@ -61,7 +61,7 @@ export class PublicHolidaysFormComponent implements OnInit {
       this._holidaysService.addHoliday(publicHolidaysFormData).subscribe(
         (res) => {
           this.publicHolidaysRef.close("success");
-          this._mesgageService.showSuccess(res.message || 'Holiday Created successfully'); 
+          this._mesgageService.showSuccess(res.message || 'Holiday created successfully'); 
         },
         (err) => {
           this._mesgageService.showError(err.error.message);
