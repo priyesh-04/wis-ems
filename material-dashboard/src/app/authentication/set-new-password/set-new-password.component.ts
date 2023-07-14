@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 
 import { AuthService } from "../../services/auth/auth.service";
 import { MesgageService } from '../../services/shared/message.service';
-
+import { PasswordStrengthValidator } from '../utils/password.validators';
 @Component({
   selector: 'app-set-new-password',
   templateUrl: './set-new-password.component.html',
@@ -25,23 +25,21 @@ export class SetNewPasswordComponent implements OnInit {
   
   ngOnInit(): void {
     this.resetPass = this.fb.group({
-      password: ["", [Validators.required,
-        Validators.pattern(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
-        ),
-        Validators.minLength(8),
-      ]],
-      conPassword: ["", [Validators.required,
-        Validators.pattern(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
-        ),
-        Validators.minLength(8),]],
+      password: ["", [Validators.required, PasswordStrengthValidator]],
+      conPassword: ["", [Validators.required]],
+    },{ 
+      validators: this.password.bind(this)
     })   
+    
     let params = this.activatedRoute.snapshot.params;
       this.userId = params['userId'];
       this.token = params['token'];
   }
-
+  password(formGroup: FormGroup) {
+    const { value: password } = formGroup.get('password');
+    const { value: conPassword } = formGroup.get('conPassword');
+    return password === conPassword ? null : { passwordNotMatch: true };
+  }
   public get lForm() {
     return this.resetPass.controls;
   }
@@ -56,7 +54,7 @@ export class SetNewPasswordComponent implements OnInit {
       
       this._authService.setNewPassword(editObj, this.userId, this.token).subscribe(
         (data) => {
-          this._mesgageService.showError(data.message || 'Password changed successfully');
+          this._mesgageService.showSuccess(data.message || 'Password changed successfully');
           this._router.navigate(['/login']);
         },
         (err) => {
