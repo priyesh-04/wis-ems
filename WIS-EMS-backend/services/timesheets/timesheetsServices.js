@@ -5,6 +5,8 @@ const { User } = require('../../models/auth/user');
 const { ClientDetails } = require('../../models/clientDetails/clientDetails');
 const { TokenService } = require('../../utils');
 const mongoose = require('mongoose');
+const EmailConfig = require('../../config/emailConfig');
+const { EmailSend } = require('../../helper/email/emailSend');
 
 class TimeSheetService {
   async addTimeSheet(req, res, next) {
@@ -365,6 +367,7 @@ class TimeSheetService {
 
       delete payload['task_details'];
       payload.task_details = taskId;
+      payload.status = 'Present';
       await Timesheets.findByIdAndUpdate(
         { _id: timesheetId },
         payload,
@@ -562,7 +565,10 @@ class TimeSheetService {
         .then(async (data) => {
           await Timesheets.findByIdAndUpdate(
             { _id: req.params.id },
-            { task_details: [...existTimesheet.task_details, data._id] },
+            {
+              task_details: [...existTimesheet.task_details, data._id],
+              status: 'Present',
+            },
             (err, details) => {
               if (err) {
                 return res
@@ -1009,6 +1015,7 @@ class TimeSheetService {
           { name: payload.reason },
         ];
       }
+      let existUser = await User.findById({ _id: user._id });
       await Timesheets.findByIdAndUpdate(
         { _id: req.params.id },
         { edit_status, edit_reason },
@@ -1019,6 +1026,23 @@ class TimeSheetService {
               .status(400)
               .json({ msgErr: true, message: 'Something Went Wrong.' });
           } else {
+            const emailData = {
+              template: EmailConfig.TEMPLATES.EDIT_REQ,
+              subject: EmailConfig.SUBJECT.EDIT_REQ,
+              email: process.env.EDIT_REQ_EMAIL,
+              emailBody: {
+                employeeName: existUser.name,
+                adminName: 'Admin',
+                reason: payload.reason,
+              },
+            };
+            let emailSendStatus = EmailSend(emailData);
+            if (!emailSendStatus) {
+              return res.status(400).json({
+                msgErr: true,
+                message: 'Something went wrong.',
+              });
+            }
             return res.status(200).json({
               msgErr: false,
               message: 'Timesheet Edit Request Sent.',
