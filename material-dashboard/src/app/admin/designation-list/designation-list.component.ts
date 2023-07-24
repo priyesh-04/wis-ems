@@ -53,6 +53,7 @@ export class DesignationListComponent implements OnInit {
     this.isLoading = !this.isLoading;
         this.designationList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
     this.isLoading = !this.isLoading;

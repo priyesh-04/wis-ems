@@ -61,6 +61,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
         this.isLoading = !this.isLoading;
         this.employeeList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
@@ -74,6 +75,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       (res) => {
         this.employeeList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');

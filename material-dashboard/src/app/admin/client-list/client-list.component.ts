@@ -41,6 +41,7 @@ export class ClientListComponent implements OnInit {
         this.isLoading = !this.isLoading;
         this.clientList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
