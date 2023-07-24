@@ -43,6 +43,10 @@
                 </tr>
             </tbody>
         </table>
+        <div class="text-center" *ngIf="!clientList && !isLoading">
+            <h2>No Client available to display</h2>
+        </div>
     </div>
-    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+    <app-pagination [pagination]="pagination" *ngIf="currentPage < totalPage" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+    <app-page-loader *ngIf="isLoading"></app-page-loader>
 </div>

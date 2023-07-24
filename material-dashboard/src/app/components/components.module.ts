@@ -12,7 +12,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { EmployeeTableComponent } from './employee-table/employee-table.component';
 import { PaginationComponent } from './pagination/pagination.component';
-
+import { PageLoaderComponent } from './page-loader/page-loader.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 @NgModule({
   imports: [
     CommonModule,
@@ -21,21 +22,24 @@ import { PaginationComponent } from './pagination/pagination.component';
     MatButtonModule,
     MatSelectModule,
     MatIconModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatProgressSpinnerModule
   ],
   declarations: [
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
     EmployeeTableComponent,
-    PaginationComponent
+    PaginationComponent,
+    PageLoaderComponent
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
     EmployeeTableComponent,
-    PaginationComponent
+    PaginationComponent,
+    PageLoaderComponent
   ]
 })
 export class ComponentsModule { }

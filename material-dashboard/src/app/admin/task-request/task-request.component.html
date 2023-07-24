@@ -39,9 +39,13 @@
                         <p *ngIf="reqList.edit_status == EditStatus.Accepted">{{ EditStatus.Accepted }}</p>                       
                         <p *ngIf="reqList.edit_status == EditStatus.Edited">{{ EditStatus.Edited }}</p>                       
                     </td>
-                </tr>
-            </tbody> 
+                </tr>               
+            </tbody>                
         </table>
-    </div>
-    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+        <div *ngIf="!allEditReqList.length && !isLoading" class="text-center">
+            <h2>No Edit Request are available to display</h2>
+        </div>
+    </div>    
+    <app-pagination [pagination]="pagination" *ngIf="currentPage < totalPage" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+    <app-page-loader *ngIf="isLoading"></app-page-loader>
 </div>

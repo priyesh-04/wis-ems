@@ -15,7 +15,10 @@ export class AdminListComponent implements OnInit {
   public adminList: any;
   public pagination: pagination;
   public limit = 10;
-
+  public isLoading = false;
+  public currentPage = 1;
+  public totalPage = 0;
+  
   constructor(
     private _employeeService: EmployeeService,
     private _mesgageService: MesgageService,
@@ -31,12 +34,16 @@ export class AdminListComponent implements OnInit {
   }
 
   private refreshadminList() {
+    this.isLoading = !this.isLoading;
     this._employeeService.getAllAdmins(this.params).subscribe(
       (res) => {
+        this.isLoading = !this.isLoading;
         this.adminList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
+        this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message);
       }
     );

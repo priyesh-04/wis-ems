@@ -25,7 +25,10 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   public useDefault :boolean;
   public pagination: pagination;
   public limit = 10;
-
+  public isLoading = false;
+  public currentPage = 1;
+  public totalPage = 0;
+  
   constructor(    
     private _employeeService: EmployeeService,
     private _mesgageService: MesgageService,
@@ -52,12 +55,16 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
   
   private refreshEmployeeList() {
+    this.isLoading = !this.isLoading;
     this._employeeService.getAllEmployees(this.params).subscribe(
       (res) => {
+        this.isLoading = !this.isLoading;
         this.employeeList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
+        this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
       }
     );
@@ -68,6 +75,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       (res) => {
         this.employeeList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');

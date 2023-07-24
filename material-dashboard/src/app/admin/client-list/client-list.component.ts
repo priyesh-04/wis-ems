@@ -16,6 +16,9 @@ export class ClientListComponent implements OnInit {
   public clientList = [];
   public pagination: pagination;
   public limit = 10;
+  public currentPage = 1;
+  public totalPage = 0;
+  public isLoading = false;
 
   constructor(
     private dialog: MatDialog,
@@ -32,12 +35,16 @@ export class ClientListComponent implements OnInit {
   }
 
   private refreshClientList() {
+    this.isLoading = !this.isLoading;
     this._clientService.getClientList(this.params).subscribe(
       (res) => {
+        this.isLoading = !this.isLoading;
         this.clientList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
+        this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch client list');        
       }
     );
@@ -74,8 +81,7 @@ export class ClientListComponent implements OnInit {
     });
     clientDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
-        this.refreshClientList();
-        this._mesgageService.showSuccess(result.message);     
+        this.refreshClientList();    
       }
     });
   }
