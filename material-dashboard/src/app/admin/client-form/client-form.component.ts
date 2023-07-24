@@ -79,7 +79,7 @@ export class ClientFormComponent implements OnInit {
       this._clientService.addClient(clientData).subscribe(
         (res) => {
           this.dialogRef.close("success");
-        this._mesgageService.showSuccess(res.message);
+          this._mesgageService.showSuccess(res.message);
         },
         (err) => {
           this._mesgageService.showError(err.error.message);

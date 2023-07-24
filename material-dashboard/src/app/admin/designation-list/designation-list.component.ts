@@ -28,6 +28,9 @@ export class DesignationListComponent implements OnInit {
   public designationList: any;
   public pagination: pagination;
   public limit = 10;
+  public isLoading = false;
+  public currentPage = 1;
+  public totalPage = 0;
 
   constructor(
     private _designationService: DesignationService,
@@ -44,12 +47,15 @@ export class DesignationListComponent implements OnInit {
   }
 
   private refreshDesignationList() {
+    this.isLoading = !this.isLoading;
     this._designationService.getDesignationList(this.params).subscribe(
       (res) => {
+    this.isLoading = !this.isLoading;
         this.designationList = res.result;
         this.pagination = res.pagination;
       },
       (err) => {
+    this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch designation list');
       }
     );

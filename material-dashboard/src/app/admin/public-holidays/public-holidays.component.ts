@@ -16,6 +16,9 @@ export class PublicHolidaysComponent implements OnInit {
   public holidayList = [];
   public pagination: pagination;
   public limit = 10;
+  public isLoading = false;
+  public currentPage = 1;
+  public totalPage = 0;
 
   constructor(
     private _mesgageService: MesgageService,
@@ -32,12 +35,15 @@ export class PublicHolidaysComponent implements OnInit {
   }
 
   private refreshHolidaysList() {
+    this.isLoading = !this.isLoading;
     this._holidaysService.getHolidaysList(this.params).subscribe(
       (res) => {
+    this.isLoading = !this.isLoading;
         this.holidayList = res.result;
         this.pagination = res.pagination;
       },
       (err) => {
+    this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch holiday list');        
       }
     );
