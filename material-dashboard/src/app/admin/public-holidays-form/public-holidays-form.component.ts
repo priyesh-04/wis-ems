@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { MesgageService } from '../../services/shared/message.service';
 import { HolidaysService } from '../../services/holidays/holidays.service';
 import { PublicHolidaysComponent } from '../public-holidays/public-holidays.component';
-import { getFormattedDate } from "../../utils/custom-validators";
+import { formatDateToDDMMYYYY, getFormattedDate } from "../../utils/custom-validators";
 
 @Component({
   selector: 'app-public-holidays-form',
@@ -30,7 +30,10 @@ export class PublicHolidaysFormComponent implements OnInit {
     });
     if (this.publicHolidaysDialogData.mode === "edit") {
         this.publicHolidaysForm.patchValue({
-          date: getFormattedDate(this.publicHolidaysDialogData.holidayData.date),
+          //date: getFormattedDate(this.publicHolidaysDialogData.holidayData.date),
+          date: formatDateToDDMMYYYY(
+            this.publicHolidaysDialogData.holidayData.date
+          ),
           event: this.publicHolidaysDialogData.holidayData.event,
           description: this.publicHolidaysDialogData.holidayData.description,
         });

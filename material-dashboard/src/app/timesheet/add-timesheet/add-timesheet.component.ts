@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
+  formatDateToDDMMYYYY,
   getFormattedDate,
   getFormattedDatetime,
 } from "../../utils/custom-validators";
@@ -61,17 +62,20 @@ export class AddTimesheetComponent implements OnInit {
       this.displayTaskform = false;
       this.taskList = this.timesheetDialogData.timesheetData.task_details;
       this.timesheetForm.patchValue({
-        date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
-        in_time: getFormattedDatetime(
-          this.timesheetDialogData.timesheetData.in_time
-        ),
+        // date: getFormattedDate(this.timesheetDialogData.timesheetData.date),
+        date: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date),
+        // in_time: getFormattedDatetime(
+        //   this.timesheetDialogData.timesheetData.in_time
+        // ),
+        in_time: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16),
         _id : this.timesheetDialogData.timesheetData._id
       });
       if (this.timesheetDialogData.timesheetData.out_time) {
         this.timesheetForm.patchValue({
-          out_time: getFormattedDatetime(
-            this.timesheetDialogData.timesheetData.out_time
-          ),
+          // out_time: getFormattedDatetime(
+          //   this.timesheetDialogData.timesheetData.out_time
+          // ),
+          out_time: new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16),
         });
       }
     }
@@ -105,11 +109,10 @@ export class AddTimesheetComponent implements OnInit {
       client: this.taskForm.value.client,
       clientName: this.getClientName(this.taskForm.value.client),
       project_name: this.taskForm.value.project_name,
-      start_time: this.taskForm.value.start_time,
-      end_time: this.taskForm.value.end_time,
+      start_time: this.taskForm.value.start_time +":00+05:30",
+      end_time: this.taskForm.value.end_time + ":00+05:30",
       description: this.taskForm.value.description,
     };
-
     const index = this.taskList.findIndex(task => task._id === this.taskForm.value._id);
     if (index >= 0) {
       this.taskList[index] = taskData;
@@ -126,8 +129,8 @@ export class AddTimesheetComponent implements OnInit {
       _id: taskDetails._id,
       client: taskDetails.client._id ? taskDetails.client._id : taskDetails.client,
       project_name: taskDetails.project_name,
-      start_time: getFormattedDatetime(taskDetails.start_time),
-      end_time: getFormattedDatetime(taskDetails.end_time),
+      start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
+      end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
       description: taskDetails.description,
     });
     this.taskButton = "Update Task";
@@ -177,11 +180,10 @@ export class AddTimesheetComponent implements OnInit {
     });
     const myData = {
       date: timeSheetFormData.date,
-      in_time: timeSheetFormData.in_time,
-      out_time: timeSheetFormData.out_time,
+      in_time: timeSheetFormData.in_time + ":00+05:30",
+      out_time: timeSheetFormData.out_time + ":00+05:30",
       task_details: taskList,
     };
-
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
