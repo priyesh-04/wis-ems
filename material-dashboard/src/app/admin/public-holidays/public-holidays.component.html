@@ -35,6 +35,11 @@
                 </tr>
             </tbody>
         </table>
+        <div *ngIf="!holidayList.length && !isLoading" class="text-center">
+            <h2>No Holidaylist available to display</h2>
+        </div>
     </div>
-    <app-pagination [pagination]="pagination" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+    <app-pagination [pagination]="pagination" *ngIf="currentPage < totalPage" [limit]="limit" (paramsEvent)="onPaginationChange($event)"></app-pagination>
+    <app-page-loader *ngIf="isLoading"></app-page-loader>
+
 </div>

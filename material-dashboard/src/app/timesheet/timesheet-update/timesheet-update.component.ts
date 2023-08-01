@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
+  formatDateToDDMMYYYY,
   getFormattedDate,
   getFormattedDatetime,
 } from "../../utils/custom-validators";
@@ -34,9 +35,11 @@ export class TimesheetUpdateComponent implements OnInit {
     this.getClientList();
 
     this.timesheetForm = this.fb.group({
-      date: {value: getFormattedDate(this.timesheetDialogData.timesheetData.date), disabled: true},
-      in_time: {value: getFormattedDatetime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
-      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? getFormattedDatetime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
+      date: {value: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date), disabled: true},
+      // in_time: {value: getFormattedDatetime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
+      // out_time: {value: this.timesheetDialogData.timesheetData.out_time ? getFormattedDatetime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
+      in_time: {value: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16), disabled: true},
+      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16) : "", disabled: true},
       client: ["", [Validators.required]],
       project_name: ["", [Validators.required]],
       start_time: ["", [Validators.required]],
@@ -52,8 +55,10 @@ export class TimesheetUpdateComponent implements OnInit {
       this.timesheetForm.patchValue({
         client: taskDetails.client._id,
         project_name: taskDetails.project_name,
-        start_time: getFormattedDatetime(taskDetails.start_time),
-        end_time: getFormattedDatetime(taskDetails.end_time),
+        // start_time: getFormattedDatetime(taskDetails.start_time),
+        // end_time: getFormattedDatetime(taskDetails.end_time),
+        start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
+        end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
         description: taskDetails.description,
       });
     }
@@ -82,8 +87,8 @@ export class TimesheetUpdateComponent implements OnInit {
         client: timesheetData.client,
         project_name: timesheetData.project_name,
         description: timesheetData.description,
-        start_time: timesheetData.start_time,
-        end_time: timesheetData.end_time,
+        start_time: timesheetData.start_time +":00+05:30",
+        end_time: timesheetData.end_time  +":00+05:30",
       }
 
       this._employeeService
@@ -101,8 +106,8 @@ export class TimesheetUpdateComponent implements OnInit {
       const taskData = {
         client: timesheetData.client,
         project_name: timesheetData.project_name,
-        start_time: timesheetData.start_time,
-        end_time: timesheetData.end_time,
+        start_time: timesheetData.start_time +":00+05:30",
+        end_time: timesheetData.end_time +":00+05:30",
         description: timesheetData.description,
       }
 

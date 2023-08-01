@@ -2,13 +2,46 @@ import { FormControl } from "@angular/forms";
 
 export function getFormattedDate(date) {
   const d = new Date(date);
-  let month = "" + (d.getMonth() + 1);
-  let day = "" + d.getDate();
-  const year = d.getFullYear();
-  if (month.length < 2) month = "0" + month;
-  if (day.length < 2) day = "0" + day;
-  return [year, month, day].join("-");
+  const today =
+        d.getFullYear() +
+        '-' +
+        (d.getMonth() > 8
+          ? d.getMonth() + 1
+          : '0' + (d.getMonth() + 1)) +
+        '-' +
+        (d.getDate() > 9 ? d.getDate() : '0' + d.getDate()) +
+        'T' + (d.getHours() > 9 ? d.getHours(): '0'+d.getHours())+":"+(d.getMinutes() > 9 ? d.getMinutes() : '0'+d.getHours()) + ":00+05:30";
+    return [today]
+  // let month = "" + (d.getMonth() + 1);
+  // let day = "" + d.getDate();
+  // let hour = "" + d.getHours();
+  // let min = "" + d.getMinutes();
+  // let sec = "" + d.getSeconds();
+  // let timeZone ="" + d.getTimezoneOffset();
+  // const year = d.getFullYear();
+  // if (month.length < 2) month = "0" + month;
+  // if (day.length < 2) day = "0" + day;
+  // if (hour.length < 2) hour = "0" + hour;
+  // if (min.length < 2) min = "0" + min;
+  // if (sec.length < 2) sec = "0" + sec;
+
+  // return [year, month, day].join("-") + "T" + [hour, min, sec].join(":") + [timeZone].join(":");
+  // return [year, month, day].join("-");
 }
+
+export function formatDateToDDMMYYYY(dateString) {
+  const dateObj = new Date(dateString);
+
+  const day = dateObj.getUTCDate().toString().padStart(2, '0');
+  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getUTCFullYear();
+
+  //return `${day}-${month}-${year}`;
+  return `${year}-${month}-${day}`;
+}
+
+
+
 
 export function getFormattedDatetime(dateString) {
   const d = new Date(dateString);
@@ -18,12 +51,14 @@ export function getFormattedDatetime(dateString) {
   let hour = "" + d.getHours();
   let min = "" + d.getMinutes();
   let sec = "" + d.getSeconds();
+  let timeZone ="" + d.getTimezoneOffset();
+
   if (month.length < 2) month = "0" + month;
   if (day.length < 2) day = "0" + day;
   if (hour.length < 2) hour = "0" + hour;
   if (min.length < 2) min = "0" + min;
   if (sec.length < 2) sec = "0" + sec;
-  return [year, month, day].join("-") + "T" + [hour, min, sec].join(":");
+  return [year, month, day].join("-") + "T" + [hour, min, sec].join(":") + [timeZone].join(":");
 }
 
 export function validatorAlphaNumeric(control: FormControl) {

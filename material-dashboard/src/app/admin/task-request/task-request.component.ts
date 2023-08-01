@@ -17,6 +17,9 @@ export class TaskRequestComponent implements OnInit {
   public EditStatus = EditStatus;
   public pagination: pagination;
   public limit = 10;
+  public isLoading = false;
+  public currentPage = 1;
+  public totalPage = 0;
 
   constructor(
     private _allEditReqAdmin :EmployeeService,
@@ -33,12 +36,16 @@ export class TaskRequestComponent implements OnInit {
   }
 
   private getAllEditReqAdmin(){
+    this.isLoading = !this.isLoading;
     this._allEditReqAdmin.allEditReqAdmin(this.params).subscribe(
       (res) => {
+        this.isLoading = !this.isLoading;
         this.allEditReqList = res.result;
         this.pagination = res.pagination;
+        this.totalPage = res.pagination.total_page
       },
       (err) => {
+        this.isLoading = !this.isLoading;
         this._mesgageService.showError(err.error.message || 'Unable to fetch timesheet request list');
       }
     );

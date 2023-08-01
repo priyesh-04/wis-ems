@@ -7,6 +7,7 @@ import {
   validatorEmail,
   validatorTextOnly,
   getFormattedDate,
+  formatDateToDDMMYYYY,
 } from "../../utils/custom-validators";
 import { ClientListComponent } from "../client-list/client-list.component";
 import { MesgageService } from "../../services/shared/message.service";
@@ -44,10 +45,14 @@ export class ClientFormComponent implements OnInit {
         company_name: this.clientDialogData.clientData.company_name,
         company_email: this.clientDialogData.clientData.company_email,
         mobile_number: this.clientDialogData.clientData.mobile_number,
-        start_date: getFormattedDate(
+        // start_date: getFormattedDate(
+        //   this.clientDialogData.clientData.start_date
+        // ),
+        // end_date: getFormattedDate(this.clientDialogData.clientData.end_date),
+        start_date: formatDateToDDMMYYYY(
           this.clientDialogData.clientData.start_date
         ),
-        end_date: getFormattedDate(this.clientDialogData.clientData.end_date),
+        end_date: formatDateToDDMMYYYY(this.clientDialogData.clientData.end_date),
         person_name: this.clientDialogData.clientData.person_name,
       });
     }
@@ -79,7 +84,7 @@ export class ClientFormComponent implements OnInit {
       this._clientService.addClient(clientData).subscribe(
         (res) => {
           this.dialogRef.close("success");
-        this._mesgageService.showSuccess(res.message);
+          this._mesgageService.showSuccess(res.message);
         },
         (err) => {
           this._mesgageService.showError(err.error.message);
