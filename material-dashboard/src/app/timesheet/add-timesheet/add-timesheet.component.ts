@@ -7,6 +7,9 @@ import {
   formatDateToDDMMYYYY,
   getFormattedDate,
   getFormattedDatetime,
+  getMaxDateTime,
+  getMinDateTime,
+  getTodayDateTime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { ClientService } from "../../services/client/client.service";
@@ -27,6 +30,8 @@ export class AddTimesheetComponent implements OnInit {
   public taskButton = "Save Task";
   public displayTaskform = true;
   public SubmitModes = SubmitModes;
+  public minDateTime:string='';
+  public maxDateTime:string='';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -41,21 +46,24 @@ export class AddTimesheetComponent implements OnInit {
 
   ngOnInit(): void {
     this.getClientList();
+    this.minDateTime=getMinDateTime(1);
+    this.maxDateTime=getMaxDateTime(1);
 
     const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
       date: [currentDate, [Validators.required]],
-      in_time: ["", [Validators.required]],
-      out_time: [""],
+      in_time: [getTodayDateTime(), [Validators.required]],
+      out_time: [getTodayDateTime()],
     });
     this.taskForm = this.fb.group({
       _id: [""],
       client: ["", [Validators.required]],
       project_name: ["", [Validators.required]],
-      start_time: ["", [Validators.required]],
-      end_time: ["", [Validators.required]],
+      start_time: [getTodayDateTime(), [Validators.required]],
+      end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
     });
+
 
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       this.timesheetForm.get('out_time').addValidators(Validators.required);
@@ -78,6 +86,7 @@ export class AddTimesheetComponent implements OnInit {
           out_time: new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16),
         });
       }
+      this.timesheetForm.get('date').disable();
     }
   }
 
@@ -125,6 +134,7 @@ export class AddTimesheetComponent implements OnInit {
 
   public editTask(index) {
     const taskDetails = this.taskList[index];
+    //console.log(taskDetails.start_time)
     this.taskForm.patchValue({
       _id: taskDetails._id,
       client: taskDetails.client._id ? taskDetails.client._id : taskDetails.client,
@@ -179,11 +189,12 @@ export class AddTimesheetComponent implements OnInit {
       });
     });
     const myData = {
-      date: timeSheetFormData.date,
+      date: timeSheetFormData.date  +"T00:00:00+05:30",
       in_time: timeSheetFormData.in_time + ":00+05:30",
       out_time: timeSheetFormData.out_time + ":00+05:30",
       task_details: taskList,
     };
+    console.log(myData);
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
@@ -207,4 +218,5 @@ export class AddTimesheetComponent implements OnInit {
       );
     }
   }
+  
 }

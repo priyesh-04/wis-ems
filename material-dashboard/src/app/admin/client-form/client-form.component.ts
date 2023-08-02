@@ -67,7 +67,9 @@ export class ClientFormComponent implements OnInit {
   }
 
   public onSubmit(clientForm: FormGroup) {
-    const clientData = clientForm.value;
+    let clientData = clientForm.value;
+    clientData.start_date=clientData.start_date  +"T00:00:00+05:30";
+    clientData.end_date=clientData.end_date  +"T00:00:00+05:30"
     if (this.clientDialogData.mode === "edit") {
       this._clientService
         .updateClient(this.clientDialogData.clientData._id, clientData)

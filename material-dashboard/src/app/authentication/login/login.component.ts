@@ -15,6 +15,8 @@ import { MesgageService } from "../../services/shared/message.service";
 export class LoginComponent implements OnInit {
   public loginForm: FormGroup;
   public isLoading = false;
+  public passwordType: string = 'password';
+  public isPassword: boolean = true;
 
   constructor(
     private _mesgageService: MesgageService,
@@ -52,5 +54,14 @@ export class LoginComponent implements OnInit {
         this._mesgageService.showError(err.error.message || "Login failed");
       }
     );
+  }
+
+  public visibilityOnOff() {
+      this.isPassword = !this.isPassword;
+      if(this.isPassword)
+      this.passwordType = "password";
+      else 
+      this.passwordType = "text";
+
   }
 }

@@ -30,6 +30,8 @@ export function getFormattedDate(date) {
 }
 
 export function formatDateToDDMMYYYY(dateString) {
+  //const convertedDate = dateString.split('T')[0];
+  //return convertedDate;
   const dateObj = new Date(dateString);
 
   const day = dateObj.getUTCDate().toString().padStart(2, '0');
@@ -41,6 +43,54 @@ export function formatDateToDDMMYYYY(dateString) {
 }
 
 
+
+
+
+
+export function getTodayDateTime(){
+  const today = new Date();
+    const todayDate = new Date(today);
+
+    todayDate.setDate(today.getDate());
+
+    const yyyy = todayDate.getFullYear();
+    const mm = String(todayDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(todayDate.getDate()).padStart(2, '0');
+    const hh = String(todayDate.getHours()).padStart(2, '0');
+    const min = String(todayDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+export function getMinDateTime(val:number){
+  const today = new Date();
+    const minDate = new Date(today);
+
+    minDate.setDate(today.getDate() - val);
+
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    const hh = String(minDate.getHours()).padStart(2, '0');
+    const min = String(minDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+export function getMaxDateTime(val:number){
+  const today = new Date();
+    const maxDate = new Date(today);
+
+    maxDate.setDate(today.getDate() + val);
+
+    const yyyy = maxDate.getFullYear();
+    const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(maxDate.getDate()).padStart(2, '0');
+    const hh = String(maxDate.getHours()).padStart(2, '0');
+    const min = String(maxDate.getMinutes()).padStart(2, '0');
+
+    return`${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
 
 
 export function getFormattedDatetime(dateString) {

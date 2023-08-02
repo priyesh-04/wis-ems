@@ -34,8 +34,14 @@
 
               <div class="field-container">
                 <mat-form-field>
-                  <input matInput type="password" class="form-control rounded-0" formControlName="password"
+                  <div class="d-flex justify-content-between">
+                  <input matInput [type]=passwordType class="form-control rounded-0" formControlName="password"
                     placeholder="Password">
+                    <div>
+                      <mat-icon *ngIf="isPassword" (click)="visibilityOnOff()">remove_red_eye</mat-icon>
+                      <mat-icon *ngIf="!isPassword" (click)="visibilityOnOff()">visibility_off</mat-icon>
+                     </div>
+                  </div>
                 </mat-form-field>
                 <div class="text-danger" *ngIf="form.password.touched && !form.password.valid">
                   Password field cannot be left blank. 
