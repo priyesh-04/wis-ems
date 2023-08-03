@@ -45,10 +45,6 @@ export class ClientFormComponent implements OnInit {
         company_name: this.clientDialogData.clientData.company_name,
         company_email: this.clientDialogData.clientData.company_email,
         mobile_number: this.clientDialogData.clientData.mobile_number,
-        // start_date: getFormattedDate(
-        //   this.clientDialogData.clientData.start_date
-        // ),
-        // end_date: getFormattedDate(this.clientDialogData.clientData.end_date),
         start_date: formatDateToDDMMYYYY(
           this.clientDialogData.clientData.start_date
         ),

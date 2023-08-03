@@ -30,7 +30,6 @@ export class PublicHolidaysFormComponent implements OnInit {
     });
     if (this.publicHolidaysDialogData.mode === "edit") {
         this.publicHolidaysForm.patchValue({
-          //date: getFormattedDate(this.publicHolidaysDialogData.holidayData.date),
           date: formatDateToDDMMYYYY(
             this.publicHolidaysDialogData.holidayData.date
           ),

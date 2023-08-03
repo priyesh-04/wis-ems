@@ -6,6 +6,9 @@ import {
   formatDateToDDMMYYYY,
   getFormattedDate,
   getFormattedDatetime,
+  getMaxDateTime,
+  getMinDateTime,
+  getTodayDateTime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { ClientService } from "../../services/client/client.service";
@@ -21,6 +24,8 @@ import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.compone
 export class TimesheetUpdateComponent implements OnInit {
   public timesheetForm: FormGroup;
   public clientList = [];
+  public minDateTime:string='';
+  public maxDateTime:string='';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -33,17 +38,17 @@ export class TimesheetUpdateComponent implements OnInit {
 
   ngOnInit(): void {
     this.getClientList();
+    this.minDateTime=getMinDateTime(1);
+    this.maxDateTime=getMaxDateTime(1);
 
     this.timesheetForm = this.fb.group({
       date: {value: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date), disabled: true},
-      // in_time: {value: getFormattedDatetime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
-      // out_time: {value: this.timesheetDialogData.timesheetData.out_time ? getFormattedDatetime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
       in_time: {value: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16), disabled: true},
       out_time: {value: this.timesheetDialogData.timesheetData.out_time ? new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16) : "", disabled: true},
       client: ["", [Validators.required]],
       project_name: ["", [Validators.required]],
-      start_time: ["", [Validators.required]],
-      end_time: ["", [Validators.required]],
+      start_time: [getTodayDateTime(), [Validators.required]],
+      end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
     });
 
@@ -55,8 +60,6 @@ export class TimesheetUpdateComponent implements OnInit {
       this.timesheetForm.patchValue({
         client: taskDetails.client._id,
         project_name: taskDetails.project_name,
-        // start_time: getFormattedDatetime(taskDetails.start_time),
-        // end_time: getFormattedDatetime(taskDetails.end_time),
         start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
         end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
         description: taskDetails.description,

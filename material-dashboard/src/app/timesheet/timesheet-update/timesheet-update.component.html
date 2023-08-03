@@ -45,13 +45,13 @@
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0"
-                            formControlName="start_time" placeholder="Start Time">
+                            formControlName="start_time" placeholder="Start Time"  [min]="minDateTime" [max]="maxDateTime">
                     </mat-form-field>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="end_time"
-                            placeholder="End Time">
+                            placeholder="End Time"  [min]="minDateTime" [max]="maxDateTime">
                     </mat-form-field>
                 </div> 
                 <mat-form-field appearance="legacy" class="col-12">
