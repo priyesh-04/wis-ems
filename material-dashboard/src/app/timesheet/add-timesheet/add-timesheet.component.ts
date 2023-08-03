@@ -104,6 +104,8 @@ export class AddTimesheetComponent implements OnInit {
     this.taskForm.reset();
     this.taskButton = "Save Task";
     this.displayTaskform = true;
+    this.taskForm.get('start_time').setValue(getTodayDateTime());
+    this.taskForm.get('end_time').setValue(getTodayDateTime());
   }
 
   public addNewTask() {
