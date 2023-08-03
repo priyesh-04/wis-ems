@@ -33,10 +33,12 @@ export function formatDateToDDMMYYYY(dateString) {
   //const convertedDate = dateString.split('T')[0];
   //return convertedDate;
   const dateObj = new Date(dateString);
+  //return dateObj;
 
-  const day = dateObj.getUTCDate().toString().padStart(2, '0');
-  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-  const year = dateObj.getUTCFullYear();
+  const day = dateObj.getDate().toString().padStart(2, '0');
+  //return day;
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
 
   //return `${day}-${month}-${year}`;
   return `${year}-${month}-${day}`;
