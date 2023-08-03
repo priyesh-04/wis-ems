@@ -11,6 +11,8 @@ import { MesgageService } from "../../services/shared/message.service";
 })
 export class PasswordChangeComponent implements OnInit {
   public passwordChangeForm: FormGroup;
+  public cnfPasswordType: string = 'password';
+  public isCnfPassword: boolean = true;
 
   constructor(
     private _authService: AuthService,
@@ -51,5 +53,16 @@ export class PasswordChangeComponent implements OnInit {
       }, err => {
         this._mesgageService.showError(err.error.message);
       });
+  }
+
+  public visibilityOnOff() {
+ 
+      this.isCnfPassword = !this.isCnfPassword;
+      if(this.isCnfPassword)
+      this.cnfPasswordType = "password";
+      else 
+      this.cnfPasswordType = "text";
+    
+
   }
 }
