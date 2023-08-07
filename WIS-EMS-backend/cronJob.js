@@ -47,6 +47,17 @@ const cronFunction = () => {
     true,
     'Asia/Kolkata'
   ).start();
+
+  // new CronJob(
+  //   '0 5 0 * * *',
+  //   function () {
+  //     TimesheetCron.createLeave();
+  //     console.log('Creating Leave sheet');
+  //   },
+  //   null,
+  //   true,
+  //   'Asia/Kolkata'
+  // ).start();
 };
 
 module.exports = cronFunction;
