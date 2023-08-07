@@ -948,6 +948,28 @@ class AuthService {
         .json({ msgErr: true, message: 'Internal Server Error ' + error });
     }
   }
+
+  async getAllUserThirdParty(req, res, next) {
+    try {
+      let url = `${process.env.LEAVE_DATA_BASE_URL}/erp/public/get_all_employee_record`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          return res.status(200).json({ msgErr: false, result: jsonData });
+        })
+        .catch((err) => {
+          return res.status(400).json({
+            msgErr: true,
+            message: 'Something Went Wrong. Please Check after some time',
+          });
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
 }
 
 module.exports = new AuthService();

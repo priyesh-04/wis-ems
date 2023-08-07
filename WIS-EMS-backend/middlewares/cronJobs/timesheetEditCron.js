@@ -184,6 +184,68 @@ class TimesheetCron {
       console.log(error);
     }
   }
+
+  async createLeave(req, res, next) {
+    try {
+      let date = new Date();
+      const today =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() > 8
+          ? date.getMonth() + 1
+          : '0' + (date.getMonth() + 1)) +
+        '-' +
+        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
+        'T00:00:00+05:30';
+
+      let dayEnd =
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() > 8
+          ? date.getMonth() + 1
+          : '0' + (date.getMonth() + 1)) +
+        '-' +
+        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
+        'T23:59:59+05:30';
+
+      const result = await User.find({
+        role: { $ne: 'admin' },
+        is_active: true,
+      });
+
+      const officialHolidayCreate = async (user) => {
+        let existTimesheet = await Timesheets.findOne({
+          created_by: user._id,
+          date: { $gte: today, $lte: dayEnd },
+        });
+
+        let isTodayLeave = fetch(`${process.env.LEAVE_DATA_BASE_URL}/...`, {
+          method: 'POST',
+          body: {
+            date: today,
+          },
+        });
+        if (!existTimesheet & isTodayLeave) {
+          let data = {
+            in_time: null,
+            out_time: null,
+            edit_status: 'Edited',
+            date: dayEnd,
+            created_by: user._id,
+            status: 'Leave',
+          };
+          let newRequest = await Timesheets(data);
+          newRequest.save();
+        }
+      };
+
+      for (let i = 0; i < result.length; i++) {
+        await officialHolidayCreate(result[i]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 module.exports = new TimesheetCron();
