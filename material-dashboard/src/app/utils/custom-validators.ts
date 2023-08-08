@@ -113,6 +113,36 @@ export function getFormattedDatetime(dateString) {
   return [year, month, day].join("-") + "T" + [hour, min, sec].join(":") + [timeZone].join(":");
 }
 
+export function getMinDate(val:number){
+  const today = new Date();
+    const minDate = new Date(today);
+
+    minDate.setDate(today.getDate() - val);
+
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    //const hh = String(minDate.getHours()).padStart(2, '0');
+    //const min = String(minDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+export function getMaxDate(val:number){
+  const today = new Date();
+    const maxDate = new Date(today);
+
+    maxDate.setDate(today.getDate() + val);
+
+    const yyyy = maxDate.getFullYear();
+    const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(maxDate.getDate()).padStart(2, '0');
+    // const hh = String(maxDate.getHours()).padStart(2, '0');
+    // const min = String(maxDate.getMinutes()).padStart(2, '0');
+
+    return`${yyyy}-${mm}-${dd}`;
+}
+
 export function validatorAlphaNumeric(control: FormControl) {
   const regExp = /^[a-zA-Z0-9 ]*$/;
   if (control.value && !regExp.test(control.value)) {

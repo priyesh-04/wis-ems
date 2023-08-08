@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
 import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
 import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.component';
-
+import {CdkAccordionModule} from '@angular/cdk/accordion';
 @NgModule({
   declarations: [
     AddTimesheetComponent,
@@ -32,6 +32,7 @@ import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.co
     MatTooltipModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    CdkAccordionModule
   ],
 })
 export class TimesheetModule {}

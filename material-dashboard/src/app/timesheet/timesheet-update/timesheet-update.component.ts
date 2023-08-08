@@ -46,7 +46,6 @@ export class TimesheetUpdateComponent implements OnInit {
       in_time: {value: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16), disabled: true},
       out_time: {value: this.timesheetDialogData.timesheetData.out_time ? new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16) : "", disabled: true},
       client: ["", [Validators.required]],
-      project_name: ["", [Validators.required]],
       start_time: [getTodayDateTime(), [Validators.required]],
       end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
@@ -59,7 +58,6 @@ export class TimesheetUpdateComponent implements OnInit {
         );
       this.timesheetForm.patchValue({
         client: taskDetails.client._id,
-        project_name: taskDetails.project_name,
         start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
         end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
         description: taskDetails.description,
@@ -88,7 +86,7 @@ export class TimesheetUpdateComponent implements OnInit {
       const taskData = {
         _id : this.timesheetDialogData.taskID,
         client: timesheetData.client,
-        project_name: timesheetData.project_name,
+        project_name: "",
         description: timesheetData.description,
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time  +":00+05:30",
@@ -108,7 +106,7 @@ export class TimesheetUpdateComponent implements OnInit {
     } else if (this.timesheetDialogData.mode === SubmitModes.SingleAdd) {
       const taskData = {
         client: timesheetData.client,
-        project_name: timesheetData.project_name,
+        project_name: "",
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time +":00+05:30",
         description: timesheetData.description,

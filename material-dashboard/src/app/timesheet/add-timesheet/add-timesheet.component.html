@@ -10,7 +10,7 @@
                 <div class="col-sm-12 col-md-4">
                     <mat-form-field>
                         <input matInput type="date" class="form-control rounded-0" formControlName="date"
-                            placeholder="Date">
+                            placeholder="Date" [min]="minDate" [max]="maxDate">
                     </mat-form-field>
                 </div>
                 <div class="col-sm-12 col-md-4">
@@ -22,7 +22,7 @@
                 <div class="col-sm-12 col-md-4">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0" formControlName="out_time"
-                            placeholder="Out Time" [min]="minDateTime" [max]="maxDateTime" >
+                            placeholder="Out Time" [min]="minDateTime" [max]="maxDateTime">
                     </mat-form-field>
                 </div>
             </div>
@@ -45,8 +45,7 @@
                 <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th>Client</th>
-                            <th>Project Name</th>
+                            <th>Project</th>
                             <th>Start Time</th>
                             <th>End Time</th>
                             <th>Actions</th>
@@ -55,7 +54,6 @@
                     <tbody>
                         <tr *ngFor="let task of taskList; let i = index">                           
                             <td >{{task.clientName || task.client.company_name}}</td>                           
-                            <td>{{task.project_name}}</td>
                             <td>{{task.start_time | date: 'dd-MM-yyyy hh:mm a'}}</td>
                             <td>{{task.end_time | date: 'dd-MM-yyyy hh:mm a' }}</td>
                             <td>
@@ -75,9 +73,9 @@
         <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" [ngClass]="{'d-none': !displayTaskform}">
             <div class="fields-main-div">
                 <input matInput type="hidden" formControlName="_id">
-                <div class="col-sm-12 col-md-6" id="client-wrapper">
+                <div class="col-sm-12" id="client-wrapper">
                     <mat-form-field appearance="fill">
-                        <mat-label>Client</mat-label>
+                        <mat-label>Project</mat-label>
                         <mat-select formControlName="client">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
                                 {{client.company_name}}
@@ -85,12 +83,12 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="col-sm-12 col-md-6">
+                <!-- <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
                             placeholder="Project Name">
                     </mat-form-field>
-                </div>                
+                </div>                 -->
             </div>
             <div class="fields-main-div">
                 <div class="col-sm-12 col-md-6">

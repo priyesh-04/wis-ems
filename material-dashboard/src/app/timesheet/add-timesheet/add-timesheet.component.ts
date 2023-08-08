@@ -1,13 +1,15 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { DatePipe } from "@angular/common";
-import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators, AbstractControl } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
   formatDateToDDMMYYYY,
   getFormattedDate,
   getFormattedDatetime,
+  getMaxDate,
   getMaxDateTime,
+  getMinDate,
   getMinDateTime,
   getTodayDateTime,
 } from "../../utils/custom-validators";
@@ -32,6 +34,8 @@ export class AddTimesheetComponent implements OnInit {
   public SubmitModes = SubmitModes;
   public minDateTime:string='';
   public maxDateTime:string='';
+  public minDate:string='';
+  public maxDate:string='';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -47,7 +51,9 @@ export class AddTimesheetComponent implements OnInit {
   ngOnInit(): void {
     this.getClientList();
     this.minDateTime=getMinDateTime(1);
-    this.maxDateTime=getMaxDateTime(1);
+    this.maxDateTime=getMaxDateTime(0);
+    this.minDate=getMinDate(1);
+    this.maxDate=getMaxDate(0);
 
     const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
@@ -55,11 +61,10 @@ export class AddTimesheetComponent implements OnInit {
       in_time: [getTodayDateTime(), [Validators.required]],
       out_time: [getTodayDateTime()],
     });
-    this.timesheetForm.get('date').disable();
+  
     this.taskForm = this.fb.group({
       _id: [""],
       client: ["", [Validators.required]],
-      project_name: ["", [Validators.required]],
       start_time: [getTodayDateTime(), [Validators.required]],
       end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
@@ -113,7 +118,7 @@ export class AddTimesheetComponent implements OnInit {
       _id: this.taskForm.value._id,
       client: this.taskForm.value.client,
       clientName: this.getClientName(this.taskForm.value.client),
-      project_name: this.taskForm.value.project_name,
+      project_name: "",
       start_time: this.taskForm.value.start_time +":00+05:30",
       end_time: this.taskForm.value.end_time + ":00+05:30",
       description: this.taskForm.value.description,
@@ -133,7 +138,6 @@ export class AddTimesheetComponent implements OnInit {
     this.taskForm.patchValue({
       _id: taskDetails._id,
       client: taskDetails.client._id ? taskDetails.client._id : taskDetails.client,
-      project_name: taskDetails.project_name,
       start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
       end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
       description: taskDetails.description,
@@ -184,7 +188,7 @@ export class AddTimesheetComponent implements OnInit {
       });
     });
     const myData = {
-      date:this.datepipe.transform((new Date), 'yyyy-MM-dd') +"T00:00:00+05:30",
+      date:timeSheetFormData.date +"T00:00:00+05:30",
       in_time: timeSheetFormData.in_time + ":00+05:30",
       out_time: timeSheetFormData.out_time + ":00+05:30",
       task_details: taskList,
@@ -212,5 +216,16 @@ export class AddTimesheetComponent implements OnInit {
       );
     }
   }
+
+  
+
+  
+
+
+
+
+
+
+
   
 }
