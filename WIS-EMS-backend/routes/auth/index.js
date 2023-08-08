@@ -95,4 +95,11 @@ router.post(
   UserController.passwordResendEmail
 );
 
+router.get(
+  '/user/all-third-party-user',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
+  UserController.getAllUserThirdParty
+);
+
 module.exports = router;

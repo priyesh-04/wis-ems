@@ -45,6 +45,12 @@ class DesignationService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
+      if (payload.name == 'Admin') {
+        return res.status(400).json({
+          msgError: true,
+          message: "Admin designation is fixed. Can't edit",
+        });
+      }
 
       await Designation.findByIdAndUpdate(
         { _id: req.params.id },
@@ -120,6 +126,18 @@ class DesignationService {
         return res.status(400).json({
           msgError: true,
           message: "Designation already used. Can't Delete.",
+        });
+      }
+      let existDesignation = await Designation.findById({ _id: req.params.id });
+      if (!existDesignation) {
+        return res.status(400).json({
+          msgError: true,
+          message: 'Designation not found.',
+        });
+      } else if (existDesignation.name == 'Admin') {
+        return res.status(400).json({
+          msgError: true,
+          message: "Admin designation is fixed. Can't delete.",
         });
       }
       await Designation.findByIdAndDelete(

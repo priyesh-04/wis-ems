@@ -32,7 +32,7 @@ class ClientDetailsService {
           return res.status(201).json({
             msgErr: false,
             result,
-            message: 'Client Create Succesfull.',
+            message: 'Project Create Succesfull.',
           });
         }
       });
@@ -74,7 +74,7 @@ class ClientDetailsService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Client result Update Successfully.',
+              message: 'Project Update Successfully.',
             });
           }
         }
@@ -134,7 +134,7 @@ class ClientDetailsService {
         return res.status(400).json({
           msgErr: true,
           message:
-            "Can't Delete this client. This Client carrying some employee timesheet records.",
+            "Can't Delete this project. This project carrying some employee timesheet records.",
         });
       }
       await ClientDetails.findByIdAndDelete(
@@ -151,7 +151,7 @@ class ClientDetailsService {
           } else {
             return res.status(200).json({
               msgErr: false,
-              message: 'Client result Deleted Successfully.',
+              message: 'Project Deleted Successfully.',
             });
           }
         }
@@ -166,7 +166,7 @@ class ClientDetailsService {
   async getAllTaskClientWise(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await TaskDetails.find({ client: req.params.id })
+      TaskDetails.find({ client: req.params.id })
         .populate('client', '_id client_name')
         .populate('created_by', '_id name')
         .sort({ createdAt: -1 })

@@ -20,7 +20,7 @@ class TimeSheetService {
         task_details: Joi.array().items(
           Joi.object({
             client: Joi.string().length(24).required(),
-            project_name: Joi.string().required(),
+            project_name: Joi.string().allow(''),
             start_time: Joi.date().required(),
             end_time: Joi.date().required(),
             description: Joi.string(),
@@ -142,7 +142,7 @@ class TimeSheetService {
       } else if (!clientcheck) {
         return res.status(403).json({
           msgErr: true,
-          message: 'Please Provide correct client id.',
+          message: 'Please Provide correct project id.',
         });
       }
       async function getId(task) {
@@ -202,7 +202,7 @@ class TimeSheetService {
           Joi.object({
             _id: Joi.string(),
             client: Joi.string().length(24).required(),
-            project_name: Joi.string().required(),
+            project_name: Joi.string().allow(''),
             start_time: Joi.string().required(),
             end_time: Joi.string().required(),
             description: Joi.string(),
@@ -300,7 +300,7 @@ class TimeSheetService {
       } else if (!clientcheck) {
         return res.status(403).json({
           msgErr: true,
-          message: 'Please Provide correct client id.',
+          message: 'Please Provide correct project id.',
         });
       }
       let taskId = [];
@@ -320,7 +320,7 @@ class TimeSheetService {
               (err, result) => {
                 if (err) {
                   return res.status(400).json({
-                    message: `Can't Update ${taskdetails[i].project_name} task`,
+                    message: `Can't Update task`,
                   });
                 } else {
                   taskId.push(taskdetails[i]._id);
@@ -397,7 +397,7 @@ class TimeSheetService {
       let taskSchema = Joi.object({
         _id: Joi.string().length(24).required(),
         client: Joi.string().length(24).required(),
-        project_name: Joi.string().required(),
+        project_name: Joi.string().allow(''),
         start_time: Joi.string().required(),
         end_time: Joi.string().required(),
         description: Joi.string(),
@@ -413,7 +413,7 @@ class TimeSheetService {
       if (!client) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Please Provide a valid Client Id' });
+          .json({ msgErr: true, message: 'Please Provide a valid project Id' });
       }
       let currentDate = Date.now();
       let start_time = new Date(payload.start_time);
@@ -493,7 +493,7 @@ class TimeSheetService {
       const payload = req.body;
       let taskSchema = Joi.object({
         client: Joi.string().length(24).required(),
-        project_name: Joi.string().required(),
+        project_name: Joi.string().allow(''),
         start_time: Joi.string().required(),
         end_time: Joi.string().required(),
         description: Joi.string(),
@@ -509,7 +509,7 @@ class TimeSheetService {
       if (!client) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Please Provide a valid Client Id' });
+          .json({ msgErr: true, message: 'Please Provide a valid project Id' });
       }
       let currentDate = Date.now();
       let start_time = new Date(payload.start_time);
@@ -1158,6 +1158,34 @@ class TimeSheetService {
       return res
         .status(500)
         .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async getTodayTimesheet(req, res, next) {
+    try {
+      let currentTime = new Date();
+      currentTime.setHours(0, 0, 0);
+      let currentOffset = currentTime.getTimezoneOffset();
+      let ISTOffset = 330; // IST offset UTC +5:30
+      let ISTTime = new Date(
+        currentTime.getTime() + (ISTOffset + currentOffset) * 60000
+      );
+
+      Timesheets.find({ date: { $gte: ISTTime } }).exec((err, details) => {
+        if (err) {
+          return res.status(400).json({
+            msgErr: true,
+            message: 'Something Went Wrong',
+            error: err,
+          });
+        } else {
+          return res.status(200).json({ msgErr: false, result: details });
+        }
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error', error });
     }
   }
 }

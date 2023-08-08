@@ -99,9 +99,13 @@ class AuthService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
-      const existDesignation = await Designation.findById({
+      let existDesignation = await Designation.findById({
         _id: payload.designation,
       });
+      if (payload.role === 'admin') {
+        existDesignation = await Designation.findOne({ name: 'Admin' });
+        payload.designation = existDesignation._id;
+      }
       if (!existDesignation) {
         return res.status(400).json({
           msgErr: true,
@@ -139,7 +143,7 @@ class AuthService {
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(password, salt);
       payload.password = hashPassword;
-      const newRequest = await new User(payload);
+      const newRequest = await User(payload);
       newRequest.save(async (err, result) => {
         if (err) {
           if (image) {
@@ -182,7 +186,7 @@ class AuthService {
             token: crypto.randomBytes(32).toString('hex'),
           };
 
-          let newRequest = await new ForgotPasswordToken(tokenData);
+          let newRequest = await ForgotPasswordToken(tokenData);
           newRequest.save((err, result) => {
             if (err) {
               return res.status(400).json({
@@ -938,6 +942,28 @@ class AuthService {
         msgErr: false,
         message: 'Reset Password link sended to the existing email.',
       });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async getAllUserThirdParty(req, res, next) {
+    try {
+      let url = `${process.env.LEAVE_DATA_BASE_URL}/erp/public/get_all_employee_record`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          return res.status(200).json({ msgErr: false, result: jsonData });
+        })
+        .catch((err) => {
+          return res.status(400).json({
+            msgErr: true,
+            message: 'Something Went Wrong. Please Check after some time',
+          });
+        });
     } catch (error) {
       return res
         .status(500)
