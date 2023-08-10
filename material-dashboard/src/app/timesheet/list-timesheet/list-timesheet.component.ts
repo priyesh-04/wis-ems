@@ -71,8 +71,8 @@ export class ListTimesheetComponent implements OnInit {
 
   private refreshTimesheetList(isloadMore = false) {
     this.isLoading = !this.isLoading;
-    this._employeeService.getTimesheet(this.userID, this.filterStartDate, this.filterEndDate, this.currentPage).subscribe(
-      //this._employeeService.getTimesheetWithProject(this.filterStartDate, this.filterEndDate,this.clientid, this.currentPage).subscribe(
+    this._employeeService.getTimesheet(this.userID, this.filterStartDate+"T00:00:00+05:30", this.filterEndDate+"T00:00:00+05:30", this.clientid,this.currentPage).subscribe(
+      //this._employeeService.getTimesheetWithProject(this.userID, this.filterStartDate, this.filterEndDate, this.clientid, this.currentPage).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
         console.log(this.timesheetList);

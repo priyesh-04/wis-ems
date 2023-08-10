@@ -193,6 +193,8 @@ export class AddTimesheetComponent implements OnInit {
       out_time: timeSheetFormData.out_time + ":00+05:30",
       task_details: taskList,
     };
+    console.log(myData);
+
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
