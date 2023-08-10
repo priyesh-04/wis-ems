@@ -85,6 +85,12 @@ export class EmployeeService {
     return this.http.get(endpoint, httpOptions);
   }
 
+  public getTimesheetWithProject(startDate: string, endDate: string,clientid:string, page = 1, limit = 10): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/user-spend-time?start_date=${startDate}&end_date=${endDate}&limit=${limit}&page=${page}&clientid=${clientid}`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
   public updateTimesheet(taskID, data): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/${taskID}`;
     const httpOptions = this.createHeaders();

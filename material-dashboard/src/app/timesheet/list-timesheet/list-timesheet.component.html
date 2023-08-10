@@ -21,6 +21,18 @@
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterEndDate" (change)="refreshTimesheetList()" placeholder="End Date">
                 </mat-form-field>
             </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="col-sm-12" id="client-wrapper">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Project</mat-label>
+                        <mat-select (selectionChange)="selectProject($event)">
+                            <mat-option *ngFor="let client of filterProjectList" [(ngModel)]="clientid" value="{{client._id}}" >
+                                {{client.company_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
         </div>
         <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
             <mat-icon>add</mat-icon>
@@ -67,8 +79,8 @@
         
           <div class="" (click)="accordionItem.toggle()">
             <span class="example-accordion-item-description">
-              <mat-icon>keyboard_arrow_down</mat-icon>
-              <mat-icon>keyboard_arrow_up</mat-icon> 
+              <mat-icon *ngIf="!accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_down</mat-icon>
+              <mat-icon *ngIf="accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_up</mat-icon> 
             </span>
           </div>
         </div>

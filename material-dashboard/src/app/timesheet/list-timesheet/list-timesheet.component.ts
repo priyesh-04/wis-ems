@@ -31,6 +31,9 @@ export class ListTimesheetComponent implements OnInit {
   public currentPage = 1;
   public totalPage = 0;
   public expandedIndex = 0;
+  public accordionFlag = true;
+  public filterProjectList: []=[];
+  public clientid:string='';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -38,7 +41,7 @@ export class ListTimesheetComponent implements OnInit {
     private _mesgageService: MesgageService,
     private datepipe: DatePipe,
     private dialog: MatDialog,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -54,13 +57,25 @@ export class ListTimesheetComponent implements OnInit {
       this.userID = this._authService.getUserDetail().id;
     }
     this.refreshTimesheetList();
+    //
+    this._authService.getProfile().subscribe(
+      (res) => {
+        this.filterProjectList = res.result.assigned_client;
+        console.log(this.filterProjectList);
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch data');
+      }
+    );
   }
 
   private refreshTimesheetList(isloadMore = false) {
     this.isLoading = !this.isLoading;
     this._employeeService.getTimesheet(this.userID, this.filterStartDate, this.filterEndDate, this.currentPage).subscribe(
+      //this._employeeService.getTimesheetWithProject(this.filterStartDate, this.filterEndDate,this.clientid, this.currentPage).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
+        console.log(this.timesheetList);
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
         this.isLoading = !this.isLoading;
       },
@@ -196,6 +211,15 @@ export class ListTimesheetComponent implements OnInit {
 
   public selectEmployee(event) {
     this.userID = event.value;
+    this.refreshTimesheetList();
+  }
+
+  public toggleAccordion(){
+      this.accordionFlag=!this.accordionFlag;
+  }
+
+  public selectProject(event){
+    this.clientid = event.value;
     this.refreshTimesheetList();
   }
 }
