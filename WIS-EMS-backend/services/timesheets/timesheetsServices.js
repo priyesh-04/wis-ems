@@ -155,16 +155,15 @@ class TimeSheetService {
               task[i].start_time,
               task[i].end_time
             ),
-          })
-            .then((data) => {
-              taskId.push(data._id);
-            })
-            .catch((err) => {
-              return res.status(400).json({
-                msgErr: true,
-                message: 'Error while saving task details.',
-              });
-            });
+          }).then((data) => {
+            taskId.push(data._id);
+          });
+          // .catch((err) => {
+          //   return res.status(400).json({
+          //     msgErr: true,
+          //     message: 'Error while saving task details.',
+          //   });
+          // });
         }
         return taskId;
       }
@@ -335,16 +334,15 @@ class TimeSheetService {
                 taskdetails[i].start_time,
                 taskdetails[i].end_time
               ),
-            })
-              .then((data) => {
-                taskId.push(data._id);
-              })
-              .catch((err) => {
-                return res.status(400).json({
-                  msgErr: true,
-                  message: 'Error while saving task details.' + err,
-                });
-              });
+            }).then((data) => {
+              taskId.push(data._id);
+            });
+            // .catch((err) => {
+            //   return res.status(400).json({
+            //     msgErr: true,
+            //     message: 'Error while saving task details.' + err,
+            //   });
+            // });
           }
         }
         return true;
