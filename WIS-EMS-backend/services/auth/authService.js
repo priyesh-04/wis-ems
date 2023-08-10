@@ -48,7 +48,7 @@ class AuthService {
           .status(409)
           .json({ msgErr: true, message: 'Employee currently deactivated!' });
       }
-
+      // generate token
       const { accessToken, refreshToken } = await TokenService.generateToken(
         user
       );
@@ -73,7 +73,7 @@ class AuthService {
     try {
       const payload = req.body;
       const image = req.file;
-
+      // validation
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         emp_id: Joi.string().min(3).max(15).required(),
@@ -112,8 +112,9 @@ class AuthService {
           message: 'Designation Incorrect. Please Select Correct one.',
         });
       }
-      const password = crypto.randomBytes(10).toString('hex');
 
+      // create randorm passwrd and hash password. this password can't use. when admin create a user on that time user get a email for create a new password. through this email link user can set a new password. if user not create the password then user can't login.
+      const password = crypto.randomBytes(10).toString('hex');
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
