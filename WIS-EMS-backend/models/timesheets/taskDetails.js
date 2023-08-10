@@ -11,8 +11,8 @@ const TaskDetailsSchema = new mongoose.Schema(
     },
     project_name: {
       type: String,
-      required: true,
       trim: true,
+      default: null,
     },
     start_time: {
       type: Date,
