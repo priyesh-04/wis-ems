@@ -71,7 +71,7 @@
                 </div> 
                 <div class="col-sm-12 col-md-6" *ngIf="!isAdmin">
                     <mat-form-field>
-                        <mat-label>Client</mat-label>
+                        <mat-label>Project</mat-label>
                         <mat-select formControlName="assigned_client" multiple>
                           <mat-option *ngFor="let client of clientList" [value]="client._id">{{client.company_name}}</mat-option>
                         </mat-select>
