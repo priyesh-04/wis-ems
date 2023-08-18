@@ -6,22 +6,30 @@
         </h2>
         <form [formGroup]="employeeForm" (ngSubmit)="onSubmit(employeeForm)">
             <div class="fields-main-div row">
+                <div class="col-sm-12 col-md-12" *ngIf="!isAdmin">
+                    <mat-form-field>
+                        <mat-label>Employee</mat-label>
+                        <mat-select (selectionChange)="selectEmployee($event)" [disabled]="isDisabled">
+                          <mat-option *ngFor="let employee of employeeList" [value]="employee.id">{{employee.name}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="name"
-                            placeholder="Full Name">
+                            placeholder="Full Name" >
                     </mat-form-field>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="text" class="form-control rounded-0" formControlName="emp_id"
-                            placeholder="Employee Id">
+                            placeholder="Employee Id" >
                     </mat-form-field>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="number" class="form-control rounded-0" formControlName="phone_num"
-                            placeholder="Mobile Number">
+                            placeholder="Mobile Number" >
                     </mat-form-field>
                     <div *ngIf="myEmployeeForm.phone_num.touched && myEmployeeForm.phone_num.invalid"
                         class="text-danger">
@@ -33,7 +41,7 @@
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="email" class="form-control rounded-0" formControlName="email_id"
-                            placeholder="Email Id">
+                            placeholder="Email Id" >
                     </mat-form-field>
                     <div *ngIf="myEmployeeForm.email_id.touched && myEmployeeForm.email_id.invalid" class="text-danger">
                         <div *ngIf="myEmployeeForm.email_id.errors.pattern">

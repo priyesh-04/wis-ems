@@ -79,11 +79,18 @@ export class EmployeeService {
     return this.http.post(endpoint, data, httpOptions);
   }
 
-  public getTimesheet(userID: string, startDate: string, endDate: string, page = 1, limit = 10): Observable<any> {
-    const endpoint = `${this.baseUrl}/timesheet/task-details/user/${userID}?start_date=${startDate}&end_date=${endDate}&limit=${limit}&page=${page}`;
+  public getTimesheet(userID: string, startDate: string, endDate: string, clientid:string='', page = 1, limit = 10): Observable<any> {
+    let endpoint='';
+    if(clientid){
+    endpoint = `${this.baseUrl}/timesheet/task-details/user/${userID}?start_date=${startDate}&end_date=${endDate}&limit=${limit}&page=${page}&clientid=${clientid}`;
+    }else{
+    endpoint = `${this.baseUrl}/timesheet/task-details/user/${userID}?start_date=${startDate}&end_date=${endDate}&limit=${limit}&page=${page}`;
+    }
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
+
+ 
 
   public updateTimesheet(taskID, data): Observable<any> {
     const endpoint = `${this.baseUrl}/timesheet/${taskID}`;
@@ -120,4 +127,10 @@ export class EmployeeService {
     const httpOptions = this.createHeaders();
     return this.http.post(endpoint, {edit_status:`${isApprove}`}, httpOptions);
   }  
+
+  public getAllEmployeesFromThirdParty(params?: params): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/all-third-party-user?limit=${params ? params.limit : ''}&page=${params ? params.page : ''}`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
 }

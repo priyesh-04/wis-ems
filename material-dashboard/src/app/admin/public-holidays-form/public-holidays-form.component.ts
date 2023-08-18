@@ -30,7 +30,6 @@ export class PublicHolidaysFormComponent implements OnInit {
     });
     if (this.publicHolidaysDialogData.mode === "edit") {
         this.publicHolidaysForm.patchValue({
-          //date: getFormattedDate(this.publicHolidaysDialogData.holidayData.date),
           date: formatDateToDDMMYYYY(
             this.publicHolidaysDialogData.holidayData.date
           ),
@@ -49,7 +48,8 @@ export class PublicHolidaysFormComponent implements OnInit {
   }
 
   public addHolidays(publicHolidaysForm:FormGroup) {    
-    const publicHolidaysFormData = publicHolidaysForm.value;
+    let publicHolidaysFormData = publicHolidaysForm.value;
+    publicHolidaysFormData.date=publicHolidaysFormData.date  +"T00:00:00+05:30";
     if (this.publicHolidaysDialogData.mode === "edit") {
       this._holidaysService.updateHoliday(this.publicHolidaysDialogData.holidayData._id, publicHolidaysFormData).subscribe(
         (res) => {
