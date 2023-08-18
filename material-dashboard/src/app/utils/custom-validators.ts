@@ -44,7 +44,45 @@ export function formatDateToDDMMYYYY(dateString) {
   return `${year}-${month}-${day}`;
 }
 
+export function formatToDateTime(dateString){
+// // Original ISO timestamp
+// const isoTimestamp = '2023-08-10T10:16:00.000Z';
 
+// // Create a Date object from the ISO timestamp
+// const date = new Date(isoTimestamp);
+
+// // Get the local date and time components
+// const localDate = date.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+// const localTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+// // Combine the local date and time components
+// const formattedDateTime = `${localDate} ${localTime}`;
+
+// console.log(formattedDateTime);
+
+// Original ISO timestamp
+const isoTimestamp = dateString;
+
+// Create a Date object from the ISO timestamp
+const date = new Date(isoTimestamp);
+
+// Get the local date and time components
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0');
+const day = String(date.getDate()).padStart(2, '0');
+const hours = String(date.getHours()).padStart(2, '0');
+const minutes = String(date.getMinutes()).padStart(2, '0');
+
+// Combine the local date and time components in ISO 8601 format
+const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+return formattedDateTime;
+console.log(formattedDateTime);
+
+
+
+
+
+}
 
 
 

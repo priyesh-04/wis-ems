@@ -128,3 +128,14 @@ a.close {
 .main-panel{
 z-index: 1;
 }
+.mat-button.btn.btn-primary, .mat-raised-button.btn.btn-primary, .mat-raised-button.btn:not([class*=mat-elevation-z]).btn-primary, .btn.btn-primary {
+    background-color: #fcbe00;
+    border-color: #fcbe00 !important;
+    box-shadow: 0 2px 2px 0 rgb(253 213 89 / 14%), 0 3px 1px -2px rgb(253 213 89 / 20%), 0 1px 5px 0 rgb(253 213 89 / 12%) !important;
+    color: #000;
+    font-weight: 700;
+}
+.mat-button.btn.btn-primary.disabled:hover, .mat-button.btn.btn-primary:disabled:hover, .mat-raised-button.btn.btn-primary.disabled:hover, .mat-raised-button.btn.btn-primary:disabled:hover, .mat-raised-button.btn:not([class*=mat-elevation-z]).btn-primary.disabled:hover, .mat-raised-button.btn:not([class*=mat-elevation-z]).btn-primary:disabled:hover, .btn.btn-primary.disabled:hover, .btn.btn-primary:disabled:hover {
+    background-color: #003973;
+    border-color: #003973 !important;
+}

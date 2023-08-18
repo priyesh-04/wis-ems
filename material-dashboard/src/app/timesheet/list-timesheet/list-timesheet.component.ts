@@ -33,7 +33,7 @@ export class ListTimesheetComponent implements OnInit {
   public expandedIndex = 0;
   public accordionFlag = true;
   public filterProjectList: []=[];
-  public clientid:string='';
+  public clientid:string = '';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -61,7 +61,6 @@ export class ListTimesheetComponent implements OnInit {
     this._authService.getProfile().subscribe(
       (res) => {
         this.filterProjectList = res.result.assigned_client;
-        console.log(this.filterProjectList);
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch data');
@@ -72,10 +71,8 @@ export class ListTimesheetComponent implements OnInit {
   private refreshTimesheetList(isloadMore = false) {
     this.isLoading = !this.isLoading;
     this._employeeService.getTimesheet(this.userID, this.filterStartDate+"T00:00:00+05:30", this.filterEndDate+"T00:00:00+05:30", this.clientid,this.currentPage).subscribe(
-      //this._employeeService.getTimesheetWithProject(this.userID, this.filterStartDate, this.filterEndDate, this.clientid, this.currentPage).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
-        console.log(this.timesheetList);
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
         this.isLoading = !this.isLoading;
       },

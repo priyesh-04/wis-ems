@@ -858,6 +858,7 @@ class TimeSheetService {
               in_time: 1,
               out_time: 1,
               edit_status: 1,
+              status: 1,
               date: 1,
               created_by: 1,
               edit_reason: 1,

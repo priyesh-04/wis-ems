@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
   formatDateToDDMMYYYY,
+  formatToDateTime,
   getFormattedDate,
   getFormattedDatetime,
   getMaxDateTime,
@@ -15,6 +16,7 @@ import { ClientService } from "../../services/client/client.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
 import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
+import { AuthService } from "../../services/auth/auth.service";
 
 @Component({
   selector: "app-timesheet-update",
@@ -33,7 +35,8 @@ export class TimesheetUpdateComponent implements OnInit {
     private _mesgageService: MesgageService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ListTimesheetComponent>,
-    @Inject(MAT_DIALOG_DATA) public timesheetDialogData
+    @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
+    private _authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -43,8 +46,8 @@ export class TimesheetUpdateComponent implements OnInit {
 
     this.timesheetForm = this.fb.group({
       date: {value: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date), disabled: true},
-      in_time: {value: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16), disabled: true},
-      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16) : "", disabled: true},
+      in_time: {value:formatToDateTime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
+      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? formatToDateTime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
       client: ["", [Validators.required]],
       start_time: [getTodayDateTime(), [Validators.required]],
       end_time: [getTodayDateTime(), [Validators.required]],
@@ -58,20 +61,28 @@ export class TimesheetUpdateComponent implements OnInit {
         );
       this.timesheetForm.patchValue({
         client: taskDetails.client._id,
-        start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
-        end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
+        start_time: formatToDateTime(taskDetails.start_time),
+        end_time:formatToDateTime(taskDetails.end_time),
         description: taskDetails.description,
       });
     }
   }
 
   private getClientList() {
-    this._clientService.getClientList().subscribe(
+    // this._clientService.getClientList().subscribe(
+    //   (res) => {
+    //     this.clientList = res.result;
+    //   },
+    //   (err) => {
+    //     this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+    //   }
+    // );
+    this._authService.getProfile().subscribe(
       (res) => {
-        this.clientList = res.result;
+        this.clientList = res.result.assigned_client;
       },
       (err) => {
-        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+        this._mesgageService.showError(err.error.message || 'Unable to fetch data');
       }
     );
   }

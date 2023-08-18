@@ -5,6 +5,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dial
 
 import {
   formatDateToDDMMYYYY,
+  formatToDateTime,
   getFormattedDate,
   getFormattedDatetime,
   getMaxDate,
@@ -19,6 +20,7 @@ import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delet
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
 import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
+import { AuthService } from "../../services/auth/auth.service";
 
 @Component({
   selector: "app-add-timesheet",
@@ -46,6 +48,7 @@ export class AddTimesheetComponent implements OnInit {
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<ListTimesheetComponent>,
     @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
+    private _authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -77,25 +80,34 @@ export class AddTimesheetComponent implements OnInit {
       this.taskList = this.timesheetDialogData.timesheetData.task_details;
       this.timesheetForm.patchValue({
         date: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date),
-        in_time: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16),
+        in_time: formatToDateTime(this.timesheetDialogData.timesheetData.in_time),
         _id : this.timesheetDialogData.timesheetData._id
       });
       if (this.timesheetDialogData.timesheetData.out_time) {
         this.timesheetForm.patchValue({
-          out_time: new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16),
+          out_time: formatToDateTime(this.timesheetDialogData.timesheetData.out_time),
         });
       }
       this.timesheetForm.get('date').disable();
     }
+   
   }
 
   private getClientList() {
-    this._clientService.getClientList().subscribe(
+    // this._clientService.getClientList().subscribe(
+    //   (res) => {
+    //     this.clientList = res.result;
+    //   },
+    //   (err) => {
+    //     this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+    //   }
+    // );
+    this._authService.getProfile().subscribe(
       (res) => {
-        this.clientList = res.result;
+        this.clientList = res.result.assigned_client;
       },
       (err) => {
-        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+        this._mesgageService.showError(err.error.message || 'Unable to fetch data');
       }
     );
   }
@@ -138,8 +150,8 @@ export class AddTimesheetComponent implements OnInit {
     this.taskForm.patchValue({
       _id: taskDetails._id,
       client: taskDetails.client._id ? taskDetails.client._id : taskDetails.client,
-      start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
-      end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
+      start_time:formatToDateTime(taskDetails.start_time),
+      end_time: formatToDateTime(taskDetails.end_time),
       description: taskDetails.description,
     });
     this.taskButton = "Update Task";
@@ -193,7 +205,6 @@ export class AddTimesheetComponent implements OnInit {
       out_time: timeSheetFormData.out_time + ":00+05:30",
       task_details: taskList,
     };
-    console.log(myData);
 
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
       delete myData.date;

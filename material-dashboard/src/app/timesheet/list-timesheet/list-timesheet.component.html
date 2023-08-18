@@ -26,7 +26,7 @@
                     <mat-form-field appearance="fill">
                         <mat-label>Project</mat-label>
                         <mat-select (selectionChange)="selectProject($event)">
-                            <mat-option *ngFor="let client of filterProjectList" [(ngModel)]="clientid" value="{{client._id}}" >
+                            <mat-option *ngFor="let client of filterProjectList"  value="{{client._id}}" >
                                 {{client.company_name}}
                             </mat-option>
                         </mat-select>
@@ -61,14 +61,14 @@
                     ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}})
                 </ng-container>
             </span>
-            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin" sty
+            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin &&!clientid" sty
             le="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
                 Add Task
             </span>
-            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
+            <!-- <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
             style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                 Edit All Task
-            </span>
+            </span> -->
             <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                 Request for Edit
             </span>
