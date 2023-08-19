@@ -30,17 +30,107 @@ export function getFormattedDate(date) {
 }
 
 export function formatDateToDDMMYYYY(dateString) {
+  //const convertedDate = dateString.split('T')[0];
+  //return convertedDate;
   const dateObj = new Date(dateString);
+  //return dateObj;
 
-  const day = dateObj.getUTCDate().toString().padStart(2, '0');
-  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
-  const year = dateObj.getUTCFullYear();
+  const day = dateObj.getDate().toString().padStart(2, '0');
+  //return day;
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getFullYear();
 
   //return `${day}-${month}-${year}`;
   return `${year}-${month}-${day}`;
 }
 
+export function formatToDateTime(dateString){
+// // Original ISO timestamp
+// const isoTimestamp = '2023-08-10T10:16:00.000Z';
 
+// // Create a Date object from the ISO timestamp
+// const date = new Date(isoTimestamp);
+
+// // Get the local date and time components
+// const localDate = date.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+// const localTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+// // Combine the local date and time components
+// const formattedDateTime = `${localDate} ${localTime}`;
+
+// console.log(formattedDateTime);
+
+// Original ISO timestamp
+const isoTimestamp = dateString;
+
+// Create a Date object from the ISO timestamp
+const date = new Date(isoTimestamp);
+
+// Get the local date and time components
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0');
+const day = String(date.getDate()).padStart(2, '0');
+const hours = String(date.getHours()).padStart(2, '0');
+const minutes = String(date.getMinutes()).padStart(2, '0');
+
+// Combine the local date and time components in ISO 8601 format
+const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+return formattedDateTime;
+console.log(formattedDateTime);
+
+
+
+
+
+}
+
+
+
+
+export function getTodayDateTime(){
+  const today = new Date();
+    const todayDate = new Date(today);
+
+    todayDate.setDate(today.getDate());
+
+    const yyyy = todayDate.getFullYear();
+    const mm = String(todayDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(todayDate.getDate()).padStart(2, '0');
+    const hh = String(todayDate.getHours()).padStart(2, '0');
+    const min = String(todayDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+export function getMinDateTime(val:number){
+  const today = new Date();
+    const minDate = new Date(today);
+
+    minDate.setDate(today.getDate() - val);
+
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    const hh = String(minDate.getHours()).padStart(2, '0');
+    const min = String(minDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
+
+export function getMaxDateTime(val:number){
+  const today = new Date();
+    const maxDate = new Date(today);
+
+    maxDate.setDate(today.getDate() + val);
+
+    const yyyy = maxDate.getFullYear();
+    const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(maxDate.getDate()).padStart(2, '0');
+    const hh = String(maxDate.getHours()).padStart(2, '0');
+    const min = String(maxDate.getMinutes()).padStart(2, '0');
+
+    return`${yyyy}-${mm}-${dd}T${hh}:${min}`;
+}
 
 
 export function getFormattedDatetime(dateString) {
@@ -59,6 +149,36 @@ export function getFormattedDatetime(dateString) {
   if (min.length < 2) min = "0" + min;
   if (sec.length < 2) sec = "0" + sec;
   return [year, month, day].join("-") + "T" + [hour, min, sec].join(":") + [timeZone].join(":");
+}
+
+export function getMinDate(val:number){
+  const today = new Date();
+    const minDate = new Date(today);
+
+    minDate.setDate(today.getDate() - val);
+
+    const yyyy = minDate.getFullYear();
+    const mm = String(minDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(minDate.getDate()).padStart(2, '0');
+    //const hh = String(minDate.getHours()).padStart(2, '0');
+    //const min = String(minDate.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+export function getMaxDate(val:number){
+  const today = new Date();
+    const maxDate = new Date(today);
+
+    maxDate.setDate(today.getDate() + val);
+
+    const yyyy = maxDate.getFullYear();
+    const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const dd = String(maxDate.getDate()).padStart(2, '0');
+    // const hh = String(maxDate.getHours()).padStart(2, '0');
+    // const min = String(maxDate.getMinutes()).padStart(2, '0');
+
+    return`${yyyy}-${mm}-${dd}`;
 }
 
 export function validatorAlphaNumeric(control: FormControl) {

@@ -70,6 +70,14 @@ class UserController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async getAllUserThirdParty(req, res, next) {
+    try {
+      await AuthService.getAllUserThirdParty(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new UserController();

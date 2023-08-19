@@ -11,29 +11,33 @@ import { PasswordStrengthValidator } from '../utils/password.validators';
   styleUrls: ['./set-new-password.component.css']
 })
 export class SetNewPasswordComponent implements OnInit {
-  private userId :string;
-  private token : string;
+  private userId: string;
+  private token: string;
   public resetPass: FormGroup;
-  
+  public passwordType: string = 'password';
+  public cnfPasswordType: string = 'password';
+  public isPassword: boolean = true;
+  public isCnfPassword: boolean = true;
+
   constructor(
     private fb: FormBuilder,
     private _authService: AuthService,
     private _mesgageService: MesgageService,
     private _router: Router,
     private activatedRoute: ActivatedRoute
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     this.resetPass = this.fb.group({
       password: ["", [Validators.required, PasswordStrengthValidator]],
       conPassword: ["", [Validators.required]],
-    },{ 
+    }, {
       validators: this.password.bind(this)
-    })   
-    
+    })
+
     let params = this.activatedRoute.snapshot.params;
-      this.userId = params['userId'];
-      this.token = params['token'];
+    this.userId = params['userId'];
+    this.token = params['token'];
   }
   password(formGroup: FormGroup) {
     const { value: password } = formGroup.get('password');
@@ -43,15 +47,15 @@ export class SetNewPasswordComponent implements OnInit {
   public get lForm() {
     return this.resetPass.controls;
   }
-  
-  public resetPassword() {    
+
+  public resetPassword() {
     if (this.resetPass.value.password !== this.resetPass.value.conPassword) {
-        this._mesgageService.showError('Confirm password not matched');
+      this._mesgageService.showError('Confirm password not matched');
     } else {
       const editObj = {
         password: this.resetPass.value.password
       }
-      
+
       this._authService.setNewPassword(editObj, this.userId, this.token).subscribe(
         (data) => {
           this._mesgageService.showSuccess(data.message || 'Password changed successfully');
@@ -62,5 +66,21 @@ export class SetNewPasswordComponent implements OnInit {
         }
       );
     }
+  }
+  public visibilityOnOff(val: string) {
+    if (val === 'pass') {
+      this.isPassword = !this.isPassword;
+      if(this.isPassword)
+      this.passwordType = "password";
+      else 
+      this.passwordType = "text";
+    } else {
+      this.isCnfPassword = !this.isCnfPassword;
+      if(this.isCnfPassword)
+      this.cnfPasswordType = "password";
+      else 
+      this.cnfPasswordType = "text";
+    }
+
   }
 }

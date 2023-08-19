@@ -22,12 +22,15 @@ export class EmployeeFormComponent implements OnInit {
   public employeeForm: FormGroup;
   public clientList = [];
   public designationList = [];
-  public isAdmin :boolean;
+  public isAdmin: boolean;
   public roleList = [
     { value: "employee", viewValue: "Employee" },
     { value: "hr", viewValue: "HR" },
   ];
   public holidayList = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  public employeeList = [];
+  private _employeeDetails;
+  public isDisabled: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,7 +40,7 @@ export class EmployeeFormComponent implements OnInit {
     private _clientService: ClientService,
     private dialogRef: MatDialogRef<EmployeeListComponent>,
     @Inject(MAT_DIALOG_DATA) public employeeDialogData
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.employeeForm = this.fb.group({
@@ -52,8 +55,17 @@ export class EmployeeFormComponent implements OnInit {
       holidays: ["", [Validators.required]]
     });
 
+    this.employeeForm.get('emp_id').disable();
+    this.employeeForm.get('name').disable();
+    this.employeeForm.get('email_id').disable();
+    this.employeeForm.get('phone_num').disable();
+
+
+
+
     this.getDesignationList();
     this.getClientList();
+    this.getEmployeeList();
 
     if (this.employeeDialogData.role === 'admin') {
       this.isAdmin = true;
@@ -77,10 +89,10 @@ export class EmployeeFormComponent implements OnInit {
         }
       }
       const selectedDays = []
-      const selectedHolidays = this.employeeDialogData.employeeData.holidays;      
+      const selectedHolidays = this.employeeDialogData.employeeData.holidays;
       for (let index in selectedHolidays) {
         selectedDays.push(selectedHolidays[index]);
-      };      
+      };
       this.employeeForm.patchValue({
         emp_id: this.employeeDialogData.employeeData.emp_id,
         name: this.employeeDialogData.employeeData.name,
@@ -92,6 +104,7 @@ export class EmployeeFormComponent implements OnInit {
         assigned_client: this.isAdmin ? this.employeeDialogData.employeeData.assigned_client : clientId,
         holidays: selectedDays
       });
+      this.isDisabled = true;
     }
   }
 
@@ -102,6 +115,17 @@ export class EmployeeFormComponent implements OnInit {
       },
       (err) => {
         this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+      }
+    );
+  }
+
+  private getEmployeeList() {
+    this._employeeService.getAllEmployeesFromThirdParty().subscribe(
+      (res) => {
+        this.employeeList = res.result;
+      },
+      (err) => {
+        this._mesgageService.showError(err.error.message || 'Unable to fetch employee list');
       }
     );
   }
@@ -126,8 +150,12 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   public onSubmit(employeeForm: FormGroup) {
-    const employeeData = employeeForm.value;
+    let employeeData = employeeForm.value;
     if (this.employeeDialogData.mode === "edit") {
+      employeeData.name = this.employeeDialogData.employeeData.name;
+      employeeData.emp_id = this.employeeDialogData.employeeData.emp_id
+      employeeData.email_id = this.employeeDialogData.employeeData.email_id;
+      employeeData.phone_num = this.employeeDialogData.employeeData.phone_num;
       this._employeeService
         .updateEmployee(
           this.employeeDialogData.employeeData._id,
@@ -143,6 +171,10 @@ export class EmployeeFormComponent implements OnInit {
           }
         );
     } else if (this.employeeDialogData.mode === "add") {
+      employeeData.name = this._employeeDetails.name;
+      employeeData.emp_id = this._employeeDetails.emp_id;
+      employeeData.email_id = this._employeeDetails.email;
+      employeeData.phone_num = this._employeeDetails.mobile;
       this._employeeService.addNewEmployee(employeeData).subscribe(
         (res) => {
           this.dialogRef.close("success");
@@ -153,5 +185,13 @@ export class EmployeeFormComponent implements OnInit {
         }
       );
     }
+  }
+
+  public selectEmployee(event) {
+    this._employeeDetails = this.employeeList.find(item => item.id === event.value)
+    this.employeeForm.get('name').setValue(this._employeeDetails.name);
+    this.employeeForm.get('emp_id').setValue(this._employeeDetails.emp_id);
+    this.employeeForm.get('email_id').setValue(this._employeeDetails.email);
+    this.employeeForm.get('phone_num').setValue(this._employeeDetails.mobile);
   }
 }

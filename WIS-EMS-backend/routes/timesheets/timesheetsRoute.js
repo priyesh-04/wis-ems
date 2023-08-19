@@ -86,4 +86,12 @@ router.get(
   TimeSheetController.getAllEditRequest
 );
 
+router.get(
+  '/today-timesheet',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
+  // ApiAuthValidator.authorizeRole('admin'),
+  TimeSheetController.getTodayTimesheet
+);
+
 module.exports = router;

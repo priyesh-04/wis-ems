@@ -88,6 +88,14 @@ class TimeSheetController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+  async getTodayTimesheet(req, res, next) {
+    try {
+      await TimeSheetService.getTodayTimesheet(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new TimeSheetController();

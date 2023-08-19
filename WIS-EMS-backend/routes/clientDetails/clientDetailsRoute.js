@@ -37,7 +37,7 @@ router.delete(
 );
 
 router.get(
-  '/all-task-by-client/:id',
+  '/all-task-by-client/:idc',
   ApiAuthValidator.validateAccessToken,
   ApiAuthValidator.isLoggedInUser,
   ApiAuthValidator.authorizeRole('admin'),

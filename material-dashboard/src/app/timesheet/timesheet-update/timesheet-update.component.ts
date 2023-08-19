@@ -4,14 +4,19 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
   formatDateToDDMMYYYY,
+  formatToDateTime,
   getFormattedDate,
   getFormattedDatetime,
+  getMaxDateTime,
+  getMinDateTime,
+  getTodayDateTime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
 import { ClientService } from "../../services/client/client.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
 import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
+import { AuthService } from "../../services/auth/auth.service";
 
 @Component({
   selector: "app-timesheet-update",
@@ -21,6 +26,8 @@ import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.compone
 export class TimesheetUpdateComponent implements OnInit {
   public timesheetForm: FormGroup;
   public clientList = [];
+  public minDateTime:string='';
+  public maxDateTime:string='';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -28,22 +35,22 @@ export class TimesheetUpdateComponent implements OnInit {
     private _mesgageService: MesgageService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ListTimesheetComponent>,
-    @Inject(MAT_DIALOG_DATA) public timesheetDialogData
+    @Inject(MAT_DIALOG_DATA) public timesheetDialogData,
+    private _authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.getClientList();
+    this.minDateTime=getMinDateTime(1);
+    this.maxDateTime=getMaxDateTime(1);
 
     this.timesheetForm = this.fb.group({
       date: {value: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date), disabled: true},
-      // in_time: {value: getFormattedDatetime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
-      // out_time: {value: this.timesheetDialogData.timesheetData.out_time ? getFormattedDatetime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
-      in_time: {value: new Date(this.timesheetDialogData.timesheetData.in_time).toISOString().slice(0, 16), disabled: true},
-      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? new Date(this.timesheetDialogData.timesheetData.out_time).toISOString().slice(0, 16) : "", disabled: true},
+      in_time: {value:formatToDateTime(this.timesheetDialogData.timesheetData.in_time), disabled: true},
+      out_time: {value: this.timesheetDialogData.timesheetData.out_time ? formatToDateTime(this.timesheetDialogData.timesheetData.out_time) : "", disabled: true},
       client: ["", [Validators.required]],
-      project_name: ["", [Validators.required]],
-      start_time: ["", [Validators.required]],
-      end_time: ["", [Validators.required]],
+      start_time: [getTodayDateTime(), [Validators.required]],
+      end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
     });
 
@@ -54,23 +61,28 @@ export class TimesheetUpdateComponent implements OnInit {
         );
       this.timesheetForm.patchValue({
         client: taskDetails.client._id,
-        project_name: taskDetails.project_name,
-        // start_time: getFormattedDatetime(taskDetails.start_time),
-        // end_time: getFormattedDatetime(taskDetails.end_time),
-        start_time: new Date(taskDetails.start_time).toISOString().slice(0, 16),
-        end_time: new Date(taskDetails.end_time).toISOString().slice(0, 16),
+        start_time: formatToDateTime(taskDetails.start_time),
+        end_time:formatToDateTime(taskDetails.end_time),
         description: taskDetails.description,
       });
     }
   }
 
   private getClientList() {
-    this._clientService.getClientList().subscribe(
+    // this._clientService.getClientList().subscribe(
+    //   (res) => {
+    //     this.clientList = res.result;
+    //   },
+    //   (err) => {
+    //     this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+    //   }
+    // );
+    this._authService.getProfile().subscribe(
       (res) => {
-        this.clientList = res.result;
+        this.clientList = res.result.assigned_client;
       },
       (err) => {
-        this._mesgageService.showError(err.error.message || 'Unable to fetch client list');
+        this._mesgageService.showError(err.error.message || 'Unable to fetch data');
       }
     );
   }
@@ -85,7 +97,7 @@ export class TimesheetUpdateComponent implements OnInit {
       const taskData = {
         _id : this.timesheetDialogData.taskID,
         client: timesheetData.client,
-        project_name: timesheetData.project_name,
+        project_name: "",
         description: timesheetData.description,
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time  +":00+05:30",
@@ -105,7 +117,7 @@ export class TimesheetUpdateComponent implements OnInit {
     } else if (this.timesheetDialogData.mode === SubmitModes.SingleAdd) {
       const taskData = {
         client: timesheetData.client,
-        project_name: timesheetData.project_name,
+        project_name: "",
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time +":00+05:30",
         description: timesheetData.description,

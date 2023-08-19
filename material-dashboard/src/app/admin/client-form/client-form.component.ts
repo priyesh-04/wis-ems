@@ -45,10 +45,6 @@ export class ClientFormComponent implements OnInit {
         company_name: this.clientDialogData.clientData.company_name,
         company_email: this.clientDialogData.clientData.company_email,
         mobile_number: this.clientDialogData.clientData.mobile_number,
-        // start_date: getFormattedDate(
-        //   this.clientDialogData.clientData.start_date
-        // ),
-        // end_date: getFormattedDate(this.clientDialogData.clientData.end_date),
         start_date: formatDateToDDMMYYYY(
           this.clientDialogData.clientData.start_date
         ),
@@ -67,7 +63,9 @@ export class ClientFormComponent implements OnInit {
   }
 
   public onSubmit(clientForm: FormGroup) {
-    const clientData = clientForm.value;
+    let clientData = clientForm.value;
+    clientData.start_date=clientData.start_date  +"T00:00:00+05:30";
+    clientData.end_date=clientData.end_date  +"T00:00:00+05:30"
     if (this.clientDialogData.mode === "edit") {
       this._clientService
         .updateClient(this.clientDialogData.clientData._id, clientData)

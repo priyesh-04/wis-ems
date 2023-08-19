@@ -48,7 +48,7 @@ class AuthService {
           .status(409)
           .json({ msgErr: true, message: 'Employee currently deactivated!' });
       }
-
+      // generate token
       const { accessToken, refreshToken } = await TokenService.generateToken(
         user
       );
@@ -73,7 +73,7 @@ class AuthService {
     try {
       const payload = req.body;
       const image = req.file;
-
+      // validation
       const registerSchema = Joi.object({
         name: Joi.string().min(3).max(50).required(),
         emp_id: Joi.string().min(3).max(15).required(),
@@ -99,17 +99,22 @@ class AuthService {
       if (error) {
         return res.status(400).json({ message: error.message });
       }
-      const existDesignation = await Designation.findById({
+      let existDesignation = await Designation.findById({
         _id: payload.designation,
       });
+      if (payload.role === 'admin') {
+        existDesignation = await Designation.findOne({ name: 'Admin' });
+        payload.designation = existDesignation._id;
+      }
       if (!existDesignation) {
         return res.status(400).json({
           msgErr: true,
           message: 'Designation Incorrect. Please Select Correct one.',
         });
       }
-      const password = crypto.randomBytes(10).toString('hex');
 
+      // create randorm passwrd and hash password. this password can't use. when admin create a user on that time user get a email for create a new password. through this email link user can set a new password. if user not create the password then user can't login.
+      const password = crypto.randomBytes(10).toString('hex');
       const bearerToken = req.headers.authorization;
       const token = bearerToken.split(' ')[1];
       const user = await TokenService.getLoggedInUser(token);
@@ -139,7 +144,7 @@ class AuthService {
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(password, salt);
       payload.password = hashPassword;
-      const newRequest = await new User(payload);
+      const newRequest = await User(payload);
       newRequest.save(async (err, result) => {
         if (err) {
           if (image) {
@@ -182,7 +187,7 @@ class AuthService {
             token: crypto.randomBytes(32).toString('hex'),
           };
 
-          let newRequest = await new ForgotPasswordToken(tokenData);
+          let newRequest = await ForgotPasswordToken(tokenData);
           newRequest.save((err, result) => {
             if (err) {
               return res.status(400).json({
@@ -938,6 +943,28 @@ class AuthService {
         msgErr: false,
         message: 'Reset Password link sended to the existing email.',
       });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+  async getAllUserThirdParty(req, res, next) {
+    try {
+      let url = `${process.env.LEAVE_DATA_BASE_URL}/erp/public/get_all_employee_record`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          return res.status(200).json({ msgErr: false, result: jsonData });
+        })
+        .catch((err) => {
+          return res.status(400).json({
+            msgErr: true,
+            message: 'Something Went Wrong. Please Check after some time',
+          });
+        });
     } catch (error) {
       return res
         .status(500)
