@@ -22,67 +22,81 @@
                 </mat-form-field>
             </div>
         </div>
-        <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
-            <mat-icon>add</mat-icon>
-        </button>
-    </div>
-    <div class="container" *ngIf="!timesheetList.length && !isLoading">
-        <div>
-            <h2>No timesheet available to display</h2>
-        </div>
-    </div>
-    <div class="timesheet-wrapper bg-white p-2 mb-2" *ngFor="let timesheet of timesheetList">
-        <div class="working-date-wrapper p-1 bg-dark text-white">
-            <span class="working-date">
-                {{timesheet.date | date }} 
-                <ng-container *ngIf="timesheet.status === 'Present'">
-                    ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}})
-                </ng-container>
-            </span>
-            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
-                Add Task
-            </span>
-            <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
-            style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
-                Edit All Task
-            </span>
-            <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
-                Request for Edit
-            </span>
-            <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-success">
-                Already Requested
-            </span>            
-        </div>
-        <ng-container *ngIf="timesheet.status === 'Present'">
-            <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
-                <span class="client-name">
-                    {{task.client?.company_name}}
-                    ({{task.start_time| date:'shortTime'}} - {{task.end_time|
-                    date:'shortTime'}})
-                </span>
-                <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin">
-                    <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
-                        (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
-                    <span style="cursor: pointer;" class="text-danger"
-                        (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
-                </span>
-                <div class="project ml-3">
-                    <p class="mb-0 project-name">{{task.project_name}}</p>
-                    <p class="mb-0 ml-3 task-details">
-                        {{task.description}}
-                    </p>
-                </div>
+        <div class="flex">
+            <div class="mr-3">
+                <mat-button-toggle-group [value]="viewType">
+                    <mat-button-toggle value="calendarView" (click)="viewType = 'calendarView'">
+                        <i class="material-icons">date_range</i>
+                    </mat-button-toggle>
+                    <mat-button-toggle value="listView" (click)="viewType = 'listView'">
+                        <i class="material-icons">format_align_left</i>
+                    </mat-button-toggle>
+                </mat-button-toggle-group>
             </div>
-        </ng-container>
-        <div class="client-project ml-2 my-1" *ngIf="timesheet.status !== 'Present'">
-            <span class="text-danger">{{timesheet.status}}</span>
+            <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
+                <mat-icon>add</mat-icon>
+            </button>
         </div>
     </div>
-    <div class="text-center my-3">
-        <button mat-stroked-button class="btn btn-primary" color="primary" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
+    <div *ngIf="viewType === 'listView'">
+        <div class="container" *ngIf="!timesheetList.length && !isLoading">
+            <div>
+                <h2>No timesheet available to display</h2>
+            </div>
+        </div>
+        <div class="timesheet-wrapper bg-white p-2 mb-2" *ngFor="let timesheet of timesheetList">
+            <div class="working-date-wrapper p-1 bg-dark text-white">
+                <span class="working-date">
+                    {{timesheet.date | date }} 
+                    <ng-container *ngIf="timesheet.status === 'Present'">
+                        ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}})
+                    </ng-container>
+                </span>
+                <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin" style="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+                    Add Task
+                </span>
+                <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
+                style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
+                    Edit All Task
+                </span>
+                <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+                    Request for Edit
+                </span>
+                <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-success">
+                    Already Requested
+                </span>            
+            </div>
+            <ng-container *ngIf="timesheet.status === 'Present'">
+                <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
+                    <span class="client-name">
+                        {{task.client?.company_name}}
+                        ({{task.start_time| date:'shortTime'}} - {{task.end_time|
+                        date:'shortTime'}})
+                    </span>
+                    <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin">
+                        <span style="color: rgb(15, 137, 252); cursor: pointer;" class="mr-2"
+                            (click)="updateSingleTaskDialog(timesheet, task._id)">Edit</span>
+                        <span style="cursor: pointer;" class="text-danger"
+                            (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
+                    </span>
+                    <div class="project ml-3">
+                        <p class="mb-0 project-name">{{task.project_name}}</p>
+                        <p class="mb-0 ml-3 task-details">
+                            {{task.description}}
+                        </p>
+                    </div>
+                </div>
+            </ng-container>
+            <div class="client-project ml-2 my-1" *ngIf="timesheet.status !== 'Present'">
+                <span class="text-danger">{{timesheet.status}}</span>
+            </div>
+        </div>
+        <div class="text-center my-3">
+            <button mat-stroked-button class="btn btn-primary" color="primary" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
+        </div>
+    </div>
+    <div *ngIf="viewType === 'calendarView'">
+       <app-calendar-view></app-calendar-view>
     </div>
 </div>
-<!-- <div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" *ngIf="isLoading">
-    <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
-</div> -->
 <app-page-loader *ngIf="isLoading"></app-page-loader>

@@ -30,6 +30,7 @@ export class ListTimesheetComponent implements OnInit {
   public filterEndDate: string;
   public currentPage = 1;
   public totalPage = 0;
+  public viewType: 'listView' | 'calendarView' = 'listView';
 
   constructor(
     private _employeeService: EmployeeService,

@@ -9,16 +9,19 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
 import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
 import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.component';
+import { CalendarViewComponent } from './calendar-view/calendar-view.component';
 
 @NgModule({
   declarations: [
     AddTimesheetComponent,
     ListTimesheetComponent,
     TimesheetUpdateComponent,
+    CalendarViewComponent,
   ],
   imports: [
     CommonModule,
@@ -32,6 +35,7 @@ import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.co
     MatTooltipModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatButtonToggleModule,
   ],
 })
 export class TimesheetModule {}
