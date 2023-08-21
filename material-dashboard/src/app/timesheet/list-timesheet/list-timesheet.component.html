@@ -34,13 +34,20 @@
                 </div>
             </div>
         </div>
-        <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
-            <mat-icon>add</mat-icon>
-        </button>
-    </div>
-    <div class="container" *ngIf="!timesheetList.length && !isLoading">
-        <div>
-            <h2>No timesheet available to display</h2>
+        <div class="flex">
+            <div class="mr-3">
+                <!-- <mat-button-toggle-group [value]="viewType">
+                    <mat-button-toggle value="calendarView" (click)="viewType = 'calendarView'">
+                        <i class="material-icons">date_range</i>
+                    </mat-button-toggle>
+                    <mat-button-toggle value="listView" (click)="viewType = 'listView'">
+                        <i class="material-icons">format_align_left</i>
+                    </mat-button-toggle>
+                </mat-button-toggle-group> -->
+            </div>
+            <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
+                <mat-icon>add</mat-icon>
+            </button>
         </div>
     </div>
     <cdk-accordion class="example-accordion">
@@ -104,7 +111,6 @@
                             (click)="deleteTimesheetDialog(timesheet._id, task._id)">Delete</span>
                     </span>
                     <div class="project ml-3">
-                        <!-- <p class="mb-0 project-name">{{task.project_name}}</p> -->
                         <p class="mb-0 ml-3 task-details">
                             {{task.description}}
                         </p>
@@ -122,7 +128,4 @@
         <button mat-stroked-button class="btn btn-primary" color="primary" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
     </div>
 </div>
-<!-- <div id="spinner-div" fxLayout="row" fxLayoutAlign="space-around center" *ngIf="isLoading">
-    <mat-spinner mode="indeterminate" diameter="50" strokeWidth="5" color="warn"></mat-spinner>
-</div> -->
 <app-page-loader *ngIf="isLoading"></app-page-loader>

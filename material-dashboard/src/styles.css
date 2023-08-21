@@ -2,6 +2,9 @@
 .container {
     margin-top: 100px;
 }
+.flex {
+    display: flex;
+}
 .page-operations {
     display: flex;
     justify-content: space-between;
