@@ -36,14 +36,14 @@
         </div>
         <div class="flex">
             <div class="mr-3">
-                <mat-button-toggle-group [value]="viewType">
+                <!-- <mat-button-toggle-group [value]="viewType">
                     <mat-button-toggle value="calendarView" (click)="viewType = 'calendarView'">
                         <i class="material-icons">date_range</i>
                     </mat-button-toggle>
                     <mat-button-toggle value="listView" (click)="viewType = 'listView'">
                         <i class="material-icons">format_align_left</i>
                     </mat-button-toggle>
-                </mat-button-toggle-group>
+                </mat-button-toggle-group> -->
             </div>
             <button id="add-more-btn" mat-mini-fab color="primary" *ngIf="!isAdmin" (click)="addTimesheetDialog()">
                 <mat-icon>add</mat-icon>
