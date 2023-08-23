@@ -38,6 +38,12 @@ export const hrROUTES: RouteInfo[] = [
     icon: "article",
     class: "",
   },
+  {
+    path: "/timesheet-list",
+    title: "Timesheet",
+    icon: "article",
+    class: "",
+  }
 ];
 export const adminROUTES: RouteInfo[] = [
   { path: "/dashboard", title: "Dashboard", icon: "dashboard", class: "" },
