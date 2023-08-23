@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
 import { DatePipe } from "@angular/common";
 import { FormGroup, FormBuilder, Validators, AbstractControl } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
@@ -26,7 +26,8 @@ import { AuthService } from "../../services/auth/auth.service";
   selector: "app-add-timesheet",
   templateUrl: "./add-timesheet.component.html"
 })
-export class AddTimesheetComponent implements OnInit {
+export class AddTimesheetComponent implements OnInit, AfterViewInit {
+  @ViewChild('endDate') endDate: ElementRef<HTMLInputElement>;
   public timesheetForm: FormGroup;
   public taskForm: FormGroup;
   public clientList = [];
@@ -62,7 +63,7 @@ export class AddTimesheetComponent implements OnInit {
     this.timesheetForm = this.fb.group({
       date: [currentDate, [Validators.required]],
       in_time: [getTodayDateTime(), [Validators.required]],
-      out_time: [getTodayDateTime()],
+      out_time: [""],
     });
   
     this.taskForm = this.fb.group({
@@ -72,25 +73,37 @@ export class AddTimesheetComponent implements OnInit {
       end_time: [getTodayDateTime(), [Validators.required]],
       description: ["", [Validators.required]],
     });
+  }
 
-
+  ngAfterViewInit() {
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
-      this.timesheetForm.get('out_time').addValidators(Validators.required);
-      this.displayTaskform = false;
-      this.taskList = this.timesheetDialogData.timesheetData.task_details;
+      // console.log('calculateDiff: ', this.calculateDiff(this.timesheetDialogData.timesheetData.date));
+      this.minDateTime=getMinDateTime(this.calculateDiff(this.timesheetDialogData.timesheetData.date));
+      
+      // this.timesheetForm.get('out_time').addValidators(Validators.required);
+      this.taskList = this.timesheetDialogData.timesheetData.task_details;    
       this.timesheetForm.patchValue({
         date: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date),
-        in_time: formatToDateTime(this.timesheetDialogData.timesheetData.in_time),
+        in_time: formatToDateTime(this.timesheetDialogData.timesheetData.in_time ? this.timesheetDialogData.timesheetData.in_time : getTodayDateTime()),
         _id : this.timesheetDialogData.timesheetData._id
       });
-      if (this.timesheetDialogData.timesheetData.out_time) {
-        this.timesheetForm.patchValue({
+      if (this.timesheetDialogData.timesheetData.out_time) {  
+        this.timesheetForm.patchValue({          
           out_time: formatToDateTime(this.timesheetDialogData.timesheetData.out_time),
         });
+        this.endDate.nativeElement.focus();
       }
       this.timesheetForm.get('date').disable();
+      this.displayTaskform = this.taskList.length ? false : true;
     }
-   
+  }
+
+  private calculateDiff(data){
+    let date = new Date(data);
+    let currentDate = new Date();
+
+    let days = Math.floor((currentDate.getTime() - date.getTime()) / 1000 / 60 / 60 / 24);
+    return days + 1;
   }
 
   private getClientList() {
@@ -202,7 +215,7 @@ export class AddTimesheetComponent implements OnInit {
     const myData = {
       date:timeSheetFormData.date +"T00:00:00+05:30",
       in_time: timeSheetFormData.in_time + ":00+05:30",
-      out_time: timeSheetFormData.out_time + ":00+05:30",
+      out_time: timeSheetFormData.out_time ? timeSheetFormData.out_time + ":00+05:30" : '',
       task_details: taskList,
     };
 
