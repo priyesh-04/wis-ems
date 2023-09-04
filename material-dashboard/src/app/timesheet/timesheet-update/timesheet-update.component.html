@@ -30,18 +30,11 @@
                         <mat-label>Project</mat-label>
                         <mat-select formControlName="client">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
-                                {{client.company_name}}
+                                {{client.client_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <!-- <div class="col-sm-12 col-md-6">
-                    <mat-form-field appearance="legacy">
-                        <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
-                            placeholder="Project Name">
-                    </mat-form-field>
-                </div> -->
-            
                 <div class="col-sm-12 col-md-6">
                     <mat-form-field appearance="legacy">
                         <input matInput type="datetime-local" class="form-control rounded-0"

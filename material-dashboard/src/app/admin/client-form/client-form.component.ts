@@ -6,7 +6,6 @@ import {
   validatorIndianMobileNumber,
   validatorEmail,
   validatorTextOnly,
-  getFormattedDate,
   formatDateToDDMMYYYY,
 } from "../../utils/custom-validators";
 import { ClientListComponent } from "../client-list/client-list.component";

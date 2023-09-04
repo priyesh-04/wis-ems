@@ -48,7 +48,7 @@ export const UserRoutes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
   },
   {
-    path: "admin/client-list",
+    path: "admin/project-list",
     component: ClientListComponent,
     canActivate: [AuthGuard, AdminGuard],
   },
@@ -74,7 +74,7 @@ export const UserRoutes: Routes = [
     canActivate: [AuthGuard, StaffGuard],
   },
   {
-    path: "hr/client-list",
+    path: "hr/project-list",
     component: ClientListComponent,
     canActivate: [AuthGuard, StaffGuard],
   },

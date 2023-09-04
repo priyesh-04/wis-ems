@@ -1,13 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
 import { DatePipe } from "@angular/common";
-import { FormGroup, FormBuilder, Validators, AbstractControl } from "@angular/forms";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 import {
   formatDateToDDMMYYYY,
   formatToDateTime,
-  getFormattedDate,
-  getFormattedDatetime,
   getMaxDate,
   getMaxDateTime,
   getMinDate,
@@ -15,7 +13,6 @@ import {
   getTodayDateTime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
-import { ClientService } from "../../services/client/client.service";
 import { ConfirmDeleteComponent } from "../../basic/confirm-delete/confirm-delete.component";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
@@ -42,7 +39,6 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
 
   constructor(
     private _employeeService: EmployeeService,
-    private _clientService: ClientService,
     private _mesgageService: MesgageService,
     private datepipe: DatePipe,
     private fb: FormBuilder,
@@ -77,7 +73,6 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
-      // console.log('calculateDiff: ', this.calculateDiff(this.timesheetDialogData.timesheetData.date));
       this.minDateTime=getMinDateTime(this.calculateDiff(this.timesheetDialogData.timesheetData.date));
       
       // this.timesheetForm.get('out_time').addValidators(Validators.required);
@@ -127,7 +122,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
 
   private getClientName(clientId: string) {
     const client = this.clientList.filter(value => { return value._id === clientId });
-    return client.length ? client[0].company_name : '-';
+    return client.length ? client[0].client_name : '-';
   }
 
   public showAddTaskForm() {
@@ -143,7 +138,6 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       _id: this.taskForm.value._id,
       client: this.taskForm.value.client,
       clientName: this.getClientName(this.taskForm.value.client),
-      project_name: "",
       start_time: this.taskForm.value.start_time +":00+05:30",
       end_time: this.taskForm.value.end_time + ":00+05:30",
       description: this.taskForm.value.description,
@@ -209,7 +203,6 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
         description: task.description,
         start_time: task.start_time,
         end_time: task.end_time,
-        project_name: task.project_name,
       });
     });
     const myData = {

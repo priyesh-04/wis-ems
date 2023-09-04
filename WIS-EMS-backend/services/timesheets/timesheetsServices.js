@@ -679,7 +679,7 @@ class TimeSheetService {
           populate: {
             path: 'client',
             modal: 'ClientDetails',
-            select: '_id company_name client_name person_name',
+            select: '_id client_name company_name client_name person_name',
           },
         })
         .sort({ date: -1 })
@@ -842,6 +842,7 @@ class TimeSheetService {
                     description: 1,
                     time_spend: 1,
                     'client._id': 1,
+                    'client.client_name': 1,
                     'client.company_name': 1,
                     'client.person_name': 1,
                     'client.company_email': 1,
@@ -909,7 +910,7 @@ class TimeSheetService {
             populate: {
               path: 'client',
               modal: 'ClientDetails',
-              select: '_id company_name person_name company_email',
+              select: '_id client_name company_name person_name company_email',
             },
           })
           .sort({ date: -1 })
@@ -1118,7 +1119,7 @@ class TimeSheetService {
         //   populate: {
         //     path: 'client',
         //     modal: 'ClientDetails',
-        //     select: '_id company_name person_name company_email',
+        //     select: '_id client_name company_name person_name company_email',
         //   },
         // })
         .populate('created_by', '_id name email_id')

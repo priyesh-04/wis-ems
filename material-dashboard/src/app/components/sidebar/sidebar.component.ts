@@ -23,19 +23,19 @@ export const hrROUTES: RouteInfo[] = [
   {
     path: "/hr/employee-list",
     title: "Employee List",
-    icon: "article",
+    icon: "list",
     class: "",
   },
   {
-    path: "/hr/client-list",
-    title: "Client List",
-    icon: "article",
+    path: "/hr/project-list",
+    title: "Project List",
+    icon: "assignment_turned_in",
     class: "",
   },
   {
     path: "/hr/designation-list",
     title: "Designation List",
-    icon: "article",
+    icon: "group_work",
     class: "",
   },
   {
@@ -60,9 +60,9 @@ export const adminROUTES: RouteInfo[] = [
     class: "",
   },
   {
-    path: "/admin/client-list",
-    title: "Client List",
-    icon: "supervised_user_circle",
+    path: "/admin/project-list",
+    title: "Project List",
+    icon: "assignment_turned_in",
     class: "",
   },
   {

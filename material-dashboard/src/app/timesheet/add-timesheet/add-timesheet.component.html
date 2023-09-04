@@ -52,7 +52,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let task of taskList; let i = index">                           
-                            <td >{{task.clientName || task.client.company_name}}</td>                           
+                            <td >{{task.clientName || task.client.client_name}}</td>                           
                             <td>{{task.start_time | date: 'dd-MM-yyyy hh:mm a'}}</td>
                             <td>{{task.end_time | date: 'dd-MM-yyyy hh:mm a' }}</td>
                             <td>
@@ -77,17 +77,11 @@
                         <mat-label>Project</mat-label>
                         <mat-select formControlName="client">
                             <mat-option *ngFor="let client of clientList" value="{{client._id}}">
-                                {{client.company_name}}
+                                {{client.client_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <!-- <div class="col-sm-12 col-md-6">
-                    <mat-form-field appearance="legacy">
-                        <input matInput type="text" class="form-control rounded-0" formControlName="project_name"
-                            placeholder="Project Name">
-                    </mat-form-field>
-                </div>                 -->
             </div>
             <div class="fields-main-div">
                 <div class="col-sm-12 col-md-6">
