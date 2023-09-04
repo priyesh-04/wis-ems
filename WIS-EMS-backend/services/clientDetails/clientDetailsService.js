@@ -98,7 +98,7 @@ class ClientDetailsService {
               .json({ msgErr: true, message: 'Error ' + err });
           } else {
             if (!limit || !page) {
-              limit = 10;
+              limit = 100;
               page = 1;
             }
             if (limit > 100) {
