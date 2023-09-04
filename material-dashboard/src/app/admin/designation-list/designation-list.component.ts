@@ -25,7 +25,7 @@ export interface DialogData {
 })
 export class DesignationListComponent implements OnInit {
   private params: params;
-  public designationList: any;
+  public designationList = [];
   public pagination: pagination;
   public limit = 10;
   public isLoading = false;

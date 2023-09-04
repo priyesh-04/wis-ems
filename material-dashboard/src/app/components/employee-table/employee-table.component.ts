@@ -21,7 +21,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() refreshTable?: boolean;
 
   private params: params;
-  public employeeList: any;
+  public employeeList = [];
   public useDefault :boolean;
   public pagination: pagination;
   public limit = 10;

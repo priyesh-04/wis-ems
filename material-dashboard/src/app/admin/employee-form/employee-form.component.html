@@ -73,7 +73,7 @@
                     <mat-form-field>
                         <mat-label>Project</mat-label>
                         <mat-select formControlName="assigned_client" multiple>
-                          <mat-option *ngFor="let client of clientList" [value]="client._id">{{client.company_name}}</mat-option>
+                          <mat-option *ngFor="let client of clientList" [value]="client._id">{{client.client_name}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>

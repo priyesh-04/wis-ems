@@ -27,7 +27,7 @@
                         <mat-label>Project</mat-label>
                         <mat-select (selectionChange)="selectProject($event)">
                             <mat-option *ngFor="let client of filterProjectList"  value="{{client._id}}" >
-                                {{client.company_name}}
+                                {{client.client_name}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -94,13 +94,14 @@
           <div
             class="example-accordion-item-body border p-2"
             role="region"
+            style="cursor: auto;"
             [style.display]="accordionItem.expanded ? '' : 'none'"
             [attr.id]="'accordion-body-' + index"
             [attr.aria-labelledby]="'accordion-header-' + index">
             <ng-container *ngIf="timesheet.status === 'Present'">
                 <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
                     <span class="client-name">
-                        {{task.client?.company_name}}
+                        {{task.client?.client_name}}
                         ({{task.start_time| date:'shortTime'}} - {{task.end_time|
                         date:'shortTime'}})
                     </span>

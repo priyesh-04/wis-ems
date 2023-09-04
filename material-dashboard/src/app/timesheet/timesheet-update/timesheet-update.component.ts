@@ -5,14 +5,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 import {
   formatDateToDDMMYYYY,
   formatToDateTime,
-  getFormattedDate,
-  getFormattedDatetime,
   getMaxDateTime,
   getMinDateTime,
   getTodayDateTime,
 } from "../../utils/custom-validators";
 import { EmployeeService } from "../../services/employee/employee.service";
-import { ClientService } from "../../services/client/client.service";
 import { MesgageService } from "../../services/shared/message.service";
 import { SubmitModes } from "../utils/TimesheetConstants";
 import { ListTimesheetComponent } from "../list-timesheet/list-timesheet.component";
@@ -31,7 +28,6 @@ export class TimesheetUpdateComponent implements OnInit {
 
   constructor(
     private _employeeService: EmployeeService,
-    private _clientService: ClientService,
     private _mesgageService: MesgageService,
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ListTimesheetComponent>,
@@ -97,7 +93,6 @@ export class TimesheetUpdateComponent implements OnInit {
       const taskData = {
         _id : this.timesheetDialogData.taskID,
         client: timesheetData.client,
-        project_name: "",
         description: timesheetData.description,
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time  +":00+05:30",
@@ -117,7 +112,6 @@ export class TimesheetUpdateComponent implements OnInit {
     } else if (this.timesheetDialogData.mode === SubmitModes.SingleAdd) {
       const taskData = {
         client: timesheetData.client,
-        project_name: "",
         start_time: timesheetData.start_time +":00+05:30",
         end_time: timesheetData.end_time +":00+05:30",
         description: timesheetData.description,

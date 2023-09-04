@@ -12,7 +12,7 @@ import { pagination, params } from "../../commonModels";
 })
 export class AdminListComponent implements OnInit {
   private params: params;
-  public adminList: any;
+  public adminList = [];
   public pagination: pagination;
   public limit = 10;
   public isLoading = false;
