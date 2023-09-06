@@ -12,7 +12,6 @@ class TimeSheetService {
   async addTimeSheet(req, res, next) {
     try {
       let payload = req.body;
-
       const timesheetSchema = Joi.object({
         in_time: Joi.date().required(),
         out_time: Joi.string().allow(''),
@@ -92,7 +91,8 @@ class TimeSheetService {
 
       const presentOneTime = await Timesheets.find({
         created_by: user._id,
-        date: { $gte: thatDay, $lte: thatDayEnd },
+         //date: { $gte: thatDay, $lte: thatDayEnd },// old logic as per Mihir
+        date: { $eq: new Date(payload.date) },// new logic by Shrabanti
       });
       if (presentOneTime.length) {
         return res.status(400).json({
@@ -170,7 +170,6 @@ class TimeSheetService {
 
       const taskdataId = await getId(taskdetails);
       payload.task_details = taskdataId;
-
       const newRequest = await Timesheets(payload);
       newRequest.save((err, result) => {
         if (err) {
