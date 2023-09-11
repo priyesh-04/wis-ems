@@ -32,10 +32,11 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
   public taskButton = "Save Task";
   public displayTaskform = true;
   public SubmitModes = SubmitModes;
-  public minDateTime:string='';
-  public maxDateTime:string='';
-  public minDate:string='';
-  public maxDate:string='';
+  public minDateTime = '';
+  public maxDateTime = '';
+  public minDate = '';
+  public maxDate = '';
+  private lastUpdatedIndex = -1;
 
   constructor(
     private _employeeService: EmployeeService,
@@ -142,17 +143,18 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       end_time: this.taskForm.value.end_time + ":00+05:30",
       description: this.taskForm.value.description,
     };
-    const index = this.taskList.findIndex(task => task._id === this.taskForm.value._id);
-    if (index >= 0) {
-      this.taskList[index] = taskData;
+    if (this.lastUpdatedIndex > -1) {
+      this.taskList[this.lastUpdatedIndex] = taskData;
     } else {
       this.taskList.push(taskData);
     }
+    this.lastUpdatedIndex = -1;
     this.displayTaskform = false;
     this.taskForm.reset();
   }
 
   public editTask(index) {
+    this.lastUpdatedIndex = index;
     const taskDetails = this.taskList[index];
     this.taskForm.patchValue({
       _id: taskDetails._id,
