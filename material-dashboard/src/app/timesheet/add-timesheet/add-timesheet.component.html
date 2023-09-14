@@ -113,7 +113,7 @@
             </div>
         </form>
 
-        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()" [disabled]="!timesheetForm.valid">
+        <button class="w-100" type="submit" mat-raised-button color="warn" (click)="submitTimesheetForm()" [disabled]="!timesheetForm.valid || isSubmitting">
             Submit
         </button>
     </div>

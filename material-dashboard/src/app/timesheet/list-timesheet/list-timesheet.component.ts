@@ -32,8 +32,9 @@ export class ListTimesheetComponent implements OnInit {
   public totalPage = 0;
   public expandedIndex = 0;
   public accordionFlag = true;
-  public filterProjectList: []=[];
-  public clientid:string = '';
+  public filterProjectList = [];
+  public clientid = '';
+  public viewType: 'listView' | 'calendarView' = 'listView';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -52,7 +53,7 @@ export class ListTimesheetComponent implements OnInit {
     this.isAdmin = this._authService.isAdmin()  === "true" ? true : false;
     if (this.isAdmin) {
       this.userID = this.route.snapshot.paramMap.get("id");
-      this.employeeSpendTimeList();
+      this.employeesList();
     } else {
       this.userID = this._authService.getUserDetail().id;
     }
@@ -83,8 +84,8 @@ export class ListTimesheetComponent implements OnInit {
     );
   }
 
-  private employeeSpendTimeList() {
-    this._employeeService.getAllEmployeesSpendTime().subscribe(
+  private employeesList() {
+    this._employeeService.getAllEmployees().subscribe(
       (res) => {
         this.employeeList = res.result;
       },
@@ -132,6 +133,7 @@ export class ListTimesheetComponent implements OnInit {
       data: {
         matDialogTitle: "Add New Timesheet",
         mode: SubmitModes.MultipleAdd,
+        timesheetList: this.timesheetList,
       },
       width: "90%",
       height: "90%",

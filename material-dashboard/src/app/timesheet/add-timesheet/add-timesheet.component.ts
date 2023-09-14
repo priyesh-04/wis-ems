@@ -36,6 +36,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
   public maxDateTime = '';
   public minDate = '';
   public maxDate = '';
+  public isSubmitting = false;
   private lastUpdatedIndex = -1;
 
   constructor(
@@ -51,10 +52,10 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.getClientList();
-    this.minDateTime=getMinDateTime(1);
-    this.maxDateTime=getMaxDateTime(0);
-    this.minDate=getMinDate(1);
-    this.maxDate=getMaxDate(0);
+    this.minDateTime = getMinDateTime(1);
+    this.maxDateTime = getMaxDateTime(0);
+    this.minDate = getMinDate(7);
+    this.maxDate = getMaxDate(0);
 
     const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     this.timesheetForm = this.fb.group({
@@ -74,9 +75,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if (this.timesheetDialogData.mode === SubmitModes.MultipleEdit) {
-      this.minDateTime=getMinDateTime(this.calculateDiff(this.timesheetDialogData.timesheetData.date));
-      
-      // this.timesheetForm.get('out_time').addValidators(Validators.required);
+      this.minDateTime = getMinDateTime(this.calculateDiff(this.timesheetDialogData.timesheetData.date));
       this.taskList = this.timesheetDialogData.timesheetData.task_details;    
       this.timesheetForm.patchValue({
         date: formatDateToDDMMYYYY(this.timesheetDialogData.timesheetData.date),
@@ -124,6 +123,19 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
   private getClientName(clientId: string) {
     const client = this.clientList.filter(value => { return value._id === clientId });
     return client.length ? client[0].client_name : '-';
+  }
+
+  private isAlreadySubmittedThisDate() {
+    const submittedDate = new Date(this.timesheetForm.value.date +"T00:00:00+05:30");
+    let dateFound = false;
+    this.timesheetDialogData.timesheetList.forEach(list => {
+      const prevDate = new Date(list.date);
+      prevDate.setHours(prevDate.getHours() + 5.5);
+      if(prevDate.toDateString() === submittedDate.toDateString()) {
+        dateFound = true;
+      }
+    });
+    return dateFound;
   }
 
   public showAddTaskForm() {
@@ -186,7 +198,11 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
   }
 
   public submitTimesheetForm() {
-    this.onSubmit(this.timesheetForm);
+    if (this.timesheetDialogData.mode === SubmitModes.MultipleAdd && this.isAlreadySubmittedThisDate()) {
+      this._mesgageService.showError('You have already created a tasksheet.');
+    } else {
+      this.onSubmit(this.timesheetForm);
+    }
   }
 
   public onSubmit(timesheetForm: FormGroup) {
@@ -197,6 +213,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       this._mesgageService.showInfo('Complete atleast one task');
       return;
     }
+    this.isSubmitting = true;
     const timeSheetFormData = timesheetForm.value;
     const taskList = [];
     this.taskList.forEach((task) => {
@@ -208,7 +225,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       });
     });
     const myData = {
-      date:timeSheetFormData.date +"T00:00:00+05:30",
+      date:timeSheetFormData.date +"T09:00:00+05:30",
       in_time: timeSheetFormData.in_time + ":00+05:30",
       out_time: timeSheetFormData.out_time ? timeSheetFormData.out_time + ":00+05:30" : '',
       task_details: taskList,
@@ -218,20 +235,24 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       delete myData.date;
       this._employeeService.allEditTimesheet(this.timesheetDialogData.timesheetData._id, myData).subscribe(
         (res) => {
+          this.isSubmitting = false;
           this.dialogRef.close("success");
           this._mesgageService.showSuccess(res.message);
         },
         (err) => {
+          this.isSubmitting = false;
           this._mesgageService.showError(err.error.message);
         }
       );
     } else if (this.timesheetDialogData.mode === SubmitModes.MultipleAdd) {
       this._employeeService.addTimesheet(myData).subscribe(
         (res) => {
+          this.isSubmitting = false;
           this.dialogRef.close("success");
           this._mesgageService.showSuccess(res.message);
         },
         (err) => {
+          this.isSubmitting = false;
           this._mesgageService.showError(err.error.message);
         }
       );

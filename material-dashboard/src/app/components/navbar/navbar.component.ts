@@ -155,7 +155,7 @@ export class NavbarComponent implements OnInit {
       title = title.slice(1);
     }
     if (title === '/profile') {
-      return 'Personal Details';
+      return 'Profile';
     } else if (title === '/change-password') {
       return 'Change Password';
     }
