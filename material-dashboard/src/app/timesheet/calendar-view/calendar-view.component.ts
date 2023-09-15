@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import {
   DayPilot,
   DayPilotCalendarComponent,
@@ -11,7 +11,7 @@ import {
   templateUrl: './calendar-view.component.html',
   styleUrls: ['./calendar-view.component.css']
 })
-export class CalendarViewComponent implements OnInit {
+export class CalendarViewComponent implements OnInit, OnChanges {
   @Input() timesheetList;
   @ViewChild("day") day!: DayPilotCalendarComponent;
   @ViewChild("week") week!: DayPilotCalendarComponent;
@@ -37,7 +37,6 @@ export class CalendarViewComponent implements OnInit {
     onEventClick: this.onEventClick.bind(this),
   };
   public events: DayPilot.EventData[] = [];
-  private randomColors = ['#f56e64', '#db6b63', '#fa9a93', '#f57369', '#b55750']
 
   constructor() {
     this.viewType('Month');
@@ -46,7 +45,6 @@ export class CalendarViewComponent implements OnInit {
   ngOnInit() {
     this.timesheetList.forEach(list => {
       list.task_details.forEach(task => {
-        const random = Math.floor(Math.random() * this.randomColors.length);
         this.events.push({
           id: task._id,
           text: task.client.client_name,
@@ -56,6 +54,23 @@ export class CalendarViewComponent implements OnInit {
         });
       });
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['timesheetList'].currentValue !== changes['timesheetList'].previousValue) {
+      this.events = [];
+      changes['timesheetList'].currentValue.forEach(list => {
+        list.task_details.forEach(task => {
+          this.events.push({
+            id: task._id,
+            text: task.client.client_name,
+            start: new DayPilot.Date(task.start_time).addHours(5.5),
+            end: new DayPilot.Date(task.end_time).addHours(5.5),
+            backColor: '#f77b72',
+          });
+        });
+      });
+    }
   }
 
   changeDate(date: DayPilot.Date): void {

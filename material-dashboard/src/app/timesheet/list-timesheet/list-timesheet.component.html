@@ -37,10 +37,10 @@
         <div class="flex">
             <div class="mr-3">
                 <mat-button-toggle-group [value]="viewType">
-                    <mat-button-toggle value="calendarView" (click)="viewType = 'calendarView'">
+                    <mat-button-toggle value="calendarView" (click)="setViewType('calendarView')">
                         <i class="material-icons">date_range</i>
                     </mat-button-toggle>
-                    <mat-button-toggle value="listView" (click)="viewType = 'listView'">
+                    <mat-button-toggle value="listView" (click)="setViewType('listView')">
                         <i class="material-icons">format_align_left</i>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
@@ -125,9 +125,11 @@
             </div>
             </cdk-accordion-item>
         </cdk-accordion>
+
+        <div class="text-center my-3" *ngIf="!timesheetList.length">No timesheet available!</div>
     
         <div class="text-center my-3">
-            <button mat-stroked-button class="btn btn-primary" color="primary" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
+            <button mat-raised-button color="warn" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
         </div>
     </div>
     <div *ngIf="viewType === 'calendarView'">

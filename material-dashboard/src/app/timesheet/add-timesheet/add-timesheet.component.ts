@@ -54,7 +54,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
     this.getClientList();
     this.minDateTime = getMinDateTime(1);
     this.maxDateTime = getMaxDateTime(0);
-    this.minDate = getMinDate(7);
+    this.minDate = getMinDate(1);
     this.maxDate = getMaxDate(0);
 
     const currentDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
