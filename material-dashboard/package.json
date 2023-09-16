@@ -29,6 +29,7 @@
     "@angular/platform-browser-dynamic": "^13.3.1",
     "@angular/platform-server": "13.3.1",
     "@angular/router": "^13.3.1",
+    "@daypilot/daypilot-lite-angular": "^3.17.0",
     "ajv": "8.11.0",
     "angular-calendar": "^0.29.0",
     "arrive": "2.4.1",

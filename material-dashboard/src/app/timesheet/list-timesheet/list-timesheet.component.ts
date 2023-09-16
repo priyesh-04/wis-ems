@@ -32,8 +32,9 @@ export class ListTimesheetComponent implements OnInit {
   public totalPage = 0;
   public expandedIndex = 0;
   public accordionFlag = true;
-  public filterProjectList: []=[];
-  public clientid:string = '';
+  public filterProjectList = [];
+  public clientid = '';
+  public viewType: 'listView' | 'calendarView' = 'listView';
 
   constructor(
     private _employeeService: EmployeeService,
@@ -45,14 +46,15 @@ export class ListTimesheetComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.filterEndDate = this.datepipe.transform((new Date), 'yyyy-MM-dd');
     const currentDate = new Date().getDate();
-    //NB: Get start date as the 15th of last month
+    //NB: Get start date as the 14th of current or next month
+    this.filterEndDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 2 : new Date().getMonth()}-14`, 'yyyy-MM-dd');
+    //NB: Get start date as the 15th of current or last month
     this.filterStartDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 1 : new Date().getMonth()}-15`, 'yyyy-MM-dd');
     this.isAdmin = this._authService.isAdmin()  === "true" ? true : false;
     if (this.isAdmin) {
       this.userID = this.route.snapshot.paramMap.get("id");
-      this.employeeSpendTimeList();
+      this.employeesList();
     } else {
       this.userID = this._authService.getUserDetail().id;
     }
@@ -70,7 +72,9 @@ export class ListTimesheetComponent implements OnInit {
 
   private refreshTimesheetList(isloadMore = false) {
     this.isLoading = !this.isLoading;
-    this._employeeService.getTimesheet(this.userID, this.filterStartDate+"T00:00:00+05:30", this.filterEndDate+"T00:00:00+05:30", this.clientid,this.currentPage).subscribe(
+    const filterStartDate = this.viewType === 'listView' ? this.filterStartDate+"T00:00:00+05:30" : null;
+    const filterEndDate = this.viewType === 'listView' ? this.filterEndDate+"T00:00:00+05:30" : null;
+    this._employeeService.getTimesheet(this.userID, filterStartDate, filterEndDate, this.clientid, this.currentPage).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
@@ -83,8 +87,8 @@ export class ListTimesheetComponent implements OnInit {
     );
   }
 
-  private employeeSpendTimeList() {
-    this._employeeService.getAllEmployeesSpendTime().subscribe(
+  private employeesList() {
+    this._employeeService.getAllEmployees().subscribe(
       (res) => {
         this.employeeList = res.result;
       },
@@ -132,6 +136,7 @@ export class ListTimesheetComponent implements OnInit {
       data: {
         matDialogTitle: "Add New Timesheet",
         mode: SubmitModes.MultipleAdd,
+        timesheetList: this.timesheetList,
       },
       width: "90%",
       height: "90%",
@@ -217,6 +222,11 @@ export class ListTimesheetComponent implements OnInit {
 
   public selectProject(event){
     this.clientid = event.value;
+    this.refreshTimesheetList();
+  }
+
+  public setViewType(viewType: 'listView' | 'calendarView') {
+    this.viewType = viewType;
     this.refreshTimesheetList();
   }
 }

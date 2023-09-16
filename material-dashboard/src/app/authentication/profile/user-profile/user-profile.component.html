@@ -14,10 +14,12 @@
                     <input matInput placeholder="Name" formControlName="name" [readonly]="!editable">
                 </mat-form-field>
             </div>
-            <mat-form-field class="col-sm-12 col-md-6">
-                <mat-label>Employee Id</mat-label>
-                <input matInput placeholder="Employee Id" formControlName="emp_id" [readonly]="!editable">
-            </mat-form-field>
+            <div class="field-container col-sm-12 col-md-6">
+                <mat-form-field>
+                    <mat-label>Employee Id</mat-label>
+                    <input matInput placeholder="Employee Id" formControlName="emp_id" [readonly]="!editable">
+                </mat-form-field>
+            </div>
             <div class="field-container col-sm-12 col-md-6 form-group">
                 <mat-form-field appearance="legacy">
                     <mat-label>Email</mat-label>
@@ -35,11 +37,13 @@
                     <mat-label>Designation</mat-label>
                     <input matInput placeholder="Designation" formControlName="designation" [readonly]="!editable">
                 </mat-form-field>                
-            </div>            
-            <mat-form-field class="col-sm-12 col-md-6">
-                <mat-label>Address</mat-label>
-                <input matInput placeholder="Address" formControlName="address" [readonly]="!editable">
-            </mat-form-field>
+            </div>
+            <div class="field-container col-sm-12 col-md-6">          
+                <mat-form-field>
+                    <mat-label>Address</mat-label>
+                    <input matInput placeholder="Address" formControlName="address" [readonly]="!editable">
+                </mat-form-field>
+            </div>  
             
             <div class="col-12" *ngIf="editable">
                 <button type="submit" mat-raised-button color="accent">Upload</button>

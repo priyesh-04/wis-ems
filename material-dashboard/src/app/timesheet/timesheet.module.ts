@@ -9,7 +9,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSelectModule } from "@angular/material/select";
 import { MatIconModule } from "@angular/material/icon";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import {CdkAccordionModule} from '@angular/cdk/accordion';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
+import { DayPilotModule } from "@daypilot/daypilot-lite-angular";
 
 import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
 import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
@@ -34,7 +36,9 @@ import { CalendarViewComponent } from "./calendar-view/calendar-view.component";
     MatTooltipModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    CdkAccordionModule
+    MatButtonToggleModule,
+    CdkAccordionModule,
+    DayPilotModule,
   ],
 })
 export class TimesheetModule {}
