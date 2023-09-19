@@ -69,7 +69,7 @@
             </div>            
         </div>
 
-        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" [ngClass]="{'d-none': !displayTaskform}">
+        <form [formGroup]="taskForm" (ngSubmit)="addNewTask()" [ngClass]="{'d-none': !displayTaskform && taskList.length}">
             <div class="fields-main-div">
                 <input matInput type="hidden" formControlName="_id">
                 <div class="col-sm-12" id="client-wrapper">
