@@ -130,7 +130,6 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
     let dateFound = false;
     this.timesheetDialogData.timesheetList.forEach(list => {
       const prevDate = new Date(list.date);
-      prevDate.setHours(prevDate.getHours() + 5.5);
       if(prevDate.toDateString() === submittedDate.toDateString()) {
         dateFound = true;
       }
@@ -188,8 +187,10 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
         callingFrom: "deleteTask",
       },
     });
-    deleteDialogRef.afterClosed().subscribe(() => {
-      this.taskList.splice(index, 1);      
+    deleteDialogRef.afterClosed().subscribe((result) => {
+      if (result === "success") {
+        this.taskList.splice(index, 1);
+      }
     });
   }
 
@@ -225,7 +226,7 @@ export class AddTimesheetComponent implements OnInit, AfterViewInit {
       });
     });
     const myData = {
-      date:timeSheetFormData.date +"T09:00:00+05:30",
+      date:timeSheetFormData.date +"T07:00:00+05:30",
       in_time: timeSheetFormData.in_time + ":00+05:30",
       out_time: timeSheetFormData.out_time ? timeSheetFormData.out_time + ":00+05:30" : '',
       task_details: taskList,
