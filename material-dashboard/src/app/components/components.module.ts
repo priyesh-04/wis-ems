@@ -14,6 +14,7 @@ import { EmployeeTableComponent } from './employee-table/employee-table.componen
 import { PaginationComponent } from './pagination/pagination.component';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+
 @NgModule({
   imports: [
     CommonModule,

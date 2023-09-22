@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { formatDate } from '@angular/common';
+import { Component, EventEmitter, Inject, Input, LOCALE_ID, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import {
   DayPilot,
   DayPilotCalendarComponent,
@@ -13,6 +14,7 @@ import {
 })
 export class CalendarViewComponent implements OnInit, OnChanges {
   @Input() timesheetList;
+  @Output() onDateRangePicked = new EventEmitter<string>();
   @ViewChild("day") day!: DayPilotCalendarComponent;
   @ViewChild("week") week!: DayPilotCalendarComponent;
   @ViewChild("month") month!: DayPilotMonthComponent;
@@ -22,71 +24,108 @@ export class CalendarViewComponent implements OnInit, OnChanges {
     showMonths: 1,
     cellWidth: 25,
     cellHeight: 25,
+    onVisibleRangeChanged: args => {
+      this.loadEvents();
+    }
   };
   public configDay: DayPilot.CalendarConfig = {
     durationBarVisible: false,
-    onEventClick: this.onEventClick.bind(this),
+    onBeforeEventRender: this.onBeforeEventRender.bind(this),
   };
   public configWeek: DayPilot.CalendarConfig = {
     viewType: "Week",
     durationBarVisible: false,
-    onEventClick: this.onEventClick.bind(this),
+    onBeforeEventRender: this.onBeforeEventRender.bind(this),
   };
   public configMonth: DayPilot.MonthConfig = {
     eventBarVisible: false,
-    onEventClick: this.onEventClick.bind(this),
+    onBeforeEventRender: this.onBeforeEventRender.bind(this),
   };
-  public events: DayPilot.EventData[] = [];
+  public monthEvents: DayPilot.EventData[] = [];
+  public weekEvents: DayPilot.EventData[] = [];
+  public dayEvents: DayPilot.EventData[] = [];
+  private startDate;
 
-  constructor() {
+  constructor(@Inject(LOCALE_ID) public locale: string) {
     this.viewType('Month');
   }
 
   ngOnInit() {
+    this.monthEvents = [];
+    this.weekEvents = [];
+    this.dayEvents = [];
     this.timesheetList.forEach(list => {
       list.task_details.forEach(task => {
-        this.events.push({
-          id: task._id,
-          text: task.client.client_name,
-          start: new DayPilot.Date(task.start_time).addHours(5.5),
-          end: new DayPilot.Date(task.end_time).addHours(5.5),
-          backColor: '#f77b72',
-        });
+        this.monthEvents.push(this.setEventDetails(task, 'month'));
+        this.weekEvents.push(this.setEventDetails(task, 'week'));
+        this.dayEvents.push(this.setEventDetails(task, 'day'));
       });
     });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['timesheetList'].currentValue !== changes['timesheetList'].previousValue) {
-      this.events = [];
+    if(changes['timesheetList'].currentValue !== changes['timesheetList'].previousValue) {      
+      console.log('timesheetList: ', this.timesheetList);
+      this.monthEvents = [];
+      this.weekEvents = [];
+      this.dayEvents = [];
       changes['timesheetList'].currentValue.forEach(list => {
         list.task_details.forEach(task => {
-          this.events.push({
-            id: task._id,
-            text: task.client.client_name,
-            start: new DayPilot.Date(task.start_time).addHours(5.5),
-            end: new DayPilot.Date(task.end_time).addHours(5.5),
-            backColor: '#f77b72',
-          });
+          this.monthEvents.push(this.setEventDetails(task, 'month'));
+          this.weekEvents.push(this.setEventDetails(task, 'week'));
+          this.dayEvents.push(this.setEventDetails(task, 'day'));
         });
       });
     }
   }
 
-  changeDate(date: DayPilot.Date): void {
+  private setEventDetails(task, eventType: string) {
+    const event = {
+      html: `<strong>${task.client.client_name}</strong><br/>${formatDate(new Date(task.start_time), 'hh:mm a', this.locale)} - ${formatDate(new Date(task.end_time), 'hh:mm a', this.locale)}<br/> ${task.description}`,
+      id: task._id,
+      text: task.client.client_name,
+      start: new DayPilot.Date(task.start_time).addHours(5.5),
+      end: new DayPilot.Date(task.end_time).addHours(5.5),
+      backColor: '#f77b72',
+      tags: ['(' + formatDate(new Date(task.start_time), 'hh:mm a', this.locale) + ' - ' + formatDate(new Date(task.end_time), 'hh:mm a', this.locale) + ') ' + task.description, eventType, task],
+    };
+    if (eventType === 'month') {
+      delete event.html;
+    } else if(eventType === 'day') {
+      event.text = null;
+    }
+    return event;
+  }
+
+  private loadEvents(): void {
+    this.startDate = this.nav.control.visibleStart();
+    this.onDateRangePicked.emit(this.startDate.toString());
+  }
+
+  private onBeforeEventRender(args: any) {
+    args.data.areas = [
+      args.data.tags[1] !== 'day' ? {
+        top: 0,
+        right: 3,
+        width: 15,
+        height: 15,
+        symbol: "assets/img/daypilot.svg#i-circle",
+        fontColor: "#fff",
+        toolTip: args.data.tags[0],
+      } : {},
+    ];
+  }
+
+  public changeDate(date: DayPilot.Date): void {
     this.configDay.startDate = date;
     this.configWeek.startDate = date;
     this.configMonth.startDate = date;
   }
 
-  viewType(type: 'Day' | 'Week' | 'Month' | 'None') {
+  public viewType(type: 'Day' | 'Week' | 'Month' | 'None') {
     this.configNavigator.selectMode = type;
     this.configDay.visible = type === 'Day' ? true : false;
     this.configWeek.visible = type === 'Week' ? true : false;
     this.configMonth.visible = type === 'Month' ? true : false;
-  }
-
-  async onEventClick(args: any) {
-    console.log('data: ', args.e.data);
   }
 }
