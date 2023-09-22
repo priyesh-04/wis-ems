@@ -48,7 +48,7 @@ export class ListTimesheetComponent implements OnInit {
   ngOnInit(): void {
     const currentDate = new Date().getDate();
     //NB: Get start date as the 14th of current or next month
-    this.filterEndDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 2 : new Date().getMonth()}-14`, 'yyyy-MM-dd');
+    this.filterEndDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 2 : new Date().getMonth() + 1}-14`, 'yyyy-MM-dd');
     //NB: Get start date as the 15th of current or last month
     this.filterStartDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 1 : new Date().getMonth()}-15`, 'yyyy-MM-dd');
     this.isAdmin = this._authService.isAdmin()  === "true" ? true : false;
@@ -70,18 +70,23 @@ export class ListTimesheetComponent implements OnInit {
     );
   }
 
-  private refreshTimesheetList(isloadMore = false) {
-    this.isLoading = !this.isLoading;
-    const filterStartDate = this.viewType === 'listView' ? this.filterStartDate+"T00:00:00+05:30" : null;
-    const filterEndDate = this.viewType === 'listView' ? this.filterEndDate+"T00:00:00+05:30" : null;
-    this._employeeService.getTimesheet(this.userID, filterStartDate, filterEndDate, this.clientid, this.currentPage).subscribe(
+  private refreshTimesheetList(isloadMore = false, startDate?: string, isLoading = true) {
+    this.isLoading = isLoading;
+    if (!isloadMore) {
+      this.currentPage = 1;
+    }
+    const filterStartDate = startDate ? startDate : (this.viewType === 'listView' ? this.filterStartDate+"T00:00:00+05:30" : this.datepipe.transform(`${new Date().getFullYear()}-${new Date().getMonth()}-25`, 'yyyy-MM-dd')+"T00:00:00+05:30");
+    const filterEndDate = (this.viewType === 'listView' ? this.datepipe.transform(new Date(this.filterEndDate).setDate(new Date(this.filterEndDate).getDate() + 1), 'yyyy-MM-dd')+"T00:00:00+05:30" :  this.datepipe.transform(new Date().setDate(new Date().getDate() + 1), 'yyyy-MM-dd')+"T00:00:00+05:30");
+    const limit = this.viewType === 'listView' ? 10 : 50;
+
+    this._employeeService.getTimesheet(this.userID, filterStartDate, filterEndDate, this.clientid, this.currentPage, limit).subscribe(
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
-        this.isLoading = !this.isLoading;
+        this.isLoading = false;
       },
       (err) => {
-        this.isLoading = !this.isLoading;
+        this.isLoading = false;
         this._mesgageService.showError(err.error.message || 'Unable to fetch timesheet');
       }
     );
@@ -228,5 +233,9 @@ export class ListTimesheetComponent implements OnInit {
   public setViewType(viewType: 'listView' | 'calendarView') {
     this.viewType = viewType;
     this.refreshTimesheetList();
+  }
+
+  public calenderDateRange(startDate) {
+    this.refreshTimesheetList(false, startDate + '+05:30', false);
   }
 }

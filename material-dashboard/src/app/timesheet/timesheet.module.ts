@@ -17,6 +17,8 @@ import { AddTimesheetComponent } from "./add-timesheet/add-timesheet.component";
 import { ListTimesheetComponent } from "./list-timesheet/list-timesheet.component";
 import { TimesheetUpdateComponent } from './timesheet-update/timesheet-update.component';
 import { CalendarViewComponent } from "./calendar-view/calendar-view.component";
+import { ComponentsModule } from "../components/components.module";
+
 @NgModule({
   declarations: [
     AddTimesheetComponent,
@@ -39,6 +41,7 @@ import { CalendarViewComponent } from "./calendar-view/calendar-view.component";
     MatButtonToggleModule,
     CdkAccordionModule,
     DayPilotModule,
+    ComponentsModule
   ],
 })
 export class TimesheetModule {}

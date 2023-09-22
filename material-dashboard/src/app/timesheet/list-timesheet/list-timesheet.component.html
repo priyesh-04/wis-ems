@@ -50,7 +50,7 @@
             </button>
         </div>
     </div>
-    <div *ngIf="viewType === 'listView'">
+    <div *ngIf="viewType === 'listView' && !isLoading">
         <cdk-accordion class="example-accordion">
             <cdk-accordion-item
             *ngFor="let timesheet of timesheetList; let index = index;"
@@ -132,8 +132,8 @@
             <button mat-raised-button color="warn" *ngIf="currentPage < totalPage" (click)="loadMore() && !isLoading">Load More</button>
         </div>
     </div>
-    <div *ngIf="viewType === 'calendarView'">
-       <app-calendar-view [timesheetList]="timesheetList"></app-calendar-view>
+    <div *ngIf="viewType === 'calendarView' && !isLoading">
+       <app-calendar-view [timesheetList]="timesheetList" (onDateRangePicked)="calenderDateRange($event)"></app-calendar-view>
     </div>
 </div>
 <app-page-loader *ngIf="isLoading"></app-page-loader>
