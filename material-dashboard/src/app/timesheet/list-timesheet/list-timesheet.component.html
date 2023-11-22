@@ -61,7 +61,7 @@
             [attr.id]="'accordion-header-' + index"
             [attr.aria-expanded]="accordionItem.expanded"
             [attr.aria-controls]="'accordion-body-' + index">
-            <div class="d-flex justify-content-between working-date-wrapper px-2 py-2 align-items-center mt-3 bg-dark text-white" style="cursor: auto;">
+            <div  [ngClass]="[timesheet.status === 'Present' ? 'bg-success' : 'bg-danger']" class="d-flex justify-content-between working-date-wrapper px-2 py-2 align-items-center mt-3 text-white" style="cursor: auto;">
                 <div class="working-date-wrapper" style="cursor: pointer;">
                     <span class="working-date" (click)="accordionItem.toggle()" style="cursor: pointer;">
                         {{timesheet.date | date }} 
@@ -70,17 +70,17 @@
                         </ng-container>
                     </span>
                     <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin &&!clientid" sty
-                    le="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2" (click)="addSingleTasks(timesheet._id, timesheet)">
+                    le="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="addSingleTasks(timesheet._id, timesheet)">
                         Add Task
                     </span>
                     <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
-                    style="cursor: pointer;" class="ml-2 text-warning" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
+                    style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
                         Edit All Task
                     </span>
-                    <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-warning" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+                    <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="editRequestDialog(timesheet._id, timesheet)"> 
                         Request for Edit
                     </span>
-                    <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-success">
+                    <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-dark font-weight-bold">
                         Already Requested
                     </span>            
                 </div>

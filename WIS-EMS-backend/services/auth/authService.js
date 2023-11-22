@@ -443,7 +443,7 @@ class AuthService {
         .populate('created_by', '_id name emp_id email_id phone_num')
         .populate('assigned_client', '_id client_name company_name')
         .lean()
-        .sort({ createdAt: -1 })
+        .sort({ emp_id: 1 })
         .exec((err, details) => {
           if (err) {
             return res
@@ -591,7 +591,7 @@ class AuthService {
           'assigned_client',
           '_id client_name company_name company_email'
         )
-        .sort({ createdAt: -1 })
+        .sort({ emp_id: 1 })
         .exec(async (err, details) => {
           if (err) {
             return res
@@ -964,6 +964,122 @@ class AuthService {
             msgErr: true,
             message: 'Something Went Wrong. Please Check after some time',
           });
+        });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+    }
+  }
+
+
+  ///////////////////////////////////////////////////////////
+  async getAllEmployeeWithoutPagination(req, res, next) {
+    try {
+      await User.find({ role: { $in: ['employee', 'hr'] } })
+        .select('-password ')
+        .populate('designation', '_id name')
+        .populate('created_by', '_id name emp_id email_id phone_num')
+        .populate('assigned_client', '_id client_name company_name')
+        .lean()
+        .sort({ emp_id: 1 })
+        .exec((err, details) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+           
+
+          
+            return res.status(200).json({
+              msgErr: false,
+              result: details
+            });
+          }
+        });
+    } catch (error) {
+      return next(CustomErrorhandler.serverError());
+    }
+  }
+
+  async usetListWithSpendTimeWithoutPagination(req, res, next) {
+    try {
+      // let {start_date, end_date } = req.query;
+
+      // if (start_date && end_date) {
+      //   start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
+      //   end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+      // }
+
+      // if (
+      //   !start_date ||
+      //   !end_date ||
+      //   start_date == 'Invalid Date' ||
+      //   end_date == 'Invalid Date'
+      // ) {
+      //   end_date = new Date();
+      //   start_date = new Date();
+      //   start_date.setMonth(start_date.getMonth() - 1);
+      //   start_date.setDate(15);
+      //   start_date.setHours(0, 0, 0, 0);
+      // }
+
+      // const timeStamptoRedableTime = (tt) => {
+      //   let times = '';
+      //   let hour = 1 * 60 * 60 * 1000;
+      //   let minute = 1 * 60 * 1000;
+
+      //   if (tt / hour > 0) {
+      //     times = Math.floor(tt / hour) + ' Hours ';
+      //   }
+      //   if (tt / minute > 0) {
+      //     times += Math.floor((tt % hour) / minute) + ' Minutes';
+      //   }
+      //   return times;
+      // };
+
+      await User.find({
+        role: { $in: ['employee', 'hr'] },
+      })
+        .select('-password -createdAt -updatedAt -image -created_by')
+        .populate('designation', '_id name')
+        .populate(
+          'assigned_client',
+          '_id client_name company_name company_email'
+        )
+        .sort({ emp_id: 1 })
+        .exec(async (err, details) => {
+          if (err) {
+            return res
+              .status(400)
+              .json({ msgErr: true, message: 'Error ' + err });
+          } else {
+            let resultArr = [];
+            for (let i = 0; i < details.length; i++) {
+              let task = await Timesheets.find({
+                created_by: details[i]._id,
+                //date: { $gte: start_date, $lte: end_date },
+                status: 'Present',
+              });
+              // let workingTime = task.reduce((v, item) => {
+              //   return v + parseInt(item.time_spend);
+              // }, 0);
+
+              resultArr.push({
+                ...details[i]._doc,
+                day_present: task.length,
+                // workingTime: timeStamptoRedableTime(workingTime),
+              });
+            }
+
+            
+            return res.status(200).json({
+              msgErr: false,
+              result: resultArr,
+             
+            });
+          }
         });
     } catch (error) {
       return res
