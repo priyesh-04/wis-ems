@@ -78,6 +78,24 @@ class UserController {
       return res.status(500).json({ status: false, message: 'Error ' + error });
     }
   }
+
+
+  //////////////////////////////////////////
+  async getAllEmployeeWithoutPagination(req, res, next) {
+    try {
+      await AuthService.getAllEmployeeWithoutPagination(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
+
+  async usetListWithSpendTimeWithoutPagination(req, res, next) {
+    try {
+      await AuthService.usetListWithSpendTimeWithoutPagination(req, res, next);
+    } catch (error) {
+      return res.status(500).json({ status: false, message: 'Error ' + error });
+    }
+  }
 }
 
 module.exports = new UserController();

@@ -102,4 +102,21 @@ router.get(
   UserController.getAllUserThirdParty
 );
 
+
+//////////////////////////////
+router.get(
+  '/user/all-employee-without-pagination',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
+  ApiAuthValidator.authorizeRole('admin', 'hr'),
+  UserController.getAllEmployeeWithoutPagination
+);
+
+router.get(
+  '/user/user-spend-time-without-pagination',
+  ApiAuthValidator.validateAccessToken,
+  ApiAuthValidator.isLoggedInUser,
+  ApiAuthValidator.authorizeRole('admin'),
+  UserController.usetListWithSpendTimeWithoutPagination
+);
 module.exports = router;

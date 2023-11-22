@@ -84,6 +84,7 @@ export class ListTimesheetComponent implements OnInit {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
         this.isLoading = false;
+        console.log("87.......",this.timesheetList);
       },
       (err) => {
         this.isLoading = false;

@@ -133,4 +133,18 @@ export class EmployeeService {
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
+
+
+  ///////////////////////////////////////////////////////////////////
+  public getAllEmployeeWithoutPagination(): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/all-employee-without-pagination`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
+
+  public getAllEmployeeSpendTimeWithoutPagination(): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/user-spend-time-without-pagination`;
+    const httpOptions = this.createHeaders();
+    return this.http.get(endpoint, httpOptions);
+  }
 }

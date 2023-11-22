@@ -21,7 +21,12 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   @Input() refreshTable?: boolean;
 
   private params: params;
+  public allEmployeeList = [];
+  public searchTerm : string ='';
+  public isActive : boolean =true;
   public employeeList = [];
+  public activeEmployeeList = [];
+  public inActiveEmployeeList = [];
   public useDefault :boolean;
   public pagination: pagination;
   public limit = 10;
@@ -56,12 +61,18 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   
   private refreshEmployeeList() {
     this.isLoading = !this.isLoading;
-    this._employeeService.getAllEmployees(this.params).subscribe(
+    this._employeeService.getAllEmployeeWithoutPagination().subscribe(
       (res) => {
         this.isLoading = !this.isLoading;
-        this.employeeList = res.result;
-        this.pagination = res.pagination;
-        this.totalPage = res.pagination.total_page
+        this.allEmployeeList = res.result;
+       // this.employeeList = res.result;
+        this.activeEmployeeList = res.result.filter(element => element.is_active === true
+          );
+          this.inActiveEmployeeList = res.result.filter(element => element.is_active === false
+            );
+            this.employeeList = this.activeEmployeeList;
+        //this.pagination = res.pagination;
+        //this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
@@ -72,12 +83,17 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
 
   private employeeSpendTimeList() {
     this.isLoading = !this.isLoading;
-    this._employeeService.getAllEmployeesSpendTime(this.params).subscribe(
+    this._employeeService.getAllEmployeeSpendTimeWithoutPagination().subscribe(
       (res) => {
         this.isLoading = !this.isLoading;
-        this.employeeList = res.result;
-        this.pagination = res.pagination;
-        this.totalPage = res.pagination.total_page
+        this.allEmployeeList = res.result;
+        this.activeEmployeeList = res.result.filter(element => element.is_active === true
+          );
+          this.inActiveEmployeeList = res.result.filter(element => element.is_active === false
+            );
+        this.employeeList = this.activeEmployeeList;
+        //this.pagination = res.pagination;
+        //this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
@@ -121,6 +137,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
     });
   }
   public onPaginationChange(event: params) {
+    this.searchTerm = '';
     this.params = event;
     this.limit = this.params.limit;
     if (this.isDashboard) {
@@ -128,6 +145,39 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
     } else {
       this.refreshEmployeeList();
     }
+  }
+
+  public searchByName(event: KeyboardEvent): void {
+    if (this.searchTerm.trim() !== '') {
+      if(this.isActive){
+        this.employeeList = this.activeEmployeeList.filter(employee =>
+          employee.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+      }else{
+          this.employeeList = this.inActiveEmployeeList.filter(employee =>
+            employee.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+          );
+      }
+    }else{
+      this.employeeList = this.allEmployeeList.filter(employee =>
+        employee.is_active === this.isActive
+      );
+    } 
+  }
+
+  public fetchActiveUser(){
+        //this.employeeList = res.result;
+        this.isActive = true;
+        this.employeeList = [];
+        this.employeeList = this.allEmployeeList.filter(element => element.is_active === true
+         );
+  }
+
+  public fetchInActiveUser(){
+       this.isActive = false;
+       this.employeeList = [];
+       this.employeeList = this.allEmployeeList.filter(element => element.is_active === false
+      );
   }
 
 }
