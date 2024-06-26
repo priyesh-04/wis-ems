@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { wisDB } = require('../../config/connection');
+const mongoose = require("mongoose");
+const { wisDB } = require("../../config/connection");
 
 const TimeSheetSchema = new mongoose.Schema(
   {
@@ -32,22 +32,22 @@ const TimeSheetSchema = new mongoose.Schema(
     edit_status: {
       type: String,
       enum: [
-        'New',
-        'Initial',
-        'Requested',
-        'Accepted',
-        'Pending',
-        'Edited',
-        'Rejected',
+        "New",
+        "Initial",
+        "Requested",
+        "Accepted",
+        "Pending",
+        "Edited",
+        "Rejected",
       ],
       trim: true,
-      default: 'New',
+      default: "New",
     },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       trim: true,
-      ref: 'user',
+      ref: "user",
     },
     // leave: {
     //   type: Boolean,
@@ -70,19 +70,19 @@ const TimeSheetSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         trim: true,
-        ref: 'TaskDetails',
+        ref: "TaskDetails",
       },
     ],
     status: {
       type: String,
-      enum: ['Present', 'Not Submited', 'Holiday', 'Official Holiday', 'Leave'],
+      enum: ["Present", "Not Submited", "Holiday", "Official Holiday", "Leave"],
       trim: true,
-      default: 'Present',
+      default: "Present",
     },
   },
   { timestamps: true }
 );
 
-const Timesheets = wisDB.model('Timesheets', TimeSheetSchema, 'timesheets');
+const Timesheets = wisDB.model("Timesheets", TimeSheetSchema, "timesheets");
 
 module.exports = { Timesheets };

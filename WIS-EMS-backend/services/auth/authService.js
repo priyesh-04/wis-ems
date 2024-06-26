@@ -1,20 +1,20 @@
-const Joi = require('joi');
-const { CustomErrorhandler } = require('../../utils');
-const { User } = require('../../models/auth/user');
-const fs = require('fs');
-const bcrypt = require('bcrypt');
-const { TokenService } = require('../../utils');
-const { UserToken } = require('../../models/auth/userToken');
-const { Designation } = require('../../models/designation/designation');
-const jwt = require('jsonwebtoken');
-const { TaskDetails } = require('../../models/timesheets/taskDetails');
+const Joi = require("joi");
+const { CustomErrorhandler } = require("../../utils");
+const { User } = require("../../models/auth/user");
+const fs = require("fs");
+const bcrypt = require("bcrypt");
+const { TokenService } = require("../../utils");
+const { UserToken } = require("../../models/auth/userToken");
+const { Designation } = require("../../models/designation/designation");
+const jwt = require("jsonwebtoken");
+const { TaskDetails } = require("../../models/timesheets/taskDetails");
 const {
   ForgotPasswordToken,
-} = require('../../models/auth/forgotPasswordToken');
-const crypto = require('crypto');
-const { EmailSend } = require('../../helper/email/emailSend');
-const EmailConfig = require('../../config/emailConfig');
-const { Timesheets } = require('../../models/timesheets/timesheets');
+} = require("../../models/auth/forgotPasswordToken");
+const crypto = require("crypto");
+const { EmailSend } = require("../../helper/email/emailSend");
+const EmailConfig = require("../../config/emailConfig");
+const { Timesheets } = require("../../models/timesheets/timesheets");
 // const { passwordPattarn } = require('../../config/regex');
 
 class AuthService {
@@ -25,13 +25,13 @@ class AuthService {
       if (!user) {
         return res
           .status(401)
-          .json({ msgErr: true, message: 'Email ID or password is wrong!' });
+          .json({ msgErr: true, message: "Email ID or password is wrong!" });
       }
 
       if (user.first_login) {
         return res.status(400).json({
           msgErr: true,
-          message: 'Please Reset Your Password. Please Check Your Email.',
+          message: "Please Reset Your Password. Please Check Your Email.",
         });
       }
       // Compare password
@@ -39,14 +39,14 @@ class AuthService {
       if (!match) {
         return res
           .status(401)
-          .json({ msgErr: true, message: 'Email ID or password is wrong!' });
+          .json({ msgErr: true, message: "Email ID or password is wrong!" });
       }
 
       // Check user is active or not
       if (!user.is_active) {
         return res
           .status(409)
-          .json({ msgErr: true, message: 'Employee currently deactivated!' });
+          .json({ msgErr: true, message: "Employee currently deactivated!" });
       }
       // generate token
       const { accessToken, refreshToken } = await TokenService.generateToken(
@@ -65,7 +65,7 @@ class AuthService {
     } catch (error) {
       return res
         .status(409)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -86,7 +86,7 @@ class AuthService {
         designation: Joi.string().required().length(24),
         role: Joi.string()
           .required()
-          .valid('admin', 'hr', 'employee', 'accountant'),
+          .valid("admin", "hr", "employee", "accountant"),
         // password: Joi.string().pattern(new RegExp(passwordPattarn)).required(),
         image: Joi.string(),
         created_by: Joi.string(),
@@ -102,25 +102,25 @@ class AuthService {
       let existDesignation = await Designation.findById({
         _id: payload.designation,
       });
-      if (payload.role === 'admin') {
-        existDesignation = await Designation.findOne({ name: 'Admin' });
+      if (payload.role === "admin") {
+        existDesignation = await Designation.findOne({ name: "Admin" });
         payload.designation = existDesignation._id;
       }
       if (!existDesignation) {
         return res.status(400).json({
           msgErr: true,
-          message: 'Designation Incorrect. Please Select Correct one.',
+          message: "Designation Incorrect. Please Select Correct one.",
         });
       }
 
       // create randorm passwrd and hash password. this password can't use. when admin create a user on that time user get a email for create a new password. through this email link user can set a new password. if user not create the password then user can't login.
-      const password = crypto.randomBytes(10).toString('hex');
+      const password = crypto.randomBytes(10).toString("hex");
       const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
+      const token = bearerToken.split(" ")[1];
       const user = await TokenService.getLoggedInUser(token);
       payload.created_by = user._id;
       payload.password = password;
-      if (payload.role === 'admin' && user.role === 'hr') {
+      if (payload.role === "admin" && user.role === "hr") {
         return res.status(403).json({
           msgErr: true,
           message: `Sorry, ${user.role} cant't create ${payload.role}.`,
@@ -128,17 +128,17 @@ class AuthService {
       }
 
       const imagename =
-        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
+        Date.now() + "_" + req.file?.originalname?.replace(/ /g, "_");
 
       if (image) {
         fs.appendFileSync(
-          './uploads/users/' + imagename,
+          "./uploads/users/" + imagename,
           image.buffer,
           (err) => {
-            console.log('Error' + err);
+            console.log("Error" + err);
           }
         );
-        payload.image = '/uploads/users/' + imagename;
+        payload.image = "/uploads/users/" + imagename;
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -148,34 +148,34 @@ class AuthService {
       newRequest.save(async (err, result) => {
         if (err) {
           if (image) {
-            fs.unlinkSync('./uploads/users/' + imagename);
+            fs.unlinkSync("./uploads/users/" + imagename);
           }
           if (
             err?.keyValue?.email_id != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Email must be unique.',
+              message: "Email must be unique.",
             });
           } else if (
             err?.keyValue?.phone_num != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Phone Number must be unique.',
+              message: "Phone Number must be unique.",
             });
           } else if (
             err?.keyValue?.emp_id != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Employee Id must be unique. ',
+              message: "Employee Id must be unique. ",
             });
           } else {
             return next(CustomErrorhandler.badRequest());
@@ -184,7 +184,7 @@ class AuthService {
           let tokenData = {
             user_id: result._id,
             email: result.email_id,
-            token: crypto.randomBytes(32).toString('hex'),
+            token: crypto.randomBytes(32).toString("hex"),
           };
 
           let newRequest = await ForgotPasswordToken(tokenData);
@@ -192,7 +192,7 @@ class AuthService {
             if (err) {
               return res.status(400).json({
                 msgErr: true,
-                message: 'Something went wrong. ' + err,
+                message: "Something went wrong. " + err,
               });
             }
           });
@@ -212,12 +212,12 @@ class AuthService {
           if (!emailSendStatus) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+              .json({ msgErr: true, message: "Something went wrong. " + err });
           }
 
           return res.status(201).json({
             msgErr: false,
-            message: 'Registration Successfully',
+            message: "Registration Successfully",
             result,
           });
         }
@@ -225,22 +225,22 @@ class AuthService {
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
   async updateUser(req, res, next) {
     try {
       const payload = req.body;
-      delete payload['password'];
+      delete payload["password"];
       const image = req.file;
       const imagename =
-        Date.now() + '_' + req.file?.originalname?.replace(/ /g, '_');
+        Date.now() + "_" + req.file?.originalname?.replace(/ /g, "_");
       const user = await User.findById({ _id: req.params.id });
       if (!user) {
         return res
           .status(400)
-          .json({ message: 'User Not Found', msgErr: true });
+          .json({ message: "User Not Found", msgErr: true });
       }
 
       const registerSchema = Joi.object({
@@ -253,7 +253,7 @@ class AuthService {
           .max(10 ** 10 - 1),
         address: Joi.string().required(),
         designation: Joi.string().required().length(24),
-        role: Joi.string().valid('admin', 'hr', 'employee', 'accountant'),
+        role: Joi.string().valid("admin", "hr", "employee", "accountant"),
         image: Joi.string(),
         created_by: Joi.string(),
         holidays: Joi.array().min(1).items(Joi.number()),
@@ -269,14 +269,14 @@ class AuthService {
       if (!existDesignation) {
         return res.status(400).json({
           msgErr: true,
-          message: 'Designation Incorrect. Please Select Correct one.',
+          message: "Designation Incorrect. Please Select Correct one.",
         });
       }
       const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
+      const token = bearerToken.split(" ")[1];
       const userDetails = await TokenService.getLoggedInUser(token);
       payload.created_by = userDetails._id;
-      if (payload.role === 'admin' && userDetails.role === 'hr') {
+      if (payload.role === "admin" && userDetails.role === "hr") {
         return res.status(403).json({
           msgErr: true,
           message: `Sorry, ${userDetails.role} cant't update ${payload.role}.`,
@@ -284,52 +284,52 @@ class AuthService {
       }
 
       if (image) {
-        if (fs.existsSync('.' + user.image)) {
-          fs.unlinkSync('.' + user.image);
+        if (fs.existsSync("." + user.image)) {
+          fs.unlinkSync("." + user.image);
         }
 
         fs.appendFileSync(
-          './uploads/users/' + imagename,
+          "./uploads/users/" + imagename,
           image.buffer,
           (err) => {
-            console.log('Error' + err);
+            console.log("Error" + err);
           }
         );
-        payload.image = '/uploads/users/' + imagename;
+        payload.image = "/uploads/users/" + imagename;
       }
       await User.findByIdAndUpdate({ _id: req.params.id }, payload, {
         new: true,
       }).exec((err, result) => {
         if (err) {
           if (image) {
-            fs.unlinkSync('./uploads/users/' + imagename);
+            fs.unlinkSync("./uploads/users/" + imagename);
           }
           if (
             err.keyValue?.email_id != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Email must be unique.',
+              message: "Email must be unique.",
             });
           } else if (
             err.keyValue?.phone_num != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Phone Number must be unique.',
+              message: "Phone Number must be unique.",
             });
           } else if (
             err.keyValue?.emp_id != null &&
-            err.name === 'MongoError' &&
+            err.name === "MongoError" &&
             err.code === 11000
           ) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Employee Id must be unique. ',
+              message: "Employee Id must be unique. ",
             });
           } else {
             return next(CustomErrorhandler.badRequest());
@@ -337,7 +337,7 @@ class AuthService {
         } else {
           return res
             .status(200)
-            .json({ msgErr: false, message: 'Update Successfully' });
+            .json({ msgErr: false, message: "Update Successfully" });
         }
       });
     } catch (error) {
@@ -355,7 +355,7 @@ class AuthService {
           } else {
             return res
               .status(200)
-              .json({ msgErr: false, message: 'Logged Out Sucessfully' });
+              .json({ msgErr: false, message: "Logged Out Sucessfully" });
           }
         }
       );
@@ -367,22 +367,22 @@ class AuthService {
   async myProfile(req, res, next) {
     try {
       const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
+      const token = bearerToken.split(" ")[1];
       const user = await TokenService.getLoggedInUser(token);
       await User.findById({ _id: user._id })
-        .select('-password ')
-        .populate('designation', '_id name')
-        .populate('assigned_client', '_id client_name company_name')
+        .select("-password ")
+        .populate("designation", "_id name")
+        .populate("assigned_client", "_id client_name company_name")
         .lean()
         .exec((err, result) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else if (!result) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Invalid Id' });
+              .json({ msgErr: true, message: "Invalid Id" });
           } else {
             return res.status(200).json({ msgErr: false, result });
           }
@@ -395,16 +395,16 @@ class AuthService {
   async getAllAdmin(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await User.find({ role: 'admin' })
-        .select('-password ')
-        .populate('designation', '_id name')
+      await User.find({ role: "admin" })
+        .select("-password ")
+        .populate("designation", "_id name")
         .lean()
         .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             if (!limit || !page) {
               limit = 10;
@@ -436,19 +436,22 @@ class AuthService {
 
   async getAllEmployee(req, res, next) {
     try {
-      let { limit, page } = req.query;
-      await User.find({ role: { $in: ['employee', 'hr'] } })
-        .select('-password ')
-        .populate('designation', '_id name')
-        .populate('created_by', '_id name emp_id email_id phone_num')
-        .populate('assigned_client', '_id client_name company_name')
+      let { limit, page, is_active = true } = req.query;
+      await User.find({
+        role: { $in: ["employee", "hr"] },
+        is_active,
+      })
+        .select("-password ")
+        .populate("designation", "_id name")
+        .populate("created_by", "_id name emp_id email_id phone_num")
+        .populate("assigned_client", "_id client_name company_name")
         .lean()
         .sort({ emp_id: 1 })
         .exec((err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             if (!limit || !page) {
               limit = 100;
@@ -482,15 +485,15 @@ class AuthService {
   async getAllHR(req, res, next) {
     try {
       let { limit, page } = req.query;
-      await User.find({ role: 'hr' })
-        .select('-password ')
+      await User.find({ role: "hr" })
+        .select("-password ")
         .lean()
         .sort({ createdAt: -1 })
         .exec((err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             if (!limit || !page) {
               limit = 10;
@@ -529,14 +532,14 @@ class AuthService {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             return res.status(200).json({
               msgErr: false,
               message:
-                'User ' +
-                (req.body.is_active ? 'Activate' : 'Deactivate') +
-                ' Successfully.',
+                "User " +
+                (req.body.is_active ? "Activate" : "Deactivate") +
+                " Successfully.",
             });
           }
         }
@@ -551,15 +554,15 @@ class AuthService {
       let { limit, page, start_date, end_date } = req.query;
 
       if (start_date && end_date) {
-        start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
-        end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
+        start_date = new Date(req.query.start_date.replace(/ /gi, "+"));
+        end_date = new Date(req.query.end_date.replace(/ /gi, "+"));
       }
 
       if (
         !start_date ||
         !end_date ||
-        start_date == 'Invalid Date' ||
-        end_date == 'Invalid Date'
+        start_date == "Invalid Date" ||
+        end_date == "Invalid Date"
       ) {
         end_date = new Date();
         start_date = new Date();
@@ -583,27 +586,27 @@ class AuthService {
       // };
 
       await User.find({
-        role: { $in: ['employee', 'hr'] },
+        role: { $in: ["employee", "hr"] },
       })
-        .select('-password -createdAt -updatedAt -image -created_by')
-        .populate('designation', '_id name')
+        .select("-password -createdAt -updatedAt -image -created_by")
+        .populate("designation", "_id name")
         .populate(
-          'assigned_client',
-          '_id client_name company_name company_email'
+          "assigned_client",
+          "_id client_name company_name company_email"
         )
         .sort({ emp_id: 1 })
         .exec(async (err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             let resultArr = [];
             for (let i = 0; i < details.length; i++) {
               let task = await Timesheets.find({
                 created_by: details[i]._id,
                 date: { $gte: start_date, $lte: end_date },
-                status: 'Present',
+                status: "Present",
               });
               // let workingTime = task.reduce((v, item) => {
               //   return v + parseInt(item.time_spend);
@@ -643,7 +646,7 @@ class AuthService {
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -672,7 +675,7 @@ class AuthService {
       }
 
       const bearerToken = req.headers.authorization;
-      const token = bearerToken.split(' ')[1];
+      const token = bearerToken.split(" ")[1];
       const user = await TokenService.getLoggedInUser(token);
 
       const userDetails = await User.findById({ _id: user._id });
@@ -680,13 +683,13 @@ class AuthService {
       if (!userDetails) {
         return res.status(409).json({
           msgErr: true,
-          message: 'User not Found. Something went worong',
+          message: "User not Found. Something went worong",
         });
       }
       if (!userDetails.is_active) {
         return res
           .status(409)
-          .json({ msgErr: true, message: 'Employee currently deactivated!' });
+          .json({ msgErr: true, message: "Employee currently deactivated!" });
       }
 
       // Compare password
@@ -697,7 +700,7 @@ class AuthService {
       if (!match) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Old Password does not match.' });
+          .json({ msgErr: true, message: "Old Password does not match." });
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -709,19 +712,19 @@ class AuthService {
           if (err) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Something went Wrong. Try again after some time later.',
+              message: "Something went Wrong. Try again after some time later.",
             });
           } else {
             return res
               .status(200)
-              .json({ msgErr: false, message: 'Password Update Successfully' });
+              .json({ msgErr: false, message: "Password Update Successfully" });
           }
         }
       );
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -730,11 +733,11 @@ class AuthService {
       let payload = req.body;
       const userDetails = await User.findOne({ email_id: payload.email_id });
       if (!userDetails) {
-        return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
+        return res.status(400).json({ msgErr: true, message: "Invalid User." });
       } else if (!userDetails.is_active) {
         return res.status(400).json({
           msgErr: true,
-          message: 'Inactive User. Please Contact with Admin of Hr',
+          message: "Inactive User. Please Contact with Admin of Hr",
         });
       }
       let alreadyRequestedToken = await ForgotPasswordToken.findOne({
@@ -743,7 +746,7 @@ class AuthService {
       let tokenData = {
         user_id: userDetails._id,
         email: userDetails.email_id,
-        token: crypto.randomBytes(32).toString('hex'),
+        token: crypto.randomBytes(32).toString("hex"),
       };
       if (!alreadyRequestedToken) {
         let newRequest = await new ForgotPasswordToken(tokenData);
@@ -751,7 +754,7 @@ class AuthService {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+              .json({ msgErr: true, message: "Something went wrong. " + err });
           }
         });
       } else {
@@ -762,7 +765,7 @@ class AuthService {
             if (err) {
               return res.status(400).json({
                 msgErr: true,
-                message: 'Something went wrong. ' + err,
+                message: "Something went wrong. " + err,
               });
             }
           }
@@ -783,17 +786,17 @@ class AuthService {
       if (!emailSendStatus) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          .json({ msgErr: true, message: "Something went wrong. " + err });
       }
       return res.status(200).json({
         msgErr: false,
         message:
-          'Please Check your existing email. Reset link will be provided there.',
+          "Please Check your existing email. Reset link will be provided there.",
       });
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -808,7 +811,7 @@ class AuthService {
       if (error) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Error ' + error });
+          .json({ msgErr: true, message: "Error " + error });
       }
       const passwordPattarn = new RegExp(
         /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/g
@@ -824,7 +827,7 @@ class AuthService {
       if (!user) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Invalid Link or User' });
+          .json({ msgErr: true, message: "Invalid Link or User" });
       }
       const token = await ForgotPasswordToken.findOne({
         user_id: req.params.userId,
@@ -833,7 +836,7 @@ class AuthService {
       if (!token) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Invalid Link or User' });
+          .json({ msgErr: true, message: "Invalid Link or User" });
       }
 
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -845,7 +848,7 @@ class AuthService {
           if (err) {
             return res.status(400).json({
               msgErr: true,
-              message: 'Something went Wrong. Try again after some time later.',
+              message: "Something went Wrong. Try again after some time later.",
             });
           } else {
             await ForgotPasswordToken.findByIdAndDelete(
@@ -854,7 +857,7 @@ class AuthService {
                 if (e) {
                   return res
                     .status(400)
-                    .json({ msgErr: true, message: 'Error ' + e });
+                    .json({ msgErr: true, message: "Error " + e });
                 }
               }
             );
@@ -866,21 +869,21 @@ class AuthService {
                 if (e) {
                   return res
                     .status(400)
-                    .json({ msgErr: true, message: 'Error ' + e });
+                    .json({ msgErr: true, message: "Error " + e });
                 }
               }
             );
 
             return res
               .status(200)
-              .json({ msgErr: false, message: 'Password Update Successfully' });
+              .json({ msgErr: false, message: "Password Update Successfully" });
           }
         }
       );
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -889,7 +892,7 @@ class AuthService {
       let userId = req.params.uid;
       const userDetails = await User.findById({ _id: userId });
       if (!userDetails) {
-        return res.status(400).json({ msgErr: true, message: 'Invalid User.' });
+        return res.status(400).json({ msgErr: true, message: "Invalid User." });
       }
       let alreadyRequestedToken = await ForgotPasswordToken.findOne({
         user_id: userId,
@@ -897,7 +900,7 @@ class AuthService {
       let tokenData = {
         user_id: userDetails._id,
         email: userDetails.email_id,
-        token: crypto.randomBytes(32).toString('hex'),
+        token: crypto.randomBytes(32).toString("hex"),
       };
       if (!alreadyRequestedToken) {
         let newRequest = await ForgotPasswordToken(tokenData);
@@ -905,7 +908,7 @@ class AuthService {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Something went wrong. ' + err });
+              .json({ msgErr: true, message: "Something went wrong. " + err });
           }
         });
       } else {
@@ -916,7 +919,7 @@ class AuthService {
             if (err) {
               return res.status(400).json({
                 msgErr: true,
-                message: 'Something went wrong. ' + err,
+                message: "Something went wrong. " + err,
               });
             }
           }
@@ -937,16 +940,16 @@ class AuthService {
       if (!emailSendStatus) {
         return res
           .status(400)
-          .json({ msgErr: true, message: 'Something went wrong. ' + err });
+          .json({ msgErr: true, message: "Something went wrong. " + err });
       }
       return res.status(200).json({
         msgErr: false,
-        message: 'Reset Password link sended to the existing email.',
+        message: "Reset Password link sended to the existing email.",
       });
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 
@@ -962,39 +965,35 @@ class AuthService {
         .catch((err) => {
           return res.status(400).json({
             msgErr: true,
-            message: 'Something Went Wrong. Please Check after some time',
+            message: "Something Went Wrong. Please Check after some time",
           });
         });
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
-
 
   ///////////////////////////////////////////////////////////
   async getAllEmployeeWithoutPagination(req, res, next) {
     try {
-      await User.find({ role: { $in: ['employee', 'hr'] } })
-        .select('-password ')
-        .populate('designation', '_id name')
-        .populate('created_by', '_id name emp_id email_id phone_num')
-        .populate('assigned_client', '_id client_name company_name')
+      await User.find({ role: { $in: ["employee", "hr"] } })
+        .select("-password ")
+        .populate("designation", "_id name")
+        .populate("created_by", "_id name emp_id email_id phone_num")
+        .populate("assigned_client", "_id client_name company_name")
         .lean()
         .sort({ emp_id: 1 })
         .exec((err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
-           
-
-          
             return res.status(200).json({
               msgErr: false,
-              result: details
+              result: details,
             });
           }
         });
@@ -1005,62 +1004,64 @@ class AuthService {
 
   async usetListWithSpendTimeWithoutPagination(req, res, next) {
     try {
-      // let {start_date, end_date } = req.query;
+      let { start_date, end_date } = req.query;
 
-      // if (start_date && end_date) {
-      //   start_date = new Date(req.query.start_date.replace(/ /gi, '+'));
-      //   end_date = new Date(req.query.end_date.replace(/ /gi, '+'));
-      // }
+      if (start_date && end_date) {
+        start_date = new Date(start_date.replace(/ /gi, "+"));
+        end_date = new Date(end_date.replace(/ /gi, "+"));
+      }
 
-      // if (
-      //   !start_date ||
-      //   !end_date ||
-      //   start_date == 'Invalid Date' ||
-      //   end_date == 'Invalid Date'
-      // ) {
-      //   end_date = new Date();
-      //   start_date = new Date();
-      //   start_date.setMonth(start_date.getMonth() - 1);
-      //   start_date.setDate(15);
-      //   start_date.setHours(0, 0, 0, 0);
-      // }
+      if (
+        !start_date ||
+        !end_date ||
+        start_date == "Invalid Date" ||
+        end_date == "Invalid Date"
+      ) {
+        end_date = new Date();
+        start_date = new Date();
+        start_date.setMonth(start_date.getMonth() - 1);
+        start_date.setDate(15);
+        start_date.setHours(0, 0, 0, 0);
+      }
 
-      // const timeStamptoRedableTime = (tt) => {
-      //   let times = '';
-      //   let hour = 1 * 60 * 60 * 1000;
-      //   let minute = 1 * 60 * 1000;
+      const timeStamptoRedableTime = (tt) => {
+        let times = "";
+        let hour = 1 * 60 * 60 * 1000;
+        let minute = 1 * 60 * 1000;
 
-      //   if (tt / hour > 0) {
-      //     times = Math.floor(tt / hour) + ' Hours ';
-      //   }
-      //   if (tt / minute > 0) {
-      //     times += Math.floor((tt % hour) / minute) + ' Minutes';
-      //   }
-      //   return times;
-      // };
+        if (tt / hour > 0) {
+          times = Math.floor(tt / hour) + " Hours ";
+        }
+        if (tt / minute > 0) {
+          times += Math.floor((tt % hour) / minute) + " Minutes";
+        }
+        return times;
+      };
+
+      console.log({ start_date, end_date });
 
       await User.find({
-        role: { $in: ['employee', 'hr'] },
+        role: { $in: ["employee", "hr"] },
       })
-        .select('-password -createdAt -updatedAt -image -created_by')
-        .populate('designation', '_id name')
+        .select("-password -createdAt -updatedAt -image -created_by")
+        .populate("designation", "_id name")
         .populate(
-          'assigned_client',
-          '_id client_name company_name company_email'
+          "assigned_client",
+          "_id client_name company_name company_email"
         )
         .sort({ emp_id: 1 })
         .exec(async (err, details) => {
           if (err) {
             return res
               .status(400)
-              .json({ msgErr: true, message: 'Error ' + err });
+              .json({ msgErr: true, message: "Error " + err });
           } else {
             let resultArr = [];
             for (let i = 0; i < details.length; i++) {
               let task = await Timesheets.find({
                 created_by: details[i]._id,
-                //date: { $gte: start_date, $lte: end_date },
-                status: 'Present',
+                date: { $gte: start_date, $lte: end_date },
+                status: "Present",
               });
               // let workingTime = task.reduce((v, item) => {
               //   return v + parseInt(item.time_spend);
@@ -1073,18 +1074,16 @@ class AuthService {
               });
             }
 
-            
             return res.status(200).json({
               msgErr: false,
               result: resultArr,
-             
             });
           }
         });
     } catch (error) {
       return res
         .status(500)
-        .json({ msgErr: true, message: 'Internal Server Error ' + error });
+        .json({ msgErr: true, message: "Internal Server Error " + error });
     }
   }
 }

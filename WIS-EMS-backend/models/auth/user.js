@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { wisDB } = require('../../config/connection');
+const mongoose = require("mongoose");
+const { wisDB } = require("../../config/connection");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -33,13 +33,13 @@ const UserSchema = new mongoose.Schema(
     designation: {
       type: mongoose.Schema.Types.ObjectId,
       trim: true,
-      ref: 'designation',
+      ref: "designation",
       default: null,
     },
     role: {
       type: String,
-      enum: ['admin', 'employee', 'hr', 'accountant'],
-      default: 'employee',
+      enum: ["admin", "employee", "hr", "accountant"],
+      default: "employee",
     },
     password: {
       type: String,
@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema(
     },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
       default: null,
     },
     is_active: {
@@ -68,13 +68,13 @@ const UserSchema = new mongoose.Schema(
     assigned_client: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'ClientDetails',
+        ref: "ClientDetails",
       },
     ],
   },
   { timestamps: true }
 );
 
-const User = wisDB.model('user', UserSchema, 'User');
+const User = wisDB.model("user", UserSchema, "User");
 
 module.exports = { User };
