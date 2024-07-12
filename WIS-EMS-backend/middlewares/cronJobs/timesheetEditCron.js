@@ -294,6 +294,10 @@ class TimesheetCron {
       return console.log(error?.message);
     }
 
+    if (leaveTanen?.length === 0) {
+      return console.log(`No leaves are taken on ${yesterdayDateString}`);
+    }
+
     if (leaveTanen?.length > 0) {
       leaveTanen?.forEach?.((data) => {
         employeeIds.push(data?.user?.emp_id);
