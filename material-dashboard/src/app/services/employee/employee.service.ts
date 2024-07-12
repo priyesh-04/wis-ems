@@ -135,15 +135,14 @@ export class EmployeeService {
   }
 
 
-  ///////////////////////////////////////////////////////////////////
   public getAllEmployeeWithoutPagination(): Observable<any> {
     const endpoint = `${this.baseUrl}/user/all-employee-without-pagination`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }
 
-  public getAllEmployeeSpendTimeWithoutPagination(): Observable<any> {
-    const endpoint = `${this.baseUrl}/user/user-spend-time-without-pagination`;
+  public getAllEmployeeSpendTimeWithoutPagination(startDate: string, endDate: string): Observable<any> {
+    const endpoint = `${this.baseUrl}/user/user-spend-time-without-pagination?start_date=${startDate}&end_date=${endDate}`;
     const httpOptions = this.createHeaders();
     return this.http.get(endpoint, httpOptions);
   }

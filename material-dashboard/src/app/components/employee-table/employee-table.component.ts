@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { DatePipe } from '@angular/common';
 
 import { EmployeeService } from '../../services/employee/employee.service';
 import { EmployeeFormComponent } from '../../admin/employee-form/employee-form.component';
@@ -33,11 +34,14 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   public isLoading = false;
   public currentPage = 1;
   public totalPage = 0;
+  public filterStartDate: string;
+  public filterEndDate: string;
   
   constructor(    
     private _employeeService: EmployeeService,
     private _mesgageService: MesgageService,
     private dialog: MatDialog,
+    private datepipe: DatePipe,
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -47,6 +51,12 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
 
   ngOnInit(): void {
+    const currentDate = new Date().getDate();
+    //NB: Get start date as the 14th of current or next month
+    this.filterEndDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 2 : new Date().getMonth() + 1}-14`, 'yyyy-MM-dd');
+    //NB: Get start date as the 15th of current or last month
+    this.filterStartDate = this.datepipe.transform(`${new Date().getFullYear()}-${(currentDate >= 15) ? new Date().getMonth() + 1 : new Date().getMonth()}-15`, 'yyyy-MM-dd');
+
     this.params = {
       limit: this.limit,
       page: 1
@@ -65,14 +75,11 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       (res) => {
         this.isLoading = !this.isLoading;
         this.allEmployeeList = res.result;
-       // this.employeeList = res.result;
         this.activeEmployeeList = res.result.filter(element => element.is_active === true
           );
           this.inActiveEmployeeList = res.result.filter(element => element.is_active === false
             );
             this.employeeList = this.activeEmployeeList;
-        //this.pagination = res.pagination;
-        //this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
@@ -83,7 +90,11 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
 
   private employeeSpendTimeList() {
     this.isLoading = !this.isLoading;
-    this._employeeService.getAllEmployeeSpendTimeWithoutPagination().subscribe(
+
+    const filterStartDate = this.filterStartDate+"T00:00:00+05:30";
+    const filterEndDate = this.datepipe.transform(new Date(this.filterEndDate).setDate(new Date(this.filterEndDate).getDate() + 1), 'yyyy-MM-dd')+"T00:00:00+05:30";
+
+    this._employeeService.getAllEmployeeSpendTimeWithoutPagination(filterStartDate, filterEndDate).subscribe(
       (res) => {
         this.isLoading = !this.isLoading;
         this.allEmployeeList = res.result;
@@ -92,8 +103,6 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
           this.inActiveEmployeeList = res.result.filter(element => element.is_active === false
             );
         this.employeeList = this.activeEmployeeList;
-        //this.pagination = res.pagination;
-        //this.totalPage = res.pagination.total_page
       },
       (err) => {
         this.isLoading = !this.isLoading;
@@ -119,6 +128,7 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
       }
     });
   }
+
   public employeeToggle(userId, is_active){
     const deleteDialogRef = this.dialog.open(ConfirmDeleteComponent, {
       data: {
@@ -131,11 +141,15 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
     });
     deleteDialogRef.afterClosed().subscribe((result) => {
       if (result === "success") {
-        this.refreshEmployeeList();
-      }
-      
+        if (this.isDashboard) {
+          this.employeeSpendTimeList();
+        } else {
+          this.refreshEmployeeList();
+        }
+      }      
     });
   }
+
   public onPaginationChange(event: params) {
     this.searchTerm = '';
     this.params = event;
@@ -166,18 +180,15 @@ export class EmployeeTableComponent implements OnChanges, OnInit {
   }
 
   public fetchActiveUser(){
-        //this.employeeList = res.result;
-        this.isActive = true;
-        this.employeeList = [];
-        this.employeeList = this.allEmployeeList.filter(element => element.is_active === true
-         );
+    this.isActive = true;
+    this.employeeList = [];
+    this.employeeList = this.allEmployeeList.filter(element => element.is_active === true);
   }
 
   public fetchInActiveUser(){
-       this.isActive = false;
-       this.employeeList = [];
-       this.employeeList = this.allEmployeeList.filter(element => element.is_active === false
-      );
+    this.isActive = false;
+    this.employeeList = [];
+    this.employeeList = this.allEmployeeList.filter(element => element.is_active === false);
   }
 
 }
