@@ -10,7 +10,6 @@ const app = express();
 
 const cronFunction = require("./cronJob");
 const { TimesheetCron } = require("./middlewares/cronJobs");
-const { checkAndUpdateLeaveEveryNight } = require("./middlewares/cronJobs/timesheetEditCron");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,7 +26,7 @@ app.use(function (req, res, next) {
 });
 
 global.appRoot = path.resolve(__dirname);
-checkAndUpdateLeaveEveryNight()
+
 app.use("/api", routes);
 app.use("/uploads", express.static("uploads"));
 
