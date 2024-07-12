@@ -1,20 +1,21 @@
-const { User } = require('../../models/auth/user');
-const { Timesheets } = require('../../models/timesheets/timesheets');
+const axios = require("axios");
+const { User } = require("../../models/auth/user");
+const { Timesheets } = require("../../models/timesheets/timesheets");
 const {
   OfficeHolidays,
-} = require('../../models/officeHolidays/officeHolidays');
+} = require("../../models/officeHolidays/officeHolidays");
 
 class TimesheetCron {
   async resetTimesheetEditPermission(req, res, next) {
     try {
       const result = await Timesheets.find({
-        edit_status: 'New',
+        edit_status: "New",
       });
-      console.log('New Change to Initial');
+      console.log("New Change to Initial");
       for (let i = 0; i < result.length; i++) {
         await Timesheets.findByIdAndUpdate(
           { _id: result[i]._id },
-          { edit_status: 'Initial' },
+          { edit_status: "Initial" },
           { new: true }
         );
       }
@@ -26,13 +27,13 @@ class TimesheetCron {
   async changeAcceptedPermission(req, res, next) {
     try {
       const result = await Timesheets.find({
-        edit_status: 'Accepted',
+        edit_status: "Accepted",
       });
-      console.log('Accepted Change to Edited');
+      console.log("Accepted Change to Edited");
       for (let i = 0; i < result.length; i++) {
         await Timesheets.findByIdAndUpdate(
           { _id: result[i]._id },
-          { edit_status: 'Edited' },
+          { edit_status: "Edited" },
           { new: true }
         );
       }
@@ -44,32 +45,32 @@ class TimesheetCron {
   async createHolidayTimesheet(req, res, next) {
     try {
       const result = await User.find({
-        role: { $ne: 'admin' },
+        role: { $ne: "admin" },
         is_active: true,
       });
-      console.log('Auto fillup holiday started');
+      console.log("Auto fillup holiday started");
       let date = new Date();
       let currentDay = date.getDay();
 
       const today =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T00:00:00+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T00:00:00+05:30";
 
       let dayEnd =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T23:59:59+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T23:59:59+05:30";
       // console.log(today, dayEnd);
 
       const checkAndCreate = async (user) => {
@@ -81,10 +82,10 @@ class TimesheetCron {
           let data = {
             in_time: null,
             out_time: null,
-            edit_status: 'Initial',
+            edit_status: "Initial",
             date: dayEnd, /// have to check
             created_by: user._id,
-            status: 'Holiday',
+            status: "Holiday",
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
@@ -103,10 +104,10 @@ class TimesheetCron {
           let data = {
             in_time: null,
             out_time: null,
-            edit_status: 'Initial',
+            edit_status: "Initial",
             date: dayEnd,
             created_by: user._id,
-            status: 'Not Submited',
+            status: "Not Submited",
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
@@ -130,29 +131,29 @@ class TimesheetCron {
       let date = new Date();
       const today =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T00:00:00+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T00:00:00+05:30";
 
       let dayEnd =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T23:59:59+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T23:59:59+05:30";
       let isTodayHoliday = await OfficeHolidays.find({
         date: { $gte: today, $lte: dayEnd },
       });
 
       const result = await User.find({
-        role: { $ne: 'admin' },
+        role: { $ne: "admin" },
         is_active: true,
       });
 
@@ -165,10 +166,10 @@ class TimesheetCron {
           let data = {
             in_time: null,
             out_time: null,
-            edit_status: 'Initial',
+            edit_status: "Initial",
             date: dayEnd,
             created_by: user._id,
-            status: 'Official Holiday',
+            status: "Official Holiday",
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
@@ -190,26 +191,26 @@ class TimesheetCron {
       let date = new Date();
       const today =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T00:00:00+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T00:00:00+05:30";
 
       let dayEnd =
         date.getFullYear() +
-        '-' +
+        "-" +
         (date.getMonth() > 8
           ? date.getMonth() + 1
-          : '0' + (date.getMonth() + 1)) +
-        '-' +
-        (date.getDate() > 9 ? date.getDate() : '0' + date.getDate()) +
-        'T23:59:59+05:30';
+          : "0" + (date.getMonth() + 1)) +
+        "-" +
+        (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+        "T23:59:59+05:30";
 
       const result = await User.find({
-        role: { $ne: 'admin' },
+        role: { $ne: "admin" },
         is_active: true,
       });
 
@@ -221,7 +222,7 @@ class TimesheetCron {
 
         // leave api data to be compleate
         let isTodayLeave = fetch(`${process.env.LEAVE_DATA_BASE_URL}/...`, {
-          method: 'POST',
+          method: "POST",
           body: {
             date: today,
           },
@@ -230,10 +231,10 @@ class TimesheetCron {
           let data = {
             in_time: null,
             out_time: null,
-            edit_status: 'Edited',
+            edit_status: "Edited",
             date: dayEnd,
             created_by: user._id,
-            status: 'Leave',
+            status: "Leave",
           };
           let newRequest = await Timesheets(data);
           newRequest.save();
@@ -242,6 +243,117 @@ class TimesheetCron {
 
       for (let i = 0; i < result.length; i++) {
         await officialHolidayCreate(result[i]);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async checkAndUpdateLeaveEveryNight(req, res, next) {
+    const today = new Date("2024-07-09");
+    const yesterday = new Date(today.setDate(today.getDate() - 1));
+    const yesterdayDateString = yesterday.toISOString().split("T")?.[0];
+    //  const yesterdayDateString = "2024-01-01";
+
+    const dayStart =
+      yesterday.getFullYear() +
+      "-" +
+      (yesterday.getMonth() > 8
+        ? yesterday.getMonth() + 1
+        : "0" + (yesterday.getMonth() + 1)) +
+      "-" +
+      (yesterday.getDate() > 9
+        ? yesterday.getDate()
+        : "0" + yesterday.getDate()) +
+      "T00:00:00+05:30";
+
+    const dayEnd =
+      yesterday.getFullYear() +
+      "-" +
+      (yesterday.getMonth() > 8
+        ? yesterday.getMonth() + 1
+        : "0" + (yesterday.getMonth() + 1)) +
+      "-" +
+      (yesterday.getDate() > 9
+        ? yesterday.getDate()
+        : "0" + yesterday.getDate()) +
+      "T23:59:59+05:30";
+
+    console.log({ dayStart, dayEnd });
+
+    let leaveTanen = [];
+    const leaveUpdates = [];
+    let users = null;
+    const employeeIds = [];
+
+    const url = `https://webideasolution.in/erp/public/api/leave-data?from_date=${yesterdayDateString}&to_date=${yesterdayDateString}`;
+    try {
+      const response = await axios.get(url);
+      leaveTanen = response?.data;
+    } catch (error) {
+      return console.log(error?.message);
+    }
+
+    if (leaveTanen?.length > 0) {
+      leaveTanen?.forEach?.((data) => {
+        employeeIds.push(data?.user?.emp_id);
+        leaveUpdates.push({
+          employeeId: data?.user?.emp_id,
+          status: data?.day_count === 0.5 ? "Half Day" : "Leave",
+          leaveData: {
+            type: data?.leave_type?.leave_type_name,
+            reason: data?.description,
+            remarks: data?.remarks,
+            count: data?.day_count === 0.5 ? 0.5 : 1,
+          },
+        });
+      });
+    }
+
+    try {
+      users = await User.find({ emp_id: { $in: employeeIds } });
+    } catch (error) {
+      return console.log(error?.message);
+    }
+
+    if (!users) {
+      return console.log("Something went wrong");
+    }
+
+    const userMap = users.reduce((acc, user) => {
+      acc[user.emp_id] = user._id;
+      return acc;
+    }, {});
+
+    const bulkOperations = leaveUpdates
+      .map((update) => {
+        const userId = userMap[update.employeeId];
+        if (!userId) {
+          return null; // Skip if the user is not found
+        }
+        return {
+          updateMany: {
+            filter: {
+              created_by: userId,
+              date: {
+                $gte: dayStart,
+                $lte: dayEnd,
+              },
+            },
+            update: {
+              $set: { leaveData: update.leaveData, status: update.status },
+            },
+          },
+        };
+      })
+      .filter((operation) => operation !== null);
+
+    try {
+      if (bulkOperations.length > 0) {
+        const result = await Timesheets.bulkWrite(bulkOperations);
+        console.log(`${result.modifiedCount} documents updated.`);
+      } else {
+        console.log("No documents to update.");
       }
     } catch (error) {
       console.log(error);
