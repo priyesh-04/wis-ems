@@ -250,7 +250,7 @@ class TimesheetCron {
   }
 
   async checkAndUpdateLeaveEveryNight(req, res, next) {
-    const today = new Date("2024-07-09");
+    const today = new Date();
     const yesterday = new Date(today.setDate(today.getDate() - 1));
     const yesterdayDateString = yesterday.toISOString().split("T")?.[0];
     //  const yesterdayDateString = "2024-01-01";
