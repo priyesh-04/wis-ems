@@ -1,7 +1,7 @@
 <div class="container">
     <div class="page-operations mb-3" *ngIf="(timesheetList.length || !isLoading)">
         <div class="form-inline flex m-0">
-            <div class="col-sm-12" *ngIf="isAdmin" [ngClass]="viewType === 'listView' ? 'col-md-4' : 'col-md-12'">
+            <div class="col-sm-12" *ngIf="isAdmin" [ngClass]="viewType === 'listView' ? 'col-md-4' : 'col-md-6'">
                 <mat-form-field appearance="fill">
                     <mat-label>Employee</mat-label>
                     <mat-select [(value)]="userID" (selectionChange)="selectEmployee($event)">
@@ -11,15 +11,18 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-sm-12 col-md-4" *ngIf="viewType === 'listView'">
+            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-4'" *ngIf="viewType === 'listView'">
                 <mat-form-field appearance="legacy">
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterStartDate" (change)="refreshTimesheetList()" placeholder="Start Date">
                 </mat-form-field>
             </div>
-            <div class="col-sm-12 col-md-4" *ngIf="viewType === 'listView'">
+            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-4'" *ngIf="viewType === 'listView'">
                 <mat-form-field appearance="legacy">
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterEndDate" (change)="refreshTimesheetList()" placeholder="End Date">
                 </mat-form-field>
+            </div>
+            <div class="col-sm-12" [ngClass]="viewType === 'listView' ? (isAdmin ? 'col-md-2' : 'col-md-4') : (isAdmin ? 'col-md-6' : 'col-md-12')">
+                <strong>Total Working Days: {{ totalWorkingDays }}</strong> 
             </div>
             <!-- <div class="col-sm-12 col-md-4">
                 <div class="col-sm-12" id="client-wrapper">
@@ -61,36 +64,44 @@
             [attr.id]="'accordion-header-' + index"
             [attr.aria-expanded]="accordionItem.expanded"
             [attr.aria-controls]="'accordion-body-' + index">
-            <div  [ngClass]="[timesheet.status === 'Present' ? 'bg-success' : 'bg-danger']" class="d-flex justify-content-between working-date-wrapper px-2 py-2 align-items-center mt-3 text-white" style="cursor: auto;">
+            <div  [ngClass]="getAccordionBGColor(timesheet.status)" class="d-flex justify-content-between working-date-wrapper px-2 py-2 align-items-center mt-3 text-white" style="cursor: auto;">
                 <div class="working-date-wrapper" style="cursor: pointer;">
                     <span class="working-date" (click)="accordionItem.toggle()" style="cursor: pointer;">
                         {{timesheet.date | date }} 
-                        <ng-container *ngIf="timesheet.status === 'Present'">
-                            ({{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}})
+                        <ng-container *ngIf="timesheet.status === 'Present' || timesheet.status === 'Half Day'">
+                            (
+                                {{timesheet.in_time | date:'shortTime'}} - {{timesheet.out_time | date:'shortTime'}}
+                                {{timesheet.status === 'Half Day' ? ', Half Day' : ''}}
+                            )
+                        </ng-container>
+                        <ng-container *ngIf="timesheet.status === 'Leave'">
+                            ({{ timesheet.leaveData?.type ?  timesheet.leaveData?.type : timesheet.status }})
                         </ng-container>
                     </span>
-                    <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin &&!clientid" sty
-                    le="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="addSingleTasks(timesheet._id, timesheet)">
-                        Add Task
-                    </span>
-                    <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) && !isAdmin"
-                    style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
-                        Edit All Task
-                    </span>
-                    <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial) && !isAdmin" style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="editRequestDialog(timesheet._id, timesheet)"> 
-                        Request for Edit
-                    </span>
-                    <span *ngIf="timesheet.edit_status === EditStatus.Requested && !isAdmin" class="ml-2 text-dark font-weight-bold">
-                        Already Requested
-                    </span>            
+                    <ng-container *ngIf="timesheet.status !== 'Leave' && !isAdmin">
+                        <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted) &&!clientid" sty
+                        le="color: rgb(15, 137, 252); cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="addSingleTasks(timesheet._id, timesheet)">
+                            Add Task
+                        </span>
+                        <span *ngIf="(timesheet.edit_status === EditStatus.New || timesheet.edit_status === EditStatus.Accepted)"
+                        style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="allEditTimesheetDialog(timesheet._id, timesheet)">
+                            Edit All Task
+                        </span>
+                        <span *ngIf="(timesheet.edit_status === EditStatus.Edited || timesheet.edit_status === EditStatus.Rejected || timesheet.edit_status === EditStatus.Initial)" style="cursor: pointer;" class="ml-2 text-dark font-weight-bold" (click)="editRequestDialog(timesheet._id, timesheet)"> 
+                            Request for Edit
+                        </span>
+                        <span *ngIf="timesheet.edit_status === EditStatus.Requested" class="ml-2 text-dark font-weight-bold">
+                            Already Requested
+                        </span>
+                    </ng-container>
                 </div>
             
-            <div (click)="accordionItem.toggle()" style="cursor: pointer;">
-                <span class="example-accordion-item-description">
-                <mat-icon *ngIf="!accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_down</mat-icon>
-                <mat-icon *ngIf="accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_up</mat-icon> 
-                </span>
-            </div>
+                <div (click)="accordionItem.toggle()" style="cursor: pointer;">
+                    <span class="example-accordion-item-description">
+                    <mat-icon *ngIf="!accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_down</mat-icon>
+                    <mat-icon *ngIf="accordionItem.expanded" (click)="toggleAccordion()">keyboard_arrow_up</mat-icon> 
+                    </span>
+                </div>
             </div>
             <div
                 class="example-accordion-item-body border p-2"
@@ -99,7 +110,7 @@
                 [style.display]="accordionItem.expanded ? '' : 'none'"
                 [attr.id]="'accordion-body-' + index"
                 [attr.aria-labelledby]="'accordion-header-' + index">
-                <ng-container *ngIf="timesheet.status === 'Present'">
+                <ng-container *ngIf="timesheet.status === 'Present' || timesheet.status === 'Half Day'">
                     <div class="client-project ml-2 my-1" *ngFor="let task of timesheet.task_details">
                         <span class="client-name">
                             {{task.client?.client_name}}
@@ -120,7 +131,11 @@
                     </div>
                 </ng-container>
                 <div class="client-project ml-2 my-1" *ngIf="timesheet.status !== 'Present'">
-                    <span class="text-danger">{{timesheet.status}}</span>
+                    <div class="text-danger" *ngIf="timesheet.status === 'Leave' || timesheet.status === 'Half Day'">
+                        <div><strong>Reason: </strong><span [innerHTML]="timesheet.leaveData?.reason"></span>{{timesheet.leaveData?.reason}}</div>
+                        <div *ngIf="timesheet.leaveData?.remarks"><strong>Remarks: </strong>{{timesheet.leaveData?.remarks}}</div>
+                    </div>
+                    <span class="text-danger" *ngIf="timesheet.status !== 'Leave' && timesheet.status !== 'Half Day'">{{timesheet.status}}</span>
                 </div>
             </div>
             </cdk-accordion-item>

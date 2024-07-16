@@ -35,6 +35,7 @@ export class ListTimesheetComponent implements OnInit {
   public filterProjectList = [];
   public clientid = '';
   public viewType: 'listView' | 'calendarView' = 'listView';
+  public totalWorkingDays = 0;
 
   constructor(
     private _employeeService: EmployeeService,
@@ -83,8 +84,8 @@ export class ListTimesheetComponent implements OnInit {
       (res) => {
         this.timesheetList = !isloadMore ? res.result : [...this.timesheetList, ...res.result];
         this.totalPage = res.pagination ? res.pagination.total_page : 0;
+        this.totalWorkingDays = res.totalWorkingDays;
         this.isLoading = false;
-        console.log("87.......",this.timesheetList);
       },
       (err) => {
         this.isLoading = false;
@@ -238,5 +239,18 @@ export class ListTimesheetComponent implements OnInit {
 
   public calenderDateRange(startDate) {
     this.refreshTimesheetList(false, startDate + '+05:30', false);
+  }
+
+  public getAccordionBGColor(status: string) {
+    switch(status) {
+      case 'Present':
+        return 'bg-success';
+      case 'Leave':
+        return 'bg-info';
+      case 'Half Day':
+        return 'bg-secondary ';
+      default:
+        return 'bg-danger';
+    }
   }
 }

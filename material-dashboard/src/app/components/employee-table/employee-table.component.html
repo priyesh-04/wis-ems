@@ -1,9 +1,29 @@
 <div class="table-responsive">
-    <!-- <button (click)="fetchActiveUser()">Active</button>
-    <button (click)="fetchInActiveUser()">Inactive</button> -->
-    <button [ngClass]="isActive ? 'bg-primary' :  'bg-secondary' " (click)="fetchActiveUser()" class="mr-3 btn">Active</button>
-    <button (click)="fetchInActiveUser()" [ngClass]="!isActive ? 'bg-primary' :  'bg-secondary' "class="btn">Inactive</button>
-    <div class="ml-auto w-25 mb-3"><div class="d-flex"><mat-icon>search</mat-icon><input class="form-control" type ="text" [(ngModel)]="searchTerm" placeholder="search by Employee name" (keyup)="searchByName($event)"/></div></div>
+    <div class="page-operations" [ngClass]="{'mb-3': !isDashboard}">
+        <div class="flex">
+            <button [ngClass]="isActive ? 'bg-primary' :  'bg-secondary' " (click)="fetchActiveUser()" class="mr-3 btn" style="height: 40px;">Active</button>
+            <button (click)="fetchInActiveUser()" [ngClass]="!isActive ? 'bg-primary' :  'bg-secondary' "class="btn" style="height: 40px;">Inactive</button>
+            
+            <div class="col-sm-12 col-md-4" *ngIf="isDashboard">
+                <mat-form-field appearance="legacy">
+                    <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterStartDate" (change)="employeeSpendTimeList()" placeholder="Start Date">
+                </mat-form-field>
+            </div>
+            <div class="col-sm-12 col-md-4" *ngIf="isDashboard">
+                <mat-form-field appearance="legacy">
+                    <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterEndDate" (change)="employeeSpendTimeList()" placeholder="End Date">
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="ml-auto w-25 mb-3">
+            <div class="d-flex">
+                <mat-icon>search</mat-icon>
+                <input class="form-control" type ="text" [(ngModel)]="searchTerm" placeholder="search by Employee name" (keyup)="searchByName($event)"/>
+            </div>
+        </div>
+    </div>
+
     <table class="table table-bordered bg-white">
         <thead>
             <tr>
@@ -13,18 +33,18 @@
                 <th scope="col" class="font-weight-bold">Designation</th>
                 <th scope="col" class="font-weight-bold">Role</th>
                 <th scope="col" class="font-weight-bold">Mobile Number</th>
-                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Clients</th>
+                <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Projects</th>
                 <th scope="col" class="font-weight-bold" *ngIf="isDashboard">Working Days</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Timesheet</th>
                 <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Actions</th>
-                <th scope="col" class="font-weight-bold" *ngIf="!isDashboard">Status</th>
+                <th scope="col" class="font-weight-bold">Status</th>
             </tr>
         </thead>
         <tbody *ngFor="let employee of employeeList; let i = index">
             <!-- <tr [ngClass]="[employee.is_active === true ? 'bg-success' : 'bg-danger']"> -->
                 <tr>
                 <!-- <th scope="row">{{pagination.current_page ? (pagination.current_page - 1) * limit + i + 1 : i + 1}}</th> -->
-                <th scope="row"></th>
+                <td scope="row">{{i+1}}</td>
                 <td>
                     <a [routerLink]="['/timesheet-list', employee._id]">
                         {{employee.emp_id}}
@@ -53,7 +73,7 @@
                         Edit
                     </button>
                 </td>
-                <td *ngIf="!isDashboard">
+                <td>
                     <div class="d-inline employee-status" (click)="employeeToggle(employee._id, employee.is_active)">
                         <mat-slide-toggle [checked]="employee.is_active" [disabled]='true'></mat-slide-toggle>
                     </div>

@@ -7,6 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from "@angular/material/icon";
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { FooterComponent } from './footer/footer.component';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -14,7 +17,6 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { EmployeeTableComponent } from './employee-table/employee-table.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { PageLoaderComponent } from './page-loader/page-loader.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 @NgModule({
   imports: [
@@ -25,6 +27,8 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatMenuModule,
     MatButtonModule,
     MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatIconModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule
