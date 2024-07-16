@@ -11,17 +11,17 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-6'" *ngIf="viewType === 'listView'">
+            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-4'" *ngIf="viewType === 'listView'">
                 <mat-form-field appearance="legacy">
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterStartDate" (change)="refreshTimesheetList()" placeholder="Start Date">
                 </mat-form-field>
             </div>
-            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-6'" *ngIf="viewType === 'listView'">
+            <div class="col-sm-12" [ngClass]="isAdmin ? 'col-md-3' : 'col-md-4'" *ngIf="viewType === 'listView'">
                 <mat-form-field appearance="legacy">
                     <input matInput type="date" class="form-control rounded-0" [(ngModel)]="filterEndDate" (change)="refreshTimesheetList()" placeholder="End Date">
                 </mat-form-field>
             </div>
-            <div class="col-sm-12" [ngClass]="viewType === 'listView' ? 'col-md-2' : 'col-md-6'" *ngIf="isAdmin">
+            <div class="col-sm-12" [ngClass]="viewType === 'listView' ? (isAdmin ? 'col-md-2' : 'col-md-4') : (isAdmin ? 'col-md-6' : 'col-md-12')">
                 <strong>Total Working Days: {{ totalWorkingDays }}</strong> 
             </div>
             <!-- <div class="col-sm-12 col-md-4">

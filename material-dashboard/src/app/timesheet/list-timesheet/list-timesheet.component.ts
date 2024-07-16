@@ -248,7 +248,7 @@ export class ListTimesheetComponent implements OnInit {
       case 'Leave':
         return 'bg-info';
       case 'Half Day':
-        return 'bg-primary';
+        return 'bg-secondary ';
       default:
         return 'bg-danger';
     }
